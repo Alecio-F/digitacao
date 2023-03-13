@@ -26,22 +26,34 @@
             height: 100px;
             font-size:x-large;
         }
-        p {
+        #texto {
             display: flex;
             justify-content: center;
             text-align: justify;
             width: 80%;
             font-size: x-large;
         }
+
+        .mistake {
+            color: red;
+            text-decoration: underline;
+        }
+
+
     </style>
 </head>
 <body>
     <div>
-        <label for="input-texto"><h2>Digitação</h2></label><br>
-        <input type="text" id="input-texto">
-        <p id="texto">Ok, funcionando. ÊêáÁàÀãÃâÂííìÌóòôõúùû</p>
-        <!--Você díz que se pudesse voar Nunca mais voltaria Então você pretende alcançar O azul, o azul, o azul do céu Você ainda precisar conhecer a tristeza Para aprender a suporta Devem ser transformados em palavras-->
-    </div>
+        <h2>Teste de digitação</h2>
+        <p>Escreva o texto abaixo:</p>
+        <p id="quote"></p>
+        <input type="text" id="input" placeholder="Digite aqui"></input>
+        <button id="start">Iniciar</button>
+        <button id="reset">Reiniciar</button>
+        <p id="wpm"></p>
+        <p id="accuracy"></p>
+      </div>
+      
 
     <script src="assets/js/script.js"></script>
 </body>
