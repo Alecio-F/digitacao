@@ -13,4 +13,3 @@ Sou iniciante como programador, mas uma das coisas que aprendi é que se você q
 + CSS
 + Javascript
 + Biblioteca [JQuery](https://jquery.com/)
-+ Biblioteca [unorm.js](https://github.com/walling/unorm)
