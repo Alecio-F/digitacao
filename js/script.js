@@ -11,7 +11,7 @@ let quoteIndex = 0;
 let numCharsTyped = 0;
 let numMistakes = 0;
 const quoteElem = $("#quote");
-const inputElem = $("#input");
+const inputElem = $("#digitandoTexto");
 const startButton = $("#start");
 const resetButton = $("#reset");
 const wpmElem = $("#wpm");
@@ -32,12 +32,12 @@ function stopTimer() {
 
 function updateTimer() {
   const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
-  wpmElem.text(`${Math.floor(numCharsTyped / 5 / (elapsedSeconds / 60))} WPM`);
+  wpmElem.text(`${Math.floor(numCharsTyped / 5 / (elapsedSeconds / 60))}`);
 }
 
 function updateAccuracy() {
   const accuracy = 100 - ((numMistakes / numCharsTyped) * 100);
-  accuracyElem.text(`${accuracy.toFixed(2)}% precisão`);
+  accuracyElem.text(`${accuracy.toFixed(2)}%`);
 }
 
 function handleInput() {
@@ -79,8 +79,8 @@ function reset() {
   displayQuote();
   inputElem.val("");
   inputElem.prop("disabled", true);
-  wpmElem.text("");
-  accuracyElem.text("");
+  wpmElem.text("0");
+  accuracyElem.text("0");
 }
 
 startButton.click(function() {
