@@ -7,43 +7,85 @@
     <title>Digitação Online</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/string-similarity/umd/string-similarity.min.js"></script>
-    <script src="node_modules/unorm/lib/unorm.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-        }
-        div {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 80%;
-        }
-        input {
-            width: 80%;
-            height: 100px;
-            font-size:x-large;
-        }
-        #texto {
-            display: flex;
-            justify-content: center;
-            text-align: justify;
-            width: 80%;
-            font-size: x-large;
-        }
-
         .mistake {
             color: red;
             text-decoration: underline;
         }
-
-
     </style>
 </head>
 <body>
-    <div>
+    <header>
+        <div class="center">
+            <div class="logo">
+                <a href="#"><img src="assets/media/PandaDigitações-logo.png" alt="PandaDigitações" width="50" height="60"></a>
+            </div>
+            <div class="menu">
+                <a href="#">Início</a>
+                <a href="#">Teste de digitação</a>
+                <a href="#">Aprenda</a>
+                <a href="#">Pratique</a>
+            </div>
+            <div class="contaeConfig">
+                <a href="#">Criar conta/Entrar</a>
+                <a href="#"><img src="assets/media/Configurações.png" alt="Configurações" width="30" height="30"></a>
+            </div>
+        </div>
+    </header>
+    <section class="banner">
+        <div class="conteiner">
+            <div class="copy">
+                <p>Aprenda a digitar mais 
+                    rápido e com precisão!
+                </p>
+                <p>Treine com nossas lições personalizadas 
+                    e melhore suas habilidades de digitação 
+                    em pouco tempo.
+                </p>
+            </div>
+            <div class="panda">
+                <img src="assets/media/Design_sem_nome-removebg-preview.png" alt="Pandatype" height="455px">
+            </div>
+        </div>
+        <div class="pandas">
+            <img src="assets/media/pandas-banner.png" width="250px" >
+        </div>
+    </section>
+    <section class="testeDigita">
+            <div class="conteinerDois inputD">
+                <h1>Teste sua digitação!</h1>
+                <div class="parametros">
+                    <div class="tempo">
+                        <div class="numeros">60s</div>
+                        <p>Tempo</p>
+                    </div>
+                    <div class="precisao">
+                        <div id="accuracy" class="numeros">0</div>
+                        <p>Precisão</p>
+                    </div>
+                    <div class="ppm">
+                        <div id="wpm" class="numeros">0</div>
+                        <p>PPM</p>
+                    </div>
+                    <div class="pausaReiniciar">
+                        <span id="start" class="material-symbols-outlined">
+                            pause_circle
+                        </span>
+                        <span  id="reset" class="material-symbols-outlined">
+                            restart_alt
+                        </span>
+                    </div>
+                </div>
+                <div class="digitacaoDoTexto">
+                    <label for="digitandoTexto" class="label inputD"></label>
+                    <input id="digitandoTexto"  type="text" spellcheck="false" autocapitalize="none" autocomplete="off" autocorrect="off">
+                    <p id="quote"></p>
+                </div>
+            </div>
+    </section>
+    <!--
+        <div>
         <h2>Teste de digitação</h2>
         <p>Escreva o texto abaixo:</p>
         <p id="quote"></p>
@@ -52,9 +94,16 @@
         <button id="reset">Reiniciar</button>
         <p id="wpm"></p>
         <p id="accuracy"></p>
-      </div>
-      
+      </div> 
+    -->
+    <script>
+        let minhaDiv = document.querySelector('.inputD');
+        let meuLabel = document.querySelector('.label');
 
+            minhaDiv.addEventListener('click', function() {
+            meuLabel.click();
+        });
+    </script>
     <script src="assets/js/script.js"></script>
 </body>
 </html>
