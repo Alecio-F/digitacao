@@ -61,11 +61,11 @@
                         <p>Tempo</p>
                     </div>
                     <div class="precisao">
-                        <div id="accuracy" class="numeros">0</div>
+                        <div class="numeros">00</div>
                         <p>Precisão</p>
                     </div>
                     <div class="ppm">
-                        <div id="wpm" class="numeros">0</div>
+                        <div class="numeros">00</div>
                         <p>PPM</p>
                     </div>
                     <div class="pausaReiniciar">
@@ -77,25 +77,16 @@
                         </span>
                     </div>
                 </div>
-                <div class="digitacaoDoTexto">
-                    <label for="digitandoTexto" class="label inputD"></label>
-                    <input id="digitandoTexto"  type="text" spellcheck="false" autocapitalize="none" autocomplete="off" autocorrect="off">
-                    <p id="quote"></p>
+                <div class="conteinerDigita">
+                    <div class="digitacaoDoTexto">
+                        <label for="digitandoTexto" class="label inputD"></label>
+                        <input id="digitandoTexto"  type="text" spellcheck="false" autocapitalize="none" autocomplete="off" autocorrect="off">
+                        <p class="textoParaDigitar">Lorem ipsum dolor sit amet consectetur adipisicing elit. Deleniti dolor saepe distinctio iste nemo quo reiciendis vitae blanditiis, voluptates incidunt illo rerum dolorem quaerat adipisci expedita quod cum explicabo nulla.</p>
+                    </div>
                 </div>
             </div>
     </section>
-    <!--
-        <div>
-        <h2>Teste de digitação</h2>
-        <p>Escreva o texto abaixo:</p>
-        <p id="quote"></p>
-        <input type="text" id="input" placeholder="Digite aqui"></input>
-        <button id="start">Iniciar</button>
-        <button id="reset">Reiniciar</button>
-        <p id="wpm"></p>
-        <p id="accuracy"></p>
-      </div> 
-    -->
+
     <script>
         let minhaDiv = document.querySelector('.inputD');
         let meuLabel = document.querySelector('.label');

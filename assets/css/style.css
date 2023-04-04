@@ -21,6 +21,7 @@
 
 body {
     background-color: var(--corFundo);
+    position: relative;
 }
 
 .center {
@@ -111,7 +112,10 @@ header {
 }
 
 .testeDigita {
-    height: 600px;
+    background-image: url(../media/fundo.png) ;
+    background-repeat: no-repeat;
+    background-position: top;
+    height: 780px;
     display: flex;
     justify-content: center;
 }
@@ -161,5 +165,11 @@ header {
     margin-top: 50px;
 }
 #digitandoTexto {
-    
+    border: none;
+    background-color: var(--corHeader);
+    outline: none;
+}
+.textoParaDigitar {
+    width: 700px;
+    text-align: justify;
 }
