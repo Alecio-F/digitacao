@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de digitação - PandaDigitaçôes</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link rel="shortcut icon" href="../img/1PandaDigitações-logo.ico" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <div class="center">
+            <div class="logo">
+                <a href="#"><img src="../img/PandaDigitações-logo.png" alt="PandaDigitações" width="50" height="60"></a>
+            </div>
+            <div class="menu">
+                <a href="index.html">Início</a>
+                <a href="testeDigitação.html">Teste de digitação</a>
+                <a href="aprenda.html">Aprenda</a>
+                <a href="pratique.html">Pratique</a>
+            </div>
+            <div class="contaeConfig">
+                <a href="entrarCriarConta.html">Criar conta/Entrar</a>
+                <a href="#"><img src="../img/Configurações.png" alt="Configurações" width="30" height="30"></a>
+            </div>
+        </div>
+    </header>
+    <section class="testeDigita">
+        <div class="conteinerDois inputD">
+            <h1>Teste sua digitação!</h1>
+            <div class="parametros">
+                <div class="tempo">
+                    <div class="numeros">60s</div>
+                    <p>Tempo</p>
+                </div>
+                <div class="precisao">
+                    <div class="numeros">00</div>
+                    <p>Precisão</p>
+                </div>
+                <div class="ppm">
+                    <div class="numeros">00</div>
+                    <p>PPM</p>
+                </div>
+                <div class="pausaReiniciar">
+                    <span id="start" class="material-symbols-outlined">
+                        pause_circle
+                    </span>
+                    <span  id="reset" class="material-symbols-outlined">
+                        restart_alt
+                    </span>
+                </div>
+            </div>
+            <div class="conteinerDigita">
+                <div class="digitacaoDoTexto">
+                    <label for="digitandoTexto" class="label inputD"></label>
+                    <input id="digitandoTexto"  type="text" spellcheck="false" autocapitalize="none" autocomplete="off" autocorrect="off">
+                    <p class="textoParaDigitar">Lorem ipsum dolor sit amet consectetur adipisicing elit. Deleniti dolor saepe distinctio iste nemo quo reiciendis vitae blanditiis, voluptates incidunt illo rerum dolorem quaerat adipisci expedita quod cum explicabo nulla.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div>
+            © Copyright 2023 PandaDigitaçôes. Todos os direitos reservados.
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+</body>
+</html>

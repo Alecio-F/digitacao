@@ -17,6 +17,7 @@
     --corFundo: #A5B5C1;
     --corTexto: #087CA7;
     --corTitulo: #0B3954;
+    --corFooter: #373D45;
 }
 
 body {
@@ -112,7 +113,7 @@ header {
 }
 
 .testeDigita {
-    background-image: url(../media/fundo.png) ;
+    background-image: url(../img/fundo.png) ;
     background-repeat: no-repeat;
     background-position: top;
     height: 780px;
@@ -172,4 +173,85 @@ header {
 .textoParaDigitar {
     width: 700px;
     text-align: justify;
+}
+
+.resumo {
+    background-image: url(../img/fundo.png);
+    background-repeat: no-repeat;
+    background-position: top;
+    height: 780px;
+}
+#bar {
+    width: 100%;
+    height: 3px;
+    background-color: var(--corHeader);
+    border: 3px solid #EEEEEE;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+.resumoD {
+    margin: auto;
+}
+.resumoD p {
+    text-align: justify;
+    line-height: 1.6em;
+    padding: 0px 20px 20px;
+    font-size: 17px;
+    font-family: var(--fontTexto);
+}
+
+footer {
+    background-color: var(--corFooter);
+    padding: 6px;
+}
+footer div {
+    font-size: 13px;
+    text-align: center;
+}
+
+.aprendaS {
+    background-image: url(../img/img-fundo-longo.png);
+    background-repeat: no-repeat;
+    background-position: top;
+    height: 1550px;
+}
+.conteinerAprenda {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background-color: var(--corHeader);
+    width: 755px;
+    height: 1320px;
+    border-radius: 0 0 20px 20px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    margin: auto;
+}
+.conteinerAprenda h1 {
+    font-family: var(--fontTitulo);
+    color: var(--corTitulo);
+    font-weight: 600;
+    font-size: 25px;
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    padding: 30px 0;
+}
+.conteinerAprenda p {
+    text-align: justify;
+    line-height: 1.6em;
+    padding: 0px 20px 20px;
+    font-size: 17px;
+    font-family: var(--fontTexto);
+}
+.posturaCorreta {
+    display: flex;
+}
+.posturaCorreta p {
+    flex: 1;
+}
+.posturaCorreta img {
+    flex: 2;
+    padding-right: 20px;
+}
+.posicionamentoDedos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
