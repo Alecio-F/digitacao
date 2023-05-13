@@ -50,7 +50,7 @@ header {
     color: var(--corTitulo);
     text-transform: uppercase;
     font-weight: 700;
-    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    text-shadow: 0px 2px 3px rgba(0, 0, 0, 0.25);
 }
 .contaeConfig img {
     filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.253));
@@ -65,7 +65,7 @@ header {
     color: var(--corTexto);
     text-transform: uppercase;
     font-weight: 600;
-    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
 }
 
 .banner {
@@ -135,7 +135,7 @@ header {
     color: var(--corTitulo);
     font-weight: 600;
     font-size: 25px;
-    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
     padding: 30px 0;
 }
 .parametros {
@@ -230,7 +230,7 @@ footer div {
     color: var(--corTitulo);
     font-weight: 600;
     font-size: 25px;
-    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
     padding: 30px 0;
 }
 .conteinerAprenda p {
@@ -254,4 +254,101 @@ footer div {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.pratique {
+    display: flex;
+    justify-content: center;
+}
+.conPratique {
+    background-color: var(--corBanner);
+
+}
+.opcoes {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    min-width: 100%;
+    margin-top: 10px;
+}
+.opcoes div {
+    font-size: 17px;
+    font-weight: 600;
+    background-color: var(--corHeader);
+    padding: 10px 15px;
+    border-radius: 12px;
+    color: var(--corTitulo);
+    cursor: pointer;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+.opcoes div:not(:last-child) {
+    background-color: var(--corTitulo);
+    color: var(--corHeader);
+}
+.licoes {
+    min-width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding-top: 20px;
+}
+.licao {
+    margin: 10px;
+    width: 30%;
+    padding: 10px 50px;
+    background-color: var(--corHeader);
+    border-radius: 10px;
+    font-family: var(--fontTexto);
+    font-weight: 500;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+}
+.textos {
+    min-width: 100%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding-top: 20px;
+}
+.textos div {
+    margin: 10px;
+    width: 45%;
+    padding: 10px 50px;
+    background-color: var(--corHeader);
+    border-radius: 10px;
+    font-family: var(--fontTexto);
+    font-weight: 500;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+}
+
+.conta {
+    background-color: var(--corBanner);
+}
+.criarConta, .entrar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.input, .botao {
+    display: flex;
+    flex-direction: column;
+}
+.input input {
+    margin-bottom: 15px;
+    width: 300px;
+    height: 35px;
+    background: #EEEEEE;
+    border-radius: 13px;
+    border: none;
+    padding-left: 10px;
+}
+.input input:first-child {
+    margin-bottom: 20px;
+}
+.botao button {
+    margin-bottom: 10px;
+}
+.entrar {
+    display: none;
 }
