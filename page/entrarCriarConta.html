@@ -16,46 +16,70 @@
             <div class="logo">
                 <a href="inicio.html"><img src="../img/PandaDigitações-logo.png" alt="PandaDigitações" width="50" height="60"></a>
             </div>
-            <div class="menu">
-                <a href="inicio.html">Início</a>
-                <a href="testeDigitação.html">Teste de digitação</a>
-                <a href="aprenda.html">Aprenda</a>
-                <a href="pratique.html">Pratique</a>
-            </div>
+            <nav class="menu">
+                <ul>
+                    <li><a href="inicio.html">Início</a></li>
+                    <li><a href="testeDigitação.html">Teste de digitação</a></li>
+                    <li><a href="aprenda.html">Aprenda</a></li>
+                    <li><a href="pratique.html">Pratique</a></li>
+                </ul>
+            </nav>
             <div class="contaeConfig">
-                <a href="entrarCriarConta.html">Criar conta/Entrar</a>
-                <a href="#"><img src="../img/Configurações.png" alt="Configurações" width="30" height="30"></a>
+                <ul>
+                    <li><a href="entrarCriarConta.html">Criar conta/Entrar</a></li>
+                    <li><a href="#"><img src="../img/Configurações.png" alt="Configurações" width="30" height="30"></a></li>
+                </ul>
             </div>
         </div>
     </header>
-    <section class="pratique">
+    <section class="pratique account">
         <div class="conteinerDois conta">
             <div class="criarConta">
                 <h1>Criar conta</h1>
-                <div class="input">
-                    <input type="text" placeholder="nome" autocomplete="none">
-                    <input type="text" placeholder="e-mail" autocomplete="none">
-                    <input type="text" placeholder="senha" autocomplete="none">
-                </div>
+                <form class="login">
+                    <input type="text" placeholder="Nome" autocomplete="none" required minlength="6">
+                    <input type="email" placeholder="E-mail" autocomplete="none" required minlength="8">
+                    <input type="password" placeholder="Senha" autocomplete="none" required minlength="5">
+                </form>
                 <div class="botao">
-                    <button>Criar conta</button>
-                    <button>Entrar</button>
+                    <button type="submit" id="criarConta" disabled>Criar conta</button>
+                    <button type="submit" class="botaoEntrar">Entrar</button>
                 </div>
             </div>
-            <div class="entrar">
+            <div class="entrar"  style="display: none;">
                 <h1>Entrar</h1>
-                <div class="input">
-                    <input type="text">
-                    <input type="text">
-                </div>
-                <p>Esqueci a senha</p>
+                <form class="login">
+                    <input type="email" autocomplete="none" placeholder="E-mail" required>
+                    <input type="password" placeholder="Senha" required>
+                </form>
+                <a href="#">Esqueci a senha</a>
                 <div class="botao">
-                    <button>Entrar</button>
-                    <button>Criar conta</button>
+                    <button type="submit" id="entrar" disabled>Entrar</button>
+                    <button type="submit" class="botaoCriarConta">Criar conta</button>
                 </div>
             </div>
         </div>
     </section>
+    <footer>
+        <div>
+            © Copyright 2023 PandaDigitaçôes. Todos os direitos reservados.
+        </div>
+    </footer>
+
+    <script>
+        $(document).ready(function() {
+            $(".botaoCriarConta").click(function() {
+                $(".criarConta").css("display", "flex");
+                $(".entrar").css("display", "none");
+            });
+
+            $(".botaoEntrar").click(function() {
+                $(".criarConta").css("display", "none");
+                $(".entrar").css("display", "flex");
+            });
+        });
+
+    </script>
 
     <script src="../js/script.js"></script>
 </body>

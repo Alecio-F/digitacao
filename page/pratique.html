@@ -16,25 +16,31 @@
             <div class="logo">
                 <a href="inicio.html"><img src="../img/PandaDigitações-logo.png" alt="PandaDigitações" width="50" height="60"></a>
             </div>
-            <div class="menu">
-                <a href="inicio.html">Início</a>
-                <a href="testeDigitação.html">Teste de digitação</a>
-                <a href="aprenda.html">Aprenda</a>
-                <a href="pratique.html">Pratique</a>
-            </div>
+            <nav class="menu">
+                <ul>
+                    <li><a href="inicio.html">Início</a></li>
+                    <li><a href="testeDigitação.html">Teste de digitação</a></li>
+                    <li><a href="aprenda.html">Aprenda</a></li>
+                    <li><a href="pratique.html" class="selecionado">Pratique</a></li>
+                </ul>
+            </nav>
             <div class="contaeConfig">
-                <a href="entrarCriarConta.html">Criar conta/Entrar</a>
-                <a href="#"><img src="../img/Configurações.png" alt="Configurações" width="30" height="30"></a>
+                <ul>
+                    <li><a href="entrarCriarConta.html">Criar conta/Entrar</a></li>
+                    <li><a href="#"><img src="../img/Configurações.png" alt="Configurações" width="30" height="30"></a></li>
+                </ul>
             </div>
         </div>
     </header>
     <section class="pratique">
         <div class="conteinerDois conPratique">
-            <div class="opcoes">
-                 <div>Lições</div>
-                 <div>Textos</div>
-             </div>
-            <div class="licoes">
+            <nav class="opcoes">
+                 <ul>
+                     <li id="opcaoLicoes" class="selecionado">Lições</li>
+                     <li id="opcaoTextos">Textos</li>
+                 </ul>
+             </nav>
+            <div class="licoes" class="conteudo">
                 <div class="licao">Lição 1 - ABCD</div>
                 <div class="licao">Lição 1 - ABCD</div>
                 <div class="licao">Lição 1 - ABCD</div>
@@ -54,7 +60,7 @@
                 <div class="licao">Lição 1 - ABCD</div>
                 <div class="licao">Lição 1 - ABCD</div>
             </div>
-            <div class="textos">
+            <div class="textos" class="conteudo" style="display: none;" >
                 <div>"O Cravo e a Rosa" Fulano</div>
                 <div>"O Cravo e a Rosa" Fulano</div>
                 <div>"O Cravo e a Rosa" Fulano</div>
@@ -70,6 +76,39 @@
             </div>
         </div>
     </section>
+    <footer>
+        <div>
+            © Copyright 2023 PandaDigitaçôes. Todos os direitos reservados.
+        </div>
+    </footer>
+    
+    <script>
+        $(document).ready(function() {
+            $("#opcaoLicoes").click(function() {
+                $(".licoes").css("display", "flex");
+                $(".textos").css("display", "none");
+            });
+
+            $("#opcaoTextos").click(function() {
+                $(".licoes").css("display", "none");
+                $(".textos").css("display", "flex");
+            });
+        });
+
+        $(document).ready(function() {
+            $("#opcaoLicoes").click(function() {
+                $(this).addClass("selecionado");
+                $("#opcaoTextos").removeClass("selecionado");
+            });
+
+            $("#opcaoTextos").click(function() {
+                $(this).addClass("selecionado");
+                $("#opcaoLicoes").removeClass("selecionado");
+            });
+        });
+
+
+    </script>
     <script src="../js/script.js"></script>
 </body>
 </html>
