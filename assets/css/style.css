@@ -39,33 +39,38 @@ header {
     background-color: #eee;
 }
 
-.contaeConfig {
+.menu ul {
     display: flex;
     align-items: center;
 }
-.contaeConfig a:not(:last-child) {
+.menu ul li:not(:last-child) {
     padding-right: 20px;
-    font-family: var(--fontTitulo);
-    font-size: 18px;
-    color: var(--corTitulo);
-    text-transform: uppercase;
-    font-weight: 700;
-    text-shadow: 0px 2px 3px rgba(0, 0, 0, 0.25);
-}
-.contaeConfig img {
-    filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.253));
-}
-
-.menu a:not(:last-child) {
-    padding-right: 30px;
 }
 .menu a {
+    display: inline-block;
     font-family: var(--fontTitulo);
     font-size: 17px;
     color: var(--corTexto);
     text-transform: uppercase;
     font-weight: 600;
     text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+    border-bottom: solid 2px transparent;
+}
+.menu a.selecionado {
+    border-color: var(--corTexto);
+}
+.contaeConfig ul {
+    display: flex;
+    align-items: center;
+}
+.contaeConfig a {
+    font-family: var(--fontTitulo);
+    font-size: 18px;
+    color: var(--corTitulo);
+    text-transform: uppercase;
+    padding-right: 20px;
+    font-weight: 700;
+    text-shadow: 0px 2px 3px rgba(0, 0, 0, 0.25);
 }
 
 .banner {
@@ -129,6 +134,9 @@ header {
     height: 450px;
     border-radius: 0 0 20px 20px;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+.inputD {
+    background-image: url(../img/fundo-bambooEEE.png)
 }
 .conteinerDois h1 {
     font-family: var(--fontTitulo);
@@ -259,19 +267,22 @@ footer div {
 .pratique {
     display: flex;
     justify-content: center;
+    background-image: url(../img/fundo.png);
+    background-repeat: no-repeat;
+    background-position: top;
+    height: 700px;
 }
 .conPratique {
-    background-color: var(--corBanner);
-
+    background-image: url(../img/fundo-bamboo.png);
 }
-.opcoes {
+.opcoes ul {
     display: flex;
     align-items: center;
     justify-content: space-around;
-    min-width: 100%;
+    width: 755px;
     margin-top: 10px;
 }
-.opcoes div {
+.opcoes li {
     font-size: 17px;
     font-weight: 600;
     background-color: var(--corHeader);
@@ -281,7 +292,8 @@ footer div {
     cursor: pointer;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
-.opcoes div:not(:last-child) {
+
+.opcoes li.selecionado {
     background-color: var(--corTitulo);
     color: var(--corHeader);
 }
@@ -305,7 +317,6 @@ footer div {
 }
 .textos {
     min-width: 100%;
-    display: none;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
@@ -324,17 +335,23 @@ footer div {
 
 .conta {
     background-color: var(--corBanner);
+    background-image: url(../img/fundo-bamboo.png);
+    background-repeat: no-repeat;
+    background-position: center;
 }
 .criarConta, .entrar {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
-.input, .botao {
+.criarConta {
+    display: flex;
+}
+.login, .botao {
     display: flex;
     flex-direction: column;
 }
-.input input {
+.login input {
     margin-bottom: 15px;
     width: 300px;
     height: 35px;
@@ -342,13 +359,28 @@ footer div {
     border-radius: 13px;
     border: none;
     padding-left: 10px;
+    outline-color: var(--corTexto);
 }
-.input input:first-child {
+.criarConta input:first-child {
     margin-bottom: 20px;
 }
 .botao button {
     margin-bottom: 10px;
+    width: 130px;
+    height: 35px;
+    background: #EEEEEE;
+    border-radius: 13px;
+    border: none;
+    color: var(--corTexto);
+    font-family: var(--fontTitulo);
+    font-weight: 700;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0px 4px 3px rgba(0, 0, 0, 0.25);
 }
-.entrar {
-    display: none;
+.entrar a {
+    margin-bottom: 15px;
+    font-family: var(--fontTexto);
+    font-size: 14px;
+    color: var(--corTexto);
 }

@@ -1,3 +1,4 @@
+
 $(document).ready(function() {
   // Seleciona o input pelo ID
   var input = $('#digitandoTexto');
