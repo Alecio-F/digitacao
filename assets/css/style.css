@@ -18,6 +18,7 @@
     --corTexto: #087CA7;
     --corTitulo: #0B3954;
     --corFooter: #373D45;
+    --corFundoConfig: #ffffffe7;
 }
 
 body {
@@ -36,7 +37,7 @@ body {
 
 header {
     padding: 20px 0;
-    background-color: #eee;
+    background-color: var(--corHeader);
 }
 
 .menu ul {
@@ -59,7 +60,7 @@ header {
 .menu a.selecionado {
     border-color: var(--corTexto);
 }
-.contaeConfig ul {
+.contaeConfig > div {
     display: flex;
     align-items: center;
 }
@@ -72,11 +73,69 @@ header {
     font-weight: 700;
     text-shadow: 0px 2px 3px rgba(0, 0, 0, 0.25);
 }
+.animaConfig {
+    position: relative;
+    box-shadow: 0 0 0 0 var(--corFundoConfig), 0 0 0 0 var(--corFundoConfig);
+    transition: box-shadow .25s ease-in-out;
+    border-radius: 50%;
+    z-index: 1;
+}
+#animaConfigOne {
+    position: relative;
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.45);
+    transition: box-shadow .30s ease-in-out;
+    border-radius: 50%;
+    z-index: 1;
+}
+#config {
+    display: block;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+#config:active {
+    transform: rotate(20deg);
+}
+#inputConfig:checked ~ label .animaConfig {
+    box-shadow: 0 0 0 600px var(--corFundoConfig);
+    background-color: var(--corFundoConfig);
+}
+#inputConfig:checked ~ label #animaConfigOne {
+    box-shadow: 0 0 0 100vw rgba(0, 0, 0, 0.50);
+
+}
+.menu-engrenagem {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    opacity: 0;
+    pointer-events: none;
+}
+#inputConfig:checked ~ .menu-engrenagem.show {
+    opacity: 1;
+    z-index: 1;
+    pointer-events: auto;
+    transition: .30s .10s ease-in-out;
+}
+#inputConfig:checked ~ .menu-engrenagem.hide {
+    opacity: 0;
+    transition: 1s .05s ease-in-out;
+}
+.menuConfig {
+    font-weight: 600;
+    font-size: 1.4em;
+}
+.menuConfig > div {
+    color: rgba(0, 0, 0, 0.70);
+}
+.menuConfig > div:not(:last-child) {
+    padding-bottom: 50px;
+}
 
 .banner {
     height: 450px;
     background-color: var(--corBanner);
     position: relative;
+    z-index: 0;
 }
 .conteiner {
     display: flex;
@@ -85,6 +144,7 @@ header {
     max-width: 1100px;
     margin: 0 auto;
     position: relative;
+    z-index: 0;
 }
 .copy p:not(:last-child) {
     width: 390px;
