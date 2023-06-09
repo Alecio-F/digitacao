@@ -1,3 +1,29 @@
+$(document).ready(function() {
+  var girou = false;
+
+  $("#config").click(function() {
+    if (!girou) {
+      $(this).css("transform", "rotate(20deg)");
+      girou = true;
+    } else {
+      $(this).css("transform", "rotate(0deg)");
+      girou = false;
+    }
+  });
+});
+
+$(document).ready(function() {
+  $('#inputConfig').change(function() {
+    if ($(this).is(':checked')) {
+      $('.menu-engrenagem').removeClass('hide').addClass('show');
+    } else {
+      $('.menu-engrenagem').removeClass('show').addClass('hide');
+    }
+  });
+});
+
+
+
 
 $(document).ready(function() {
   // Seleciona o input pelo ID
