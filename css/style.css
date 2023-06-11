@@ -7,23 +7,38 @@
     list-style: none;
     text-decoration: none;
     font-family: sans-serif;
-    color: black;
 }
 :root {
+    /* Fontes do site */
     --fontTexto: "Work Sans";
     --fontTitulo: "Quicksand";
+
+    /* Paleta de cores original/light theme */
     --corHeader: #eee;
     --corBanner: #BFD7EA;
     --corFundo: #A5B5C1;
     --corTexto: #087CA7;
+    --corTextoGeral: #000;
     --corTitulo: #0B3954;
     --corFooter: #373D45;
     --corFundoConfig: #ffffffe7;
 }
+.darkTheme {
+    /* Paleta de cores para dark theme */
+    --corHeader: #131313;
+    --corBanner: #2D2D2D;
+    --corFundo: #131313;
+    --corTexto: #C1CBD0;
+    --corTextoGeral: #C1CBD0;
+    --corTitulo: #96B4C6;
+    --corFundoConfig: #2e2e2ee5;
+}
+
 
 body {
     background-color: var(--corFundo);
     position: relative;
+    color: var(--corTextoGeral);
 }
 
 .center {
@@ -54,7 +69,7 @@ header {
     color: var(--corTexto);
     text-transform: uppercase;
     font-weight: 600;
-    text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+    text-shadow: 0px 2px 2px rgba(109, 109, 109, 0.25);
     border-bottom: solid 2px transparent;
 }
 .menu a.selecionado {
@@ -131,6 +146,34 @@ header {
     padding-bottom: 50px;
 }
 
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 70px;
+    height: 36px;
+    border: 2px solid var(--corFundo);
+    border-radius: 30px;
+    position: relative;
+    cursor: pointer;
+}
+.btn::before {
+    content: '';
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    background-color: var(--corFundo);
+    border-radius: 50%;
+    top: 50%;
+    left: 2px;
+    transform: translateY(-50%);
+    transition: .20s ease-in-out;
+}
+.btn.ativo::before {
+    left: 36px;
+}
+
+
 .banner {
     height: 450px;
     background-color: var(--corBanner);
@@ -185,6 +228,9 @@ header {
     display: flex;
     justify-content: center;
 }
+.testeDigitaDarktheme {
+    background-image: url(../img/fundoConteinerDark.png);
+}
 .conteinerDois {
     display: flex;
     align-items: center;
@@ -197,6 +243,9 @@ header {
 }
 .inputD {
     background-image: url(../img/fundo-bambooEEE.png)
+}
+.inputDDark {
+    background-image: url(../img/fundoDarkConteiner.png);
 }
 .conteinerDois h1 {
     font-family: var(--fontTitulo);
@@ -213,7 +262,7 @@ header {
     padding: 0 30px;
 }
 .parametros p {
-    color: rgba(0, 0, 0, 0.5);
+    color: var(--corTexto);
     font-family: var(--fontTexto);
     font-weight: 500;
     line-height: 30px;
@@ -249,11 +298,14 @@ header {
     background-position: top;
     height: 780px;
 }
+.resumoDark {
+    background-image: url(../img/fundoConteinerDark.png);
+}
 #bar {
     width: 100%;
     height: 3px;
     background-color: var(--corHeader);
-    border: 3px solid #EEEEEE;
+    border: 3px solid var(--corHeader);
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 .resumoD {
@@ -281,6 +333,9 @@ footer div {
     background-repeat: no-repeat;
     background-position: top;
     height: 1550px;
+}
+.aprendaSDark {
+    background-image: url(../img/fundoDarklongo.png);
 }
 .conteinerAprenda {
     display: flex;
@@ -332,8 +387,14 @@ footer div {
     background-position: top;
     height: 700px;
 }
+.pratiqueDark {
+    background-image: url(../img/fundoConteinerDark.png);
+}
 .conPratique {
     background-image: url(../img/fundo-bamboo.png);
+}
+.conPratiqueDark {
+    background-image: url(../img/fundoDarkConteiner.png);
 }
 .opcoes ul {
     display: flex;
@@ -399,6 +460,9 @@ footer div {
     background-repeat: no-repeat;
     background-position: center;
 }
+.contaDark {
+    background-image: url(../img/fundoDarkConteiner.png);
+}
 .criarConta, .entrar {
     display: flex;
     flex-direction: column;
@@ -415,7 +479,7 @@ footer div {
     margin-bottom: 15px;
     width: 300px;
     height: 35px;
-    background: #EEEEEE;
+    background: var(--corHeader);
     border-radius: 13px;
     border: none;
     padding-left: 10px;
@@ -428,7 +492,7 @@ footer div {
     margin-bottom: 10px;
     width: 130px;
     height: 35px;
-    background: #EEEEEE;
+    background: var(--corHeader);
     border-radius: 13px;
     border: none;
     color: var(--corTexto);

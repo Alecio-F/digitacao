@@ -1,4 +1,8 @@
 $(document).ready(function() {
+  $("body").css("display", "block");
+});
+
+$(document).ready(function() {
   var girou = false;
 
   $("#config").click(function() {
@@ -22,7 +26,52 @@ $(document).ready(function() {
   });
 });
 
+$(document).ready(function() {
+  // Verifica se a classe "ativo" está armazenada no localStorage
+  var ativo = localStorage.getItem("ativo");
+  if (ativo !== null) {
+    $(".btn").addClass("ativo");
+    $('body').addClass('darkTheme');
+    $('.inputD').addClass('inputDDark');
+    $('.testeDigita').addClass('testeDigitaDarktheme');
+    $('.resumo').addClass('resumoDark');
+    $('.pratique').addClass('pratiqueDark');
+    $('.conPratique').addClass('conPratiqueDark');
+    $('.aprendaS').addClass('aprendaSDark');
+    $('.conta').addClass('contaDark');
+  }
 
+  // Manipulador de evento de clique
+  $(".btn").on("click", function() {
+    // Adiciona ou remove a classe "ativo"
+    $(this).toggleClass("ativo");
+
+    // Verifica se a classe "ativo" está presente na div
+    if ($(this).hasClass("ativo")) {
+      // Armazena a classe "ativo" no localStorage
+      localStorage.setItem("ativo", "true");
+      $('body').addClass('darkTheme');
+      $('.inputD').addClass('inputDDark');
+      $('.testeDigita').addClass('testeDigitaDarktheme');
+      $('.resumo').addClass('resumoDark');
+      $('.pratique').addClass('pratiqueDark');
+      $('.conPratique').addClass('conPratiqueDark');
+      $('.aprendaS').addClass('aprendaSDark');
+      $('.conta').addClass('contaDark');
+    } else {
+      // Remove a classe "ativo" do localStorage
+      localStorage.removeItem("ativo");
+      $('body').removeClass('darkTheme');
+      $('.inputD').removeClass('inputDDark');
+      $('.testeDigita').removeClass('testeDigitaDarktheme');
+      $('.resumo').removeClass('resumoDark');
+      $('.pratique').removeClass('pratiqueDark');
+      $('.conPratique').removeClass('conPratiqueDark');
+      $('.aprendaS').removeClass('aprendaSDark');
+      $('.conta').removeClass('contaDark');
+    }
+  });
+});
 
 
 $(document).ready(function() {
