@@ -1,4 +1,4 @@
-# Digitação Veloz
+# Panda Digitação
 >Status: Em desenvolvimento 
 
 O objetivo é criar treinamento de digitação online. Quando decidi me aventurar no mundo da programação também busquei métodos de melhorar minha digitação no teclado, assim pesquisando na internet treinamentos onlines. 
