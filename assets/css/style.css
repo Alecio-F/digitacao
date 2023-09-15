@@ -508,3 +508,16 @@ footer div {
     font-size: 14px;
     color: var(--corTexto);
 }
+
+#digitacaoDoTexto {
+    line-height: 24px;
+    height: 100px;
+    overflow: hidden;
+}
+.palavra {
+    display: inline-block;
+    font-family: var(--fontTexto), monospace;
+    font-weight: 500;
+    font-size: 20px;
+    margin: 0 5px;
+}
