@@ -73,25 +73,27 @@ $(document).ready(function() {
   });
 });
 
+// scrip digitação
 
-$(document).ready(function() {
-  // Seleciona o input pelo ID
-  var input = $('#digitandoTexto');
+const palavras = 'Maçã Casa Gato Sol Livro Água Amigo Felicidade Janela Montanha Música Chocolate Carro Flores Arco-íris Praia Estrela Aventura Pintura Dança Bicicleta Sorriso Piano Cachorro Chuva Amor Paz Coração Lua Feliz Sonho Beleza Rir Liberdade Maravilha Brilho Canção Serenidade Oceano Espiritualidade Inspiração Vida Esperança Calma Harmonia Viagem Silêncio Abraço Paixão Mistério Alegria Respiração Encanto Generosidade Agradecer Meditação União Sucesso Reflexão Sonhar Conexão Descoberta Fantasia Respeito Sabor Criança Imaginação Verdade Carinho Desafio Surpresa'.split(' ');
+const quantidadePalavras = palavras.length;
+
+function palavrasAleatorias() {
+  const aleatorioIndex = Math.ceil(Math.random() * quantidadePalavras)
+  return palavras[aleatorioIndex]
+}
+
+function formatarPalavras(palavra) {
+  return `<div class="palavra">${palavra}</div>`
+}
+
+function digitacaoTexto() {
+  document.getElementById('palavras').innerHTML = '';
+  for (let i = 0; i < 200; i++) {
+    document.getElementById('palavras').innerHTML += formatarPalavras(palavrasAleatorias());
+  }
   
-  // Seleciona o parágrafo pelo ID
-  var texto = $('.textoParaDigitar');
-  
-  // Adiciona um evento de teclado ao input
-  input.on('keyup', function(event) {
-    var valor = input.val(); // Obtém o valor atual do input
-    var primeiraLetra = valor.charAt(0); // Obtém a primeira letra do valor
-    
-    // Verifica se a primeira letra é igual à tecla pressionada
-    if (primeiraLetra.toLowerCase() === event.key.toLowerCase()) {
-      // Atualiza o texto e o valor do input
-      texto.text(texto.text().substring(1)); // Remove a primeira letra do texto
-      input.val(valor.substring(1)); // Remove a primeira letra do valor do input
-    }
-  });
-})
+}
+
+$(document).ready(digitacaoTexto())
 
