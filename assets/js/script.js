@@ -78,13 +78,22 @@ $(document).ready(function() {
 const palavras = 'Maçã Casa Gato Sol Livro Água Amigo Felicidade Janela Montanha Música Chocolate Carro Flores Arco-íris Praia Estrela Aventura Pintura Dança Bicicleta Sorriso Piano Cachorro Chuva Amor Paz Coração Lua Feliz Sonho Beleza Rir Liberdade Maravilha Brilho Canção Serenidade Oceano Espiritualidade Inspiração Vida Esperança Calma Harmonia Viagem Silêncio Abraço Paixão Mistério Alegria Respiração Encanto Generosidade Agradecer Meditação União Sucesso Reflexão Sonhar Conexão Descoberta Fantasia Respeito Sabor Criança Imaginação Verdade Carinho Desafio Surpresa'.split(' ');
 const quantidadePalavras = palavras.length;
 
-function palavrasAleatorias() {
-  const aleatorioIndex = Math.ceil(Math.random() * quantidadePalavras)
-  return palavras[aleatorioIndex]
+function addClass(el, nome) {
+  el.className += ' ' + nome;
+}
+function removeClass(el, nome) {
+  el.className = el.className.replace(nome, '');
 }
 
-function formatarPalavras(palavra) {
-  return `<div class="palavra">${palavra}</div>`
+function palavrasAleatorias() {
+  const aleatorioIndex = Math.ceil(Math.random() * quantidadePalavras)
+  return palavras[aleatorioIndex - 1]
+}
+
+function formatarPalavras(palavra=' ') {
+  return `<div class="palavra">
+    <span class="letra">${palavra.split('').join('</span><span class="letra">')}</span>
+  </div>`
 }
 
 function digitacaoTexto() {
@@ -92,8 +101,51 @@ function digitacaoTexto() {
   for (let i = 0; i < 200; i++) {
     document.getElementById('palavras').innerHTML += formatarPalavras(palavrasAleatorias());
   }
-  
+  addClass(document.querySelector('.palavra'), 'atual');
+  addClass(document.querySelector('.letra'), 'atual');
+  addClass(document)
 }
+
+
+document.getElementById('digitandoTexto').addEventListener('keyup', ev => {
+  
+  const tecla = ev.target.value;
+  ev.target.value = '';
+  const palavraAtual = document.querySelector('.palavra.atual');
+  const letraAtual = document.querySelector('.letra.atual');
+  const expected = letraAtual?.innerHTML;
+  const letra = tecla.length === 1 &&  tecla !== ' ';
+  const espaco = tecla === ' ';
+
+  console.log({tecla, expected})
+
+  if (letra) {
+    if (letraAtual) {
+      addClass(letraAtual, tecla === expected ? 'correto' : 'incorreto');
+      removeClass(letraAtual, 'atual');
+      if (letraAtual.nextSibling) {
+        addClass(letraAtual.nextSibling, 'atual');
+      }
+    }
+  }
+
+  if (espaco) {
+    if (expected !== ' ') {
+      const invalidarLetras = [...document.querySelectorAll('.palavra.atual .letra:not(.correto)')]
+      invalidarLetras.forEach(letra => {
+        addClass(letra, 'incorreto');
+      });
+    }
+
+    removeClass(palavraAtual, 'atual')
+    addClass(palavraAtual.nextSibling, 'atual')
+
+    if (letraAtual) {
+      removeClass(letraAtual, 'atual')
+    }
+    addClass(palavraAtual.nextSibling.firstChild, 'atual');
+  }
+})
 
 $(document).ready(digitacaoTexto())
 
