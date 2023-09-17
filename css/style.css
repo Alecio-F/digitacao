@@ -283,9 +283,18 @@ header {
     margin-top: 50px;
 }
 #digitandoTexto {
+    opacity: 0;
+    padding: 0;
+    margin: 0 auto;
     border: none;
-    background-color: var(--corHeader);
+
     outline: none;
+    display: block;
+    resize: none;
+    position: absolute;
+    z-index: -1;
+    cursor: default;
+    pointer-events: none;
 }
 .textoParaDigitar {
     width: 700px;
@@ -511,8 +520,9 @@ footer div {
 
 #digitacaoDoTexto {
     line-height: 24px;
-    height: 100px;
+    height: 97px;
     overflow: hidden;
+    padding: 20px 0px;
 }
 .palavra {
     display: inline-block;
@@ -520,4 +530,30 @@ footer div {
     font-weight: 500;
     font-size: 20px;
     margin: 0 5px;
+}
+@keyframes blink{
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+#cursor {
+    width: 2px;
+    height: 1.5em;
+    background: var(--corTextoGeral);
+    position: relative;
+    top: 22px;
+    left: 4px;
+    animation: blink .5s infinite;
+}
+.correto {
+    color: #ffffff;
+}
+.incorreto {
+    color: rgba(224, 26, 0, 0.945);
 }
