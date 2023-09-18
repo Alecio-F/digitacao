@@ -77,6 +77,12 @@ $(document).ready(function() {
 
 const palavras = 'Maçã Casa Gato Sol Livro Água Amigo Felicidade Janela Montanha Música Chocolate Carro Flores Arco-íris Praia Estrela Aventura Pintura Dança Bicicleta Sorriso Piano Cachorro Chuva Amor Paz Coração Lua Feliz Sonho Beleza Rir Liberdade Maravilha Brilho Canção Serenidade Oceano Espiritualidade Inspiração Vida Esperança Calma Harmonia Viagem Silêncio Abraço Paixão Mistério Alegria Respiração Encanto Generosidade Agradecer Meditação União Sucesso Reflexão Sonhar Conexão Descoberta Fantasia Respeito Sabor Criança Imaginação Verdade Carinho Desafio Surpresa'.split(' ');
 const quantidadePalavras = palavras.length;
+let indiceAtual = 0;
+const reset = document.querySelector('#reset')
+
+reset.addEventListener('click', function() {
+  digitacaoTexto()
+});
 
 function addClass(el, nome) {
   el.className += ' ' + nome;
@@ -90,31 +96,30 @@ function palavrasAleatorias() {
   return palavras[aleatorioIndex - 1]
 }
 
-function formatarPalavras(palavra=' ') {
-  return `<div class="palavra">
+function formatarPalavras(palavra, index) {
+  return `<div class="palavra palavra-item-${index}">
     <span class="letra">${palavra.split('').join('</span><span class="letra">')}</span>
   </div>`
 }
 
 function digitacaoTexto() {
+  indiceAtual = 0;
   document.getElementById('palavras').innerHTML = '';
   for (let i = 0; i < 200; i++) {
-    document.getElementById('palavras').innerHTML += formatarPalavras(palavrasAleatorias());
+    document.getElementById('palavras').innerHTML += formatarPalavras(palavrasAleatorias(), i);
   }
   addClass(document.querySelector('.palavra'), 'atual');
   addClass(document.querySelector('.letra'), 'atual');
-  addClass(document)
+
 }
 
-
-document.getElementById('digitandoTexto').addEventListener('keyup', ev => {
+document.getElementById('digitandoTexto').addEventListener('keydown', ev => {
+  const tecla = ev.key;
   
-  const tecla = ev.target.value;
-  ev.target.value = '';
   const palavraAtual = document.querySelector('.palavra.atual');
   const letraAtual = document.querySelector('.letra.atual');
-  const expected = letraAtual?.innerHTML;
-  const letra = tecla.length === 1 &&  tecla !== ' ';
+  const expected = letraAtual?.innerHTML || ' ';
+  const letra = tecla.length === 1 && tecla !== ' ';
   const espaco = tecla === ' ';
 
   console.log({tecla, expected})
@@ -125,6 +130,11 @@ document.getElementById('digitandoTexto').addEventListener('keyup', ev => {
       removeClass(letraAtual, 'atual');
       if (letraAtual.nextSibling) {
         addClass(letraAtual.nextSibling, 'atual');
+      } else {
+        const letraIncorreta = document.createElement('span')
+        letraIncorreta.innerHTML = tecla;
+        letraIncorreta.className = 'letra incorreto extra'
+        palavraAtual.appendChild(letraIncorreta);
       }
     }
   }
@@ -137,15 +147,40 @@ document.getElementById('digitandoTexto').addEventListener('keyup', ev => {
       });
     }
 
-    removeClass(palavraAtual, 'atual')
-    addClass(palavraAtual.nextSibling, 'atual')
+    removeClass(palavraAtual, 'atual');
+    addClass(palavraAtual.nextSibling, 'atual');
+
+    indiceAtual++;
 
     if (letraAtual) {
-      removeClass(letraAtual, 'atual')
+      removeClass(letraAtual, 'atual');
     }
-    addClass(palavraAtual.nextSibling.firstChild, 'atual');
+    addClass(document.querySelector(`.palavra-item-${indiceAtual } .letra:first-child`), 'atual');
   }
+
+  // mover cursor
+
+  // mover cursor
+  const nextLetter = document.querySelector('.letra.atual');
+  const nextWord = document.querySelector('.palavra.atual');
+  const cursor = document.getElementById('cursor');
+  const digitacaoDoTexto = document.getElementById('digitacaoDoTexto');
+  const parentRect = digitacaoDoTexto.getBoundingClientRect();
+  const letraRect = nextLetter.getBoundingClientRect();
+  const palavraRect = nextWord.getBoundingClientRect();
+  
+  if (nextLetter) {
+    cursor.style.top = letraRect.top - parentRect.top + 'px';
+    cursor.style.left = letraRect.left - parentRect.left + 'px';
+  } else {
+    cursor.style.top = palavraRect.top - parentRect.top + 'px';
+    cursor.style.left = palavraRect.right - parentRect.left + 'px';
+  }
+  
 })
 
+
 $(document).ready(digitacaoTexto())
+
+
 

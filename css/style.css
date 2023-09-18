@@ -523,6 +523,7 @@ footer div {
     height: 97px;
     overflow: hidden;
     padding: 20px 0px;
+    position: relative;
 }
 .palavra {
     display: inline-block;
@@ -543,11 +544,11 @@ footer div {
     }
 }
 #cursor {
-    width: 2px;
-    height: 1.5em;
+    width: 2.1px;
+    height: 1.4em;
     background: var(--corTextoGeral);
-    position: relative;
-    top: 22px;
+    position: absolute;
+    top: 20px;
     left: 4px;
     animation: blink .5s infinite;
 }
