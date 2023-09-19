@@ -121,6 +121,10 @@ document.getElementById('digitandoTexto').addEventListener('keydown', ev => {
   const expected = letraAtual?.innerHTML || ' ';
   const letra = tecla.length === 1 && tecla !== ' ';
   const espaco = tecla === ' ';
+  const deleteLetra = tecla === 'Backspace'
+  const primeiraLetra = letraAtual?.textContent === palavraAtual?.textContent.trim().charAt(0);
+  const primeiraPalavra = palavraAtual === document.querySelector('#palavras').firstChild;
+  console.log(primeiraPalavra)
 
   console.log({tecla, expected})
 
@@ -155,28 +159,37 @@ document.getElementById('digitandoTexto').addEventListener('keydown', ev => {
     if (letraAtual) {
       removeClass(letraAtual, 'atual');
     }
-    addClass(document.querySelector(`.palavra-item-${indiceAtual } .letra:first-child`), 'atual');
+    addClass(document.querySelector(`.palavra-item-${indiceAtual} .letra:first-child`), 'atual');
   }
-
-  // mover cursor
-
-  // mover cursor
-  const nextLetter = document.querySelector('.letra.atual');
-  const nextWord = document.querySelector('.palavra.atual');
+  
+  //mover cursor
+  const proximaLetra = document.querySelector('.letra.atual');
+  const proximaPalavra = document.querySelector('.palavra.atual');
   const cursor = document.getElementById('cursor');
   const digitacaoDoTexto = document.getElementById('digitacaoDoTexto');
   const parentRect = digitacaoDoTexto.getBoundingClientRect();
-  const letraRect = nextLetter.getBoundingClientRect();
-  const palavraRect = nextWord.getBoundingClientRect();
+  const letraRect = proximaLetra?.getBoundingClientRect();
+  const palavraRect = proximaPalavra.getBoundingClientRect();
   
-  if (nextLetter) {
-    cursor.style.top = letraRect.top - parentRect.top + 'px';
-    cursor.style.left = letraRect.left - parentRect.left + 'px';
-  } else {
-    cursor.style.top = palavraRect.top - parentRect.top + 'px';
-    cursor.style.left = palavraRect.right - parentRect.left + 'px';
+  cursor.style.top = (letraRect || palavraRect).top - parentRect.top + 'px';
+  cursor.style.left = (letraRect || palavraRect)[proximaLetra ? 'left' : 'right'] - parentRect.left + 'px';
+
+if (deleteLetra) {
+  if (letraAtual && primeiraLetra) {
+    removeClass(palavraAtual, 'atual')
+    addClass(palavraAtual.previousSibling, 'atual');
+    removeClass(letraAtual, 'atual')
+    addClass(document.querySelector(`.palavra-item-${indiceAtual - 1} .letra:last-child`), 'atual');
+    indiceAtual = indiceAtual - 1;
   }
-  
+  removeClass(letraAtual, 'incorreto' && 'correto');
+  if (letraAtual && !primeiraLetra) {
+    removeClass(letraAtual, 'atual')
+    addClass(letraAtual.previousSibling, 'atual')
+    removeClass(letraAtual.nextSiblingsSibling, 'incorreto' && 'correto')
+  }
+}
+
 })
 
 
