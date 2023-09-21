@@ -519,10 +519,9 @@ footer div {
 }
 
 #digitacaoDoTexto {
-    line-height: 24px;
-    height: 97px;
+    line-height: 25px;
+    height: 75px;
     overflow: hidden;
-    padding: 20px 0px;
     position: relative;
 }
 .palavra {
