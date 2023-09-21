@@ -545,14 +545,15 @@ footer div {
 #cursor {
     width: 2.1px;
     height: 1.4em;
-    background: var(--corTextoGeral);
+    background: var(--corTitulo);
     position: absolute;
     top: 20px;
     left: 4px;
     animation: blink .5s infinite;
+    transition: 0.04s ease-in-out;
 }
 .correto {
-    color: #ffffff;
+    color: #549e4e;
 }
 .incorreto {
     color: rgba(224, 26, 0, 0.945);

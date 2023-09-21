@@ -81,6 +81,7 @@ const reset = document.querySelector('#reset')
 
 reset.addEventListener('click', function() {
   digitacaoTexto()
+  atualizarCursorContinuamente()
 });
 
 function addClass(el, nome) {
@@ -121,6 +122,25 @@ function atualizarCursorContinuamente() {
   });
 }
 
+const cursor = document.getElementById('cursor');
+const inputElement = document.getElementById('digitandoTexto');
+let isTyping = false;
+let cursorAnimationTimeout; // Declare a variável fora do escopo da função para que seja acessível em toda parte
+
+inputElement.addEventListener('input', () => {
+  if (!isTyping) {
+    cursor.style.animation = 'none'; // Pára a animação quando o usuário começa a digitar
+    isTyping = true;
+  } 
+
+  clearTimeout(cursorAnimationTimeout); // Limpa o timeout anterior
+  cursorAnimationTimeout = setTimeout(() => {
+    cursor.style.animation = 'blink 0.8s infinite'; // Retoma a animação após um curto período de inatividade
+    isTyping = false;
+  }, 700); // Ajuste o tempo limite (em milissegundos) para determinar quando o usuário parou de digitar
+});
+
+
 function digitacaoTexto() {
   document.getElementById('palavras').innerHTML = '';
   for (let i = 0; i < 200; i++) {
@@ -141,10 +161,14 @@ document.getElementById('digitandoTexto').addEventListener('keydown', ev => {
   const deleteLetra = tecla === 'Backspace';
   const primeiraLetra = letraAtual === palavraAtual.firstChild;
 
+
   console.log({tecla, expected})
 
   // letra extras incorretas
-
+  
+  const letraIncorreta = document.createElement('span')
+  letraIncorreta.innerHTML = tecla;
+  letraIncorreta.className = 'letra incorreto extra'
   if (letra) {
     if (letraAtual) {
       addClass(letraAtual, tecla === expected ? 'correto' : 'incorreto');
@@ -161,16 +185,13 @@ document.getElementById('digitandoTexto').addEventListener('keydown', ev => {
           }
         });
       }
-
-      const letraIncorreta = document.createElement('span')
-      letraIncorreta.innerHTML = tecla;
-      letraIncorreta.className = 'letra incorreto extra'
+      
       palavraAtual.appendChild(letraIncorreta)
       
     }
   }
 
-  // Evento ao clicar espaço
+  // Condicional ao digitar espaço
 
   if (espaco) {
     if (expected !== ' ') {
@@ -189,9 +210,21 @@ document.getElementById('digitandoTexto').addEventListener('keydown', ev => {
     addClass(palavraAtual.nextSibling.firstChild, 'atual');
   }
 
-  // Evento ao clicar Backspace
+  // Condicional ao digitar Backspace
 
   if (deleteLetra) {
+    const letrasDaPalavra = palavraAtual.querySelectorAll('.letra');
+  
+    // Itera pelas letras da palavra atual da direita para a esquerda
+    for (let i = letrasDaPalavra.length - 1; i >= 0; i--) {
+      const letra = letrasDaPalavra[i];
+      if (letra.classList.contains('incorreto') && letra.classList.contains('extra')) {
+        // Remove a letra incorreta extra
+        letra.remove();
+        return;
+      }
+    }
+    
     if (letraAtual && primeiraLetra) {
       if (palavraAtual.previousElementSibling) {
         removeClass(palavraAtual, 'atual');
@@ -220,10 +253,11 @@ document.getElementById('digitandoTexto').addEventListener('keydown', ev => {
 
   // mover linhas
   const digitacaoDoTexto = document.getElementById('digitacaoDoTexto');
-  if (palavraAtual.getBoundingClientRect().top > digitacaoDoTexto.getBoundingClientRect().top + 25) {
+  if (palavraAtual.getBoundingClientRect().top > digitacaoDoTexto.getBoundingClientRect().top + 35) {
+
     const palavras = document.getElementById('palavras');
     const margin = parseInt(palavras.style.marginTop || '0px');
-    palavras.style.marginTop = (margin - 30) + 'px';
+    palavras.style.marginTop = (margin - 26) + 'px';
   }
 })
 
