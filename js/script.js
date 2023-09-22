@@ -75,196 +75,169 @@ $(document).ready(function() {
 
 // scrip digitação
 
-const palavras = 'Maçã Casa Gato Sol Livro Água Amigo Felicidade Janela Montanha Música Chocolate Carro Flores Arco-íris Praia Estrela Aventura Pintura Dança Bicicleta Sorriso Piano Cachorro Chuva Amor Paz Coração Lua Feliz Sonho Beleza Rir Liberdade Maravilha Brilho Canção Serenidade Oceano Espiritualidade Inspiração Vida Esperança Calma Harmonia Viagem Silêncio Abraço Paixão Mistério Alegria Respiração Encanto Generosidade Agradecer Meditação União Sucesso Reflexão Sonhar Conexão Descoberta Fantasia Respeito Sabor Criança Imaginação Verdade Carinho Desafio Surpresa'.split(' ');
-const quantidadePalavras = palavras.length;
-const reset = document.querySelector('#reset')
-
-reset.addEventListener('click', function() {
-  digitacaoTexto()
-  atualizarCursorContinuamente()
-});
-
-function addClass(el, nome) {
-  el.className += ' ' + nome;
-}
-function removeClass(el, nome) {
-  el.className = el.className.replace(nome, '');
-}
-
-// Pegar palavras aleatoriamente 
-
-function palavrasAleatorias() {
-  const aleatorioIndex = Math.ceil(Math.random() * quantidadePalavras)
-  return palavras[aleatorioIndex - 1]
-}
-
-// Formar palavras separadas por div e cada letra em um span
-
-function formatarPalavras(palavra) {
-  const letras = palavra.split('').map(letra => `<span class="letra">${letra}</span>`).join('');
-  return `<div class="palavra">${letras}</div>`;
-}
-
-// mover cursor
-
-function atualizarCursorContinuamente() {
-  setInterval(() => {
-    const proximaLetra = document.querySelector('.letra.atual');
-    const proximaPalavra = document.querySelector('.palavra.atual');
-    const cursor = document.getElementById('cursor');
-    const digitacaoDoTexto = document.getElementById('digitacaoDoTexto');
-    const parentRect = digitacaoDoTexto.getBoundingClientRect();
-    const letraRect = proximaLetra?.getBoundingClientRect();
-    const palavraRect = proximaPalavra.getBoundingClientRect();
-
-    cursor.style.top = (letraRect || palavraRect).top - parentRect.top + 'px';
-    cursor.style.left = (letraRect || palavraRect)[proximaLetra ? 'left' : 'right'] - parentRect.left + 'px';
-  });
-}
-
-const cursor = document.getElementById('cursor');
-const inputElement = document.getElementById('digitandoTexto');
-let isTyping = false;
-let cursorAnimationTimeout; // Declare a variável fora do escopo da função para que seja acessível em toda parte
-
-inputElement.addEventListener('input', () => {
-  if (!isTyping) {
-    cursor.style.animation = 'none'; // Pára a animação quando o usuário começa a digitar
-    isTyping = true;
-  } 
-
-  clearTimeout(cursorAnimationTimeout); // Limpa o timeout anterior
-  cursorAnimationTimeout = setTimeout(() => {
-    cursor.style.animation = 'blink 0.8s infinite'; // Retoma a animação após um curto período de inatividade
-    isTyping = false;
-  }, 700); // Ajuste o tempo limite (em milissegundos) para determinar quando o usuário parou de digitar
-});
-
-
-function digitacaoTexto() {
-  document.getElementById('palavras').innerHTML = '';
-  for (let i = 0; i < 200; i++) {
-    document.getElementById('palavras').innerHTML += formatarPalavras(palavrasAleatorias(), i);
-  }
-  addClass(document.querySelector('.palavra'), 'atual');
-  addClass(document.querySelector('.letra'), 'atual');
-
-}
-
-document.getElementById('digitandoTexto').addEventListener('keydown', ev => {
-  const tecla = ev.key;
-  const palavraAtual = document.querySelector('.palavra.atual');
-  const letraAtual = document.querySelector('.letra.atual');
-  const expected = letraAtual?.innerHTML || ' ';
-  const letra = tecla.length === 1 && tecla !== ' ';
-  const espaco = tecla === ' ';
-  const deleteLetra = tecla === 'Backspace';
-  const primeiraLetra = letraAtual === palavraAtual.firstChild;
-
-
-  console.log({tecla, expected})
-
-  // letra extras incorretas
+$(document).ready(function() {
+  const palavras = 'Maçã Casa Gato Sol Livro Água Amigo Felicidade Janela Montanha Música Chocolate Carro Flores Arco-íris Praia Estrela Aventura Pintura Dança Bicicleta Sorriso Piano Cachorro Chuva Amor Paz Coração Lua Feliz Sonho Beleza Rir Liberdade Maravilha Brilho Canção Serenidade Oceano Espiritualidade Inspiração Vida Esperança Calma Harmonia Viagem Silêncio Abraço Paixão Mistério Alegria Respiração Encanto Generosidade Agradecer Meditação União Sucesso Reflexão Sonhar Conexão Descoberta Fantasia Respeito Sabor Criança Imaginação Verdade Carinho Desafio Surpresa'.split(' ');
+  const quantidadePalavras = palavras.length;
   
-  const letraIncorreta = document.createElement('span')
-  letraIncorreta.innerHTML = tecla;
-  letraIncorreta.className = 'letra incorreto extra'
-  if (letra) {
-    if (letraAtual) {
-      addClass(letraAtual, tecla === expected ? 'correto' : 'incorreto');
-      removeClass(letraAtual, 'atual');
-      if (letraAtual.nextSibling) {
-        addClass(letraAtual.nextSibling, 'atual');
+  $('#reset').click(function() {
+    digitacaoTexto();
+    atualizarCursorContinuamente();
+  });
+
+  function addClass(el, nome) {
+    el.addClass(nome);
+  }
+
+  function removeClass(el, nome) {
+    el.removeClass(nome);
+  }
+
+  function palavrasAleatorias() {
+    const aleatorioIndex = Math.ceil(Math.random() * quantidadePalavras);
+    return palavras[aleatorioIndex - 1];
+  }
+
+  function formatarPalavras(palavra) {
+    const letras = palavra.split('').map(letra => `<span class="letra">${letra}</span>`).join('');
+    return `<div class="palavra">${letras}</div>`;
+  }
+
+  function atualizarCursorContinuamente() {
+    setInterval(function() {
+      const proximaLetra = $('.letra.atual');
+      const proximaPalavra = $('.palavra.atual');
+      const cursor = $('#cursor');
+      const digitacaoDoTexto = $('#digitacaoDoTexto');
+      const parentRect = digitacaoDoTexto[0].getBoundingClientRect();
+      const letraRect = proximaLetra[0]?.getBoundingClientRect();
+      const palavraRect = proximaPalavra[0].getBoundingClientRect();
+
+      cursor.css('top', (letraRect || palavraRect).top - parentRect.top + 'px');
+      cursor.css('left', (letraRect || palavraRect)[proximaLetra[0] ? 'left' : 'right'] - parentRect.left + 'px');
+    });
+  }
+
+  const cursor = $('#cursor');
+  const inputElement = $('#digitandoTexto');
+  let isTyping = false;
+  let cursorAnimationTimeout;
+
+  inputElement.on('input', function() {
+    if (!isTyping) {
+      cursor.css('animation', 'none');
+      isTyping = true;
+    }
+
+    clearTimeout(cursorAnimationTimeout);
+    cursorAnimationTimeout = setTimeout(function() {
+      cursor.css('animation', 'blink 0.8s infinite');
+      isTyping = false;
+    }, 700);
+  });
+
+  function digitacaoTexto() {
+    $('#palavras').html('');
+    for (let i = 0; i < 200; i++) {
+      $('#palavras').append(formatarPalavras(palavrasAleatorias(), i));
+    }
+    addClass($('.palavra').first(), 'atual');
+    addClass($('.letra').first(), 'atual');
+  }
+
+  $('#digitandoTexto').keydown(function(ev) {
+    const tecla = ev.key;
+    const palavraAtual = $('.palavra.atual');
+    const letraAtual = $('.letra.atual');
+    const expected = letraAtual[0]?.innerHTML || ' ';
+    const letra = tecla.length === 1 && tecla !== ' ';
+    const espaco = tecla === ' ';
+    const deleteLetra = tecla === 'Backspace';
+    const primeiraLetra = letraAtual[0] === palavraAtual.find('.letra').first()[0];
+
+    // letra extras incorretas
+    const letraIncorreta = $('<span class="letra incorreto extra"></span>').html(tecla);
+    if (letra) {
+      if (letraAtual[0]) {
+        addClass(letraAtual, tecla === expected ? 'correto' : 'incorreto');
+        removeClass(letraAtual, 'atual');
+        if (letraAtual.next()[0]) {
+          addClass(letraAtual.next(), 'atual');
+        }
+      } else {
+        const letrasIncorretasAnteriores = palavraAtual.find('.letra.incorreto.extra');
+        if (letrasIncorretasAnteriores.length > 5) {
+          letrasIncorretasAnteriores.each(function(index, letra) {
+            if (index === letrasIncorretasAnteriores.length - 1) {
+              letra.remove();
+            }
+          });
+        }
+        palavraAtual.append(letraIncorreta);
       }
-    } else {
-      const letrasIncorretasAnteriores = palavraAtual.querySelectorAll('.letra.incorreto.extra');
-      if (letrasIncorretasAnteriores.length > 5) {
-        letrasIncorretasAnteriores.forEach((letra, index) => {
-          if (index === letrasIncorretasAnteriores.length - 1) {
-            letra.remove();
-          }
+    }
+
+    // Condicional ao digitar espaço
+    if (espaco) {
+      if (expected !== ' ') {
+        const invalidarLetras = palavraAtual.find('.letra:not(.correto)');
+        invalidarLetras.each(function() {
+          addClass($(this), 'incorreto');
         });
       }
-      
-      palavraAtual.appendChild(letraIncorreta)
-      
-    }
-  }
+      removeClass(palavraAtual, 'atual');
+      addClass(palavraAtual.next(), 'atual');
 
-  // Condicional ao digitar espaço
-
-  if (espaco) {
-    if (expected !== ' ') {
-      const invalidarLetras = [...document.querySelectorAll('.palavra.atual .letra:not(.correto)')]
-      invalidarLetras.forEach(letra => {
-        addClass(letra, 'incorreto');
-      });
-    }
-
-    removeClass(palavraAtual, 'atual');
-    addClass(palavraAtual.nextSibling, 'atual');
-
-    if (letraAtual) {
-      removeClass(letraAtual, 'atual');
-    }
-    addClass(palavraAtual.nextSibling.firstChild, 'atual');
-  }
-
-  // Condicional ao digitar Backspace
-
-  if (deleteLetra) {
-    const letrasDaPalavra = palavraAtual.querySelectorAll('.letra');
-  
-    // Itera pelas letras da palavra atual da direita para a esquerda
-    for (let i = letrasDaPalavra.length - 1; i >= 0; i--) {
-      const letra = letrasDaPalavra[i];
-      if (letra.classList.contains('incorreto') && letra.classList.contains('extra')) {
-        // Remove a letra incorreta extra
-        letra.remove();
-        return;
-      }
-    }
-    
-    if (letraAtual && primeiraLetra) {
-      if (palavraAtual.previousElementSibling) {
-        removeClass(palavraAtual, 'atual');
-        addClass(palavraAtual.previousSibling, 'atual');
+      if (letraAtual[0]) {
         removeClass(letraAtual, 'atual');
-        addClass(palavraAtual.previousSibling.lastChild, 'atual');
-        removeClass(palavraAtual.previousSibling.lastChild, 'incorreto');
-        removeClass(palavraAtual.previousSibling.lastChild, 'correto');
+      }
+      addClass(palavraAtual.next().find('.letra').first(), 'atual');
+    }
+
+    // Condicional ao digitar Backspace
+    if (deleteLetra) {
+      const letrasDaPalavra = palavraAtual.find('.letra');
+
+      for (let i = letrasDaPalavra.length - 1; i >= 0; i--) {
+        const letra = letrasDaPalavra[i];
+        if ($(letra).hasClass('incorreto') && $(letra).hasClass('extra')) {
+          $(letra).remove();
+          return;
+        }
+      }
+
+      if (letraAtual[0] && primeiraLetra) {
+        if (palavraAtual.prev()[0]) {
+          removeClass(palavraAtual, 'atual');
+          addClass(palavraAtual.prev(), 'atual');
+          removeClass(letraAtual, 'atual');
+          addClass(palavraAtual.prev().find('.letra').last(), 'atual');
+          removeClass(palavraAtual.prev().find('.letra').last(), 'incorreto');
+          removeClass(palavraAtual.prev().find('.letra').last(), 'correto');
+        }
+      }
+
+      if (letraAtual[0] && !primeiraLetra) {
+        removeClass(letraAtual, 'atual');
+        addClass(letraAtual.prev(), 'atual');
+        removeClass(letraAtual.prev(), 'correto');
+        removeClass(letraAtual.prev(), 'incorreto');
+      }
+
+      if (!letraAtual[0]) {
+        addClass(palavraAtual.find('.letra').last(), 'atual');
+        removeClass(palavraAtual.find('.letra').last(), 'correto');
+        removeClass(palavraAtual.find('.letra').last(), 'incorreto');
       }
     }
-  
-    if (letraAtual && !primeiraLetra) {
-      removeClass(letraAtual, 'atual');
-      addClass(letraAtual.previousSibling, 'atual');
-      removeClass(letraAtual.previousSibling, 'correto');
-      removeClass(letraAtual.previousSibling, 'incorreto');
+
+    const digitacaoDoTexto = $('#digitacaoDoTexto');
+    if (palavraAtual[0].getBoundingClientRect().top > digitacaoDoTexto[0].getBoundingClientRect().top + 35) {
+      const palavras = $('#palavras');
+      const margin = parseInt(palavras.css('margin-top') || '0px');
+      palavras.css('margin-top', (margin - 26) + 'px');
     }
+  });
 
-    if (!letraAtual) {
-      addClass(palavraAtual.lastChild, 'atual')
-      removeClass(palavraAtual.lastChild, 'correto');
-      removeClass(palavraAtual.lastChild, 'incorreto');
-    }
-
-  }
-
-  // mover linhas
-  const digitacaoDoTexto = document.getElementById('digitacaoDoTexto');
-  if (palavraAtual.getBoundingClientRect().top > digitacaoDoTexto.getBoundingClientRect().top + 35) {
-
-    const palavras = document.getElementById('palavras');
-    const margin = parseInt(palavras.style.marginTop || '0px');
-    palavras.style.marginTop = (margin - 26) + 'px';
-  }
-})
-
-document.addEventListener('DOMContentLoaded', () => {
   digitacaoTexto();
   atualizarCursorContinuamente();
 });
-
-
-$(document).ready(digitacaoTexto())
