@@ -518,6 +518,10 @@ footer div {
     color: var(--corTexto);
 }
 
+.conteinerDigita {
+    margin-top: 20px;
+    padding: 0 15px;
+}
 #digitacaoDoTexto {
     line-height: 25px;
     height: 75px;
@@ -543,12 +547,10 @@ footer div {
     }
 }
 #cursor {
-    width: 2.1px;
-    height: 1.4em;
+    width: 3px;
+    height: 1.6em;
     background: var(--corTitulo);
     position: absolute;
-    top: 20px;
-    left: 4px;
     animation: blink .5s infinite;
     transition: 0.04s ease-in-out;
 }
