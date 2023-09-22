@@ -76,12 +76,13 @@ $(document).ready(function() {
 // scrip digitação
 
 $(document).ready(function() {
-  const palavras = 'Maçã Casa Gato Sol Livro Água Amigo Felicidade Janela Montanha Música Chocolate Carro Flores Arco-íris Praia Estrela Aventura Pintura Dança Bicicleta Sorriso Piano Cachorro Chuva Amor Paz Coração Lua Feliz Sonho Beleza Rir Liberdade Maravilha Brilho Canção Serenidade Oceano Espiritualidade Inspiração Vida Esperança Calma Harmonia Viagem Silêncio Abraço Paixão Mistério Alegria Respiração Encanto Generosidade Agradecer Meditação União Sucesso Reflexão Sonhar Conexão Descoberta Fantasia Respeito Sabor Criança Imaginação Verdade Carinho Desafio Surpresa'.split(' ');
+  const palavras = 'Olá! Hoje é um dia especial, o aniversário de 30 anos da Maria. Ela nasceu em 15 de setembro de 1993. Para celebrar essa ocasião, planejamos uma festa incrível com muitas surpresas. O cardápio inclui pratos como Espaguete à carbonara, Frango xadrez, Torta de maçã. Também teremos música ao vivo com a banda Os Amigos do Rock. Esperamos que você possa se juntar a nós nesta festa emocionante. Por favor, confirme sua presença até sexta-feira. Atenciosamente, Equipe de organização da festa.'.split(' ');
   const quantidadePalavras = palavras.length;
   
   $('#reset').click(function() {
     digitacaoTexto();
     atualizarCursorContinuamente();
+    $('#palavras').css('margin-top', '0px');
   });
 
   function addClass(el, nome) {
@@ -91,7 +92,7 @@ $(document).ready(function() {
   function removeClass(el, nome) {
     el.removeClass(nome);
   }
-
+  
   function palavrasAleatorias() {
     const aleatorioIndex = Math.ceil(Math.random() * quantidadePalavras);
     return palavras[aleatorioIndex - 1];
@@ -101,6 +102,7 @@ $(document).ready(function() {
     const letras = palavra.split('').map(letra => `<span class="letra">${letra}</span>`).join('');
     return `<div class="palavra">${letras}</div>`;
   }
+  
 
   function atualizarCursorContinuamente() {
     setInterval(function() {
@@ -112,8 +114,8 @@ $(document).ready(function() {
       const letraRect = proximaLetra[0]?.getBoundingClientRect();
       const palavraRect = proximaPalavra[0].getBoundingClientRect();
 
-      cursor.css('top', (letraRect || palavraRect).top - parentRect.top + 'px');
-      cursor.css('left', (letraRect || palavraRect)[proximaLetra[0] ? 'left' : 'right'] - parentRect.left + 'px');
+      cursor.css('top', (letraRect || palavraRect).top - parentRect.top + -2 + 'px');
+      cursor.css('left', (letraRect || palavraRect)[proximaLetra[0] ? 'left' : 'right'] - parentRect.left + -2 + 'px');
     });
   }
 
@@ -154,6 +156,8 @@ $(document).ready(function() {
     const deleteLetra = tecla === 'Backspace';
     const primeiraLetra = letraAtual[0] === palavraAtual.find('.letra').first()[0];
 
+    console.log({tecla, expected})
+
     // letra extras incorretas
     const letraIncorreta = $('<span class="letra incorreto extra"></span>').html(tecla);
     if (letra) {
@@ -178,19 +182,17 @@ $(document).ready(function() {
 
     // Condicional ao digitar espaço
     if (espaco) {
-      if (expected !== ' ') {
-        const invalidarLetras = palavraAtual.find('.letra:not(.correto)');
-        invalidarLetras.each(function() {
-          addClass($(this), 'incorreto');
-        });
+      if (letraAtual.length > 0) {
+        addClass(letraAtual, 'incorreto')
+        removeClass(letraAtual, 'atual')
+        if (letraAtual.next()[0]) {
+          addClass(letraAtual.next(), 'atual');
+        }
+      } else {
+        removeClass(palavraAtual, 'atual')
+        addClass(palavraAtual.next(), 'atual')
+        addClass(palavraAtual.next().find('.letra').first(), 'atual');
       }
-      removeClass(palavraAtual, 'atual');
-      addClass(palavraAtual.next(), 'atual');
-
-      if (letraAtual[0]) {
-        removeClass(letraAtual, 'atual');
-      }
-      addClass(palavraAtual.next().find('.letra').first(), 'atual');
     }
 
     // Condicional ao digitar Backspace
@@ -210,9 +212,6 @@ $(document).ready(function() {
           removeClass(palavraAtual, 'atual');
           addClass(palavraAtual.prev(), 'atual');
           removeClass(letraAtual, 'atual');
-          addClass(palavraAtual.prev().find('.letra').last(), 'atual');
-          removeClass(palavraAtual.prev().find('.letra').last(), 'incorreto');
-          removeClass(palavraAtual.prev().find('.letra').last(), 'correto');
         }
       }
 
@@ -230,6 +229,7 @@ $(document).ready(function() {
       }
     }
 
+    // mover linhas
     const digitacaoDoTexto = $('#digitacaoDoTexto');
     if (palavraAtual[0].getBoundingClientRect().top > digitacaoDoTexto[0].getBoundingClientRect().top + 35) {
       const palavras = $('#palavras');
