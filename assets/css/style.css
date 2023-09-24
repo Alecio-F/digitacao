@@ -236,7 +236,7 @@ header {
     align-items: center;
     flex-direction: column;
     background-color: var(--corHeader);
-    width: 755px;
+    width: 880px;
     height: 450px;
     border-radius: 0 0 20px 20px;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -524,7 +524,7 @@ footer div {
 }
 #digitacaoDoTexto {
     line-height: 25px;
-    height: 75px;
+    height: 85px;
     overflow: hidden;
     position: relative;
 }
@@ -532,7 +532,7 @@ footer div {
     display: inline-block;
     font-family: var(--fontTexto), monospace;
     font-weight: 500;
-    font-size: 20px;
+    font-size: 25px;
     margin: 0 5px;
 }
 @keyframes blink{
@@ -548,7 +548,7 @@ footer div {
 }
 #cursor {
     width: 3px;
-    height: 1.6em;
+    height: 1.7em;
     background: var(--corTitulo);
     position: absolute;
     animation: blink .5s infinite;

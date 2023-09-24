@@ -97,15 +97,42 @@ $(document).ready(function() {
     const aleatorioIndex = Math.ceil(Math.random() * quantidadePalavras);
     return palavras[aleatorioIndex - 1];
   }
+  let posicaoAtual = 0;
+
+  function palavrasNaOrdem() {
+    if (posicaoAtual < palavras.length) {
+      const palavra = palavras[posicaoAtual];
+      posicaoAtual++;
+      return palavra;
+    } else {
+      // Você pode optar por resetar a posição para 0 quando todas as palavras foram retornadas
+      posicaoAtual = 0;
+      return palavras[posicaoAtual];
+    }
+  }
+
 
   function formatarPalavras(palavra) {
     const letras = palavra.split('').map(letra => `<span class="letra">${letra}</span>`).join('');
     return `<div class="palavra">${letras}</div>`;
   }
   
-
+  // mover linhas
+  function moverLinhasSeNecessario() {
+    const palavraAtual = $('.palavra.atual');
+    const digitacaoDoTexto = $('#digitacaoDoTexto');
+  
+    if (palavraAtual[0].getBoundingClientRect().top > digitacaoDoTexto[0].getBoundingClientRect().top + 35) {
+      const palavras = $('#palavras');
+      const margin = parseInt(palavras.css('margin-top') || '0px');
+      palavras.css('margin-top', (margin - 28) + 'px');
+    }
+  }
+  
+  // mover cursor
   function atualizarCursorContinuamente() {
     setInterval(function() {
+      moverLinhasSeNecessario()
       const proximaLetra = $('.letra.atual');
       const proximaPalavra = $('.palavra.atual');
       const cursor = $('#cursor');
@@ -113,12 +140,13 @@ $(document).ready(function() {
       const parentRect = digitacaoDoTexto[0].getBoundingClientRect();
       const letraRect = proximaLetra[0]?.getBoundingClientRect();
       const palavraRect = proximaPalavra[0].getBoundingClientRect();
-
-      cursor.css('top', (letraRect || palavraRect).top - parentRect.top + -2 + 'px');
+      
+      cursor.css('top', (letraRect || palavraRect).top - parentRect.top + 'px');  
       cursor.css('left', (letraRect || palavraRect)[proximaLetra[0] ? 'left' : 'right'] - parentRect.left + -2 + 'px');
     });
   }
 
+  // animação do cursor; não piscar enquanto digita e voltar a piscar quando parar a digitação
   const cursor = $('#cursor');
   const inputElement = $('#digitandoTexto');
   let isTyping = false;
@@ -140,7 +168,7 @@ $(document).ready(function() {
   function digitacaoTexto() {
     $('#palavras').html('');
     for (let i = 0; i < 200; i++) {
-      $('#palavras').append(formatarPalavras(palavrasAleatorias(), i));
+      $('#palavras').append(formatarPalavras(palavrasNaOrdem(), i));
     }
     addClass($('.palavra').first(), 'atual');
     addClass($('.letra').first(), 'atual');
@@ -229,13 +257,6 @@ $(document).ready(function() {
       }
     }
 
-    // mover linhas
-    const digitacaoDoTexto = $('#digitacaoDoTexto');
-    if (palavraAtual[0].getBoundingClientRect().top > digitacaoDoTexto[0].getBoundingClientRect().top + 35) {
-      const palavras = $('#palavras');
-      const margin = parseInt(palavras.css('margin-top') || '0px');
-      palavras.css('margin-top', (margin - 26) + 'px');
-    }
   });
 
   digitacaoTexto();
