@@ -85,6 +85,9 @@ $(document).ready(function() {
     $('#palavras').css('margin-top', '0px');
   });
 
+  const divAmostraTexto = $('#amostraTexto');
+  divAmostraTexto.text(palavras.join(' '));
+
   function addClass(el, nome) {
     el.addClass(nome);
   }
