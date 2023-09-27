@@ -59,7 +59,15 @@
                                 Mostrar teclado virtual: Sim Não
                             </div>
                             <div>
-                                Tempo praticando: 1 min
+                                Tempo praticando:
+                                <select id="tempoPratica">
+                                    <option value="1">1 min</option>
+                                    <option value="2">2 min</option>
+                                    <option value="3">3 min</option>
+                                    <option value="5">5 min</option>
+                                    <option value="10">10 min</option>
+                                    <option value="15">15 min</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -68,11 +76,11 @@
         </div>
     </header>
     <section class="testeDigita">
-        <div class="inputD conteinerDois">
+        <div class="conteinerDois inputD">
             <h1>Teste sua digitação!</h1>
             <div class="parametros">
-                <div class="tempo">
-                    <div class="numeros">60s</div>
+                <div id="tempo">
+                    <div class="numeros" id="tempoS">60</div>
                     <p>Tempo</p>
                 </div>
                 <div class="precisao">
@@ -87,16 +95,21 @@
                     <span id="start" class="material-symbols-outlined">
                         pause_circle
                     </span>
-                    <span  id="reset" class="material-symbols-outlined">
+                    <span id="reset" class="material-symbols-outlined">
                         restart_alt
                     </span>
                 </div>
             </div>
             <div class="conteinerDigita">
-                <div class="digitacaoDoTexto">
+                <div id="digitacaoDoTexto">
                     <label for="digitandoTexto" class="label inputD"></label>
-                    <input id="digitandoTexto"  type="text" spellcheck="false" autocapitalize="none" autocomplete="off" autocorrect="off">
-                    <p class="textoParaDigitar">Lorem ipsum dolor sit amet consectetur adipisicing elit. Deleniti dolor saepe distinctio iste nemo quo reiciendis vitae blanditiis, voluptates incidunt illo rerum dolorem quaerat adipisci expedita quod cum explicabo nulla.</p>
+                    <input id="digitandoTexto" type="text" tabindex="0" spellcheck="false" autocapitalize="none"
+                        autocomplete="off" autocorrect="off" autocorrect="off">
+                    <div id="cursor"></div>
+                    <div id="palavras"></div>
+                </div>
+                <div id="amostraTexto">
+
                 </div>
             </div>
         </div>
@@ -108,6 +121,7 @@
         </div>
     </footer>
 
-    <script src="../js/script.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/digitaçãoTexto.js"></script>
 </body>
 </html>
