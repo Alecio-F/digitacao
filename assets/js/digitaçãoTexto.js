@@ -7,12 +7,16 @@ $(document).ready(function () {
   });
 
   const palavras =
-    "Olá! Hoje é um dia especial, o aniversário de 30 anos da Maria. Ela nasceu em 15 de setembro de 1993. Para celebrar essa ocasião, planejamos uma festa incrível com muitas surpresas. O cardápio inclui pratos como Espaguete à carbonara, Frango xadrez, Torta de maçã. Também teremos música ao vivo com a banda Os Amigos do Rock. Esperamos que você possa se juntar a nós nesta festa emocionante. Por favor, confirme sua presença até sexta-feira. Atenciosamente, Equipe de organização da festa.".split(
+    "casa amor feliz trabalho cidade carro família sol comida rua escola dinheiro gato cachorro rua livro amigo café dia noite amor música filme viagem chuva montanha árvore festa criança jovem velho escola praia mar rio felicidade tristeza computador celular televisão notícia foto comida bebida encontro jantar almoço café da manhã lanche escola universidade professor estudante escritório reunião projeto recompensa desafio conquista esforço sucesso falha vitória derrota argumento opinião política governo democracia liberdade direitos humanos paz guerra casamento divórcio namoro paquera flerte mensagem telefonema reunião conferência estudo aprendizado experiência testemunha crime investigação polícia prisão julgamento sentença juiz júri verdade mentira história romance poesia pintura escultura arte artista música dança teatro ator atriz espetáculo plateia público aplausos palco luz som maquiagem figurino cena beijo abraço sorriso lágrima medo coragem felicidade tristeza surpresa alegria raiva desprezo saudade memória sonho desejo esperança futuro presente passado vida morte nascimento despedida encontro separação viuvez".split(
       " "
     );
   const quantidadePalavras = palavras.length;
   const tempo = 30 * 1000;
   window.emPratica = null;
+  let letrasDigitadas = [];
+let totalLetrasCorretas = 0;
+let totalLetrasIncorretas = 0;
+
 
   $("#reset").click(function () {
     digitacaoTexto();
@@ -129,7 +133,6 @@ $(document).ready(function () {
     const minutos = Math.floor(segundos / 60);
     const segundosRestantes = segundos % 60;
 
-    // Use a função `String.padStart` para adicionar um zero à esquerda, se necessário
     const minutosFormatados = minutos.toString().padStart(2);
     const segundosFormatados = segundosRestantes.toString().padStart(2, "0");
 
@@ -139,7 +142,7 @@ $(document).ready(function () {
   function digitacaoTexto() {
     $("#palavras").html("");
     for (let i = 0; i < 200; i++) {
-      $("#palavras").append(formatarPalavras(palavrasNaOrdem(), i));
+      $("#palavras").append(formatarPalavras(palavrasAleatorias(), i));
     }
     addClass($(".palavra").first(), "atual");
     addClass($(".letra").first(), "atual");
@@ -161,7 +164,7 @@ $(document).ready(function () {
           tempoRestante--;
           $("#tempoS").text(formatarTempo(tempoRestante));
 
-          // Calcule o PPM em tempo real aqui
+          // Calcule o PPM em tempo real
           const palavrasDigitadasNoIntervalo = $("#digitandoTexto")
             .val()
             .split(" ").length;
@@ -176,13 +179,38 @@ $(document).ready(function () {
             clearInterval(contagemIntervalo);
             alert("Tempo esgotado!");
           }
-          // Atualize a div com a classe 'ppm' com o valor calculado
           $(".ppm .numeros").text(ppm);
         } else {
           clearInterval(contagemIntervalo);
           alert("Tempo esgotado!");
         }
       }, 1000);
+    }
+  }
+
+  // cálcular precisão
+  function calcularPrecisao() {
+    const letras = $(".letra");
+    let totalLetrasCorretas = 0;
+    let totalLetrasIncorretas = 0;
+  
+    letras.each(function () {
+      const letra = $(this);
+  
+      if (letra.hasClass("correto")) {
+        totalLetrasCorretas++;
+      } else if (letra.hasClass("incorreto")) {
+        totalLetrasIncorretas++;
+      }
+    });
+  
+    const totalLetrasDigitadas = totalLetrasCorretas + totalLetrasIncorretas;
+  
+    if (totalLetrasDigitadas > 0) {
+      const precisao = (totalLetrasCorretas / totalLetrasDigitadas) * 100;
+      $(".precisao .numeros").text(precisao.toFixed(0) + '%');
+    } else {
+      $(".precisao .numeros").text("0%");
     }
   }
 
@@ -211,14 +239,14 @@ $(document).ready(function () {
       '<span class="letra incorreto extra"></span>'
     ).html(tecla);
     if (letra) {
-      caracteresDigitados++;
       if (letraAtual[0]) {
         if (tecla === expected) {
+            totalLetrasCorretas++;       
           addClass(letraAtual, "correto");
-          caracteresCorretos++;
         } else {
+            totalLetrasIncorretas++;
+            letrasDigitadas.unshift(tecla);
           addClass(letraAtual, "incorreto");
-          caracteresIncorretos++;
         }
         removeClass(letraAtual, "atual");
         if (letraAtual.next()[0]) {
@@ -261,7 +289,9 @@ $(document).ready(function () {
       for (let i = letrasDaPalavra.length - 1; i >= 0; i--) {
         const letra = letrasDaPalavra[i];
         if ($(letra).hasClass("incorreto") && $(letra).hasClass("extra")) {
+
           $(letra).remove();
+          totalLetrasIncorretas--;
           return;
         }
       }
@@ -284,11 +314,10 @@ $(document).ready(function () {
       if (!letraAtual[0]) {
         addClass(palavraAtual.find(".letra").last(), "atual");
         removeClass(palavraAtual.find(".letra").last(), "correto");
-        caracteresCorretos--;
         removeClass(palavraAtual.find(".letra").last(), "incorreto");
       }
     }
-    atualizarPrecisao();
+    calcularPrecisao();
   });
 
   digitacaoTexto();
