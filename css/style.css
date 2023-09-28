@@ -266,7 +266,7 @@ header {
     font-family: var(--fontTexto);
     font-weight: 500;
     line-height: 30px;
-    font-size: 14px;
+    font-size: 13px;
 }
 .tempo, .precisao, .ppm {
     display: flex;
@@ -279,7 +279,8 @@ header {
 .numeros {
     display: flex;
     justify-content: center;
-    font-size: 18px;
+    font-size: 15px;
+    font-weight: 600;
 }
 .digitacaoDoTexto {
     margin-top: 50px;
