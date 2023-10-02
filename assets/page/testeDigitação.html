@@ -1,24 +1,29 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teste de digitação - PandaDigitaçôes</title>
     <link rel="stylesheet" href="../css/style.css">
-    <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <script src="https://code.jquery.com/jquery-3.6.3.js"
+        integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
     <link rel="shortcut icon" href="../img/1PandaDigitações-logo.ico" type="image/x-icon">
 </head>
+
 <body style="display: none;">
     <header>
         <div class="center">
             <div class="logo">
-                <a href="inicio.html"><img src="../img/PandaDigitações-logo.png" alt="PandaDigitações" width="50" height="60"></a>
+                <a href="inicio.html"><img src="../img/PandaDigitações-logo.png" alt="PandaDigitações" width="50"
+                        height="60"></a>
             </div>
             <nav class="menu">
                 <ul>
-                    <li><a href="inicio.html"o">Início</a></li>
+                    <li><a href="inicio.html" o">Início</a></li>
                     <li><a href="testeDigitação.html" class="selecionado">Teste de digitação</a></li>
                     <li><a href="aprenda.html">Aprenda</a></li>
                     <li><a href="pratique.html">Pratique</a></li>
@@ -31,7 +36,8 @@
                     <label for="inputConfig">
                         <div id="animaConfigOne">
                             <div class="animaConfig">
-                                <img id="config" src="../img/Configurações.png" alt="Configurações" width="30" height="30">
+                                <img id="config" src="../img/Configurações.png" alt="Configurações" width="30"
+                                    height="30">
                             </div>
                         </div>
                     </label>
@@ -46,11 +52,6 @@
                                         light_mode
                                     </span>
                                 </div>
-                            </div>
-                            <div>
-                                Unidade de velocidade:
-                                PPM (palavras por minuto)
-                                CPM (caracteres por minuto)
                             </div>
                             <div>
                                 Layout de teclado: ABTN 2 QWERTY
@@ -78,20 +79,14 @@
         </div>
     </header>
     <section class="testeDigita">
-        <div class="conteinerDois inputD">
-            <h1>Teste sua digitação!</h1>
-            <div class="parametros">
+        <div class="conteinerDois inputD" style="padding-top: 30px;">
+            <div class="parametros" style="display: none;">
                 <div id="tempo">
                     <div class="numeros" id="tempoS">60</div>
                     <p>Tempo</p>
                 </div>
-                <div class="precisao">
-                    <div class="numeros">0%</div>
-                    <p>Precisão</p>
-                </div>
-                <div class="ppm">
-                    <div class="numeros">00</div>
-                    <p>PPM</p>
+                <div id="tituloTexto">
+                    Fulano de tal - Cravo e a Rosa
                 </div>
                 <div class="pausaReiniciar">
                     <span id="start" class="material-symbols-outlined">
@@ -102,7 +97,7 @@
                     </span>
                 </div>
             </div>
-            <div class="conteinerDigita">
+            <div class="conteinerDigita" style="display: none;">
                 <div id="digitacaoDoTexto">
                     <label for="digitandoTexto" class="label inputD"></label>
                     <input id="digitandoTexto" type="text" tabindex="0" spellcheck="false" autocapitalize="none"
@@ -114,7 +109,73 @@
 
                 </div>
             </div>
-        </div>
+            <div id="desempenhoTexto">
+                <h1 style="padding: 0px 0px 10px 0px; text-align: center;">Desempenho</h1>
+                <div id="desempenhoEstatisticas">
+                    <div id="tempo" class="lado">
+                        <div>Tempo:</div>
+                        <div class="numeros">60s</div>
+                    </div>
+                    <div id="ppm" class="lado">
+                        <div>PPM(palavras por minuto):</div>
+                        <div class="numeros">0</div>
+                    </div>
+                    <div id="cpm" class="lado">
+                        <div>CPM(caracteres por minuto):</div>
+                        <div class="numeros">0</div>
+                    </div>
+                    <div id="precisão" class="lado">
+                        <div>Precisão:</div>
+                        <div class="numeros">0%</div>
+                    </div>
+                    <div id="erros" class="lado">
+                        <div>Erros:</div>
+                        <div class="numeros">0</div>
+                    </div>
+                </div>
+                <div id="dicas">
+                    <h2 style="font-size: 20px; margin-bottom: 5px;">Dicas Importantes:</h2>
+                    <div class="dica">
+                        Mantenha uma postura confortável e correta enquanto digita: Uma postura confortável e
+                        correta é crucial para a saúde de suas mãos, braços e pescoço. Mantenha os pés no chão e as
+                        costas retas. Evite curvar-se para frente ou para trás. Ajuste a altura da cadeira para que
+                        seus cotovelos estejam no mesmo nível que o teclado.
+                    </div>
+                    <div class="dica">
+                        Seja paciente: A digitação é uma habilidade que melhora com o tempo. Não se frustre com erros no
+                        início. Eles são naturais e vão diminuir à medida que você pratica.
+                    </div>
+                    <div class="dica">
+                        Não olhe para o teclado: Tente evitar olhar para o teclado enquanto digita. Isso ajudará a
+                        desenvolver sua memória muscular.
+                    </div>
+                    <div class="dica">
+                        Pratique a digitação regularmente: A prática constante é fundamental para melhorar suas
+                        habilidades de digitação. Dedique um tempo todos os dias para praticar.
+                    </div>
+                    <div class="dica">
+                        Comece devagar: Não se preocupe com a velocidade no início. Foque em digitar com precisão e
+                        gradualmente aumente a velocidade conforme se sentir mais confortável.
+                    </div>
+                    <div class="dica">
+                        Faça Pausas e Estique-se: Faça pausas regulares durante as sessões de digitação para evitar
+                        lesões por esforço repetitivo (LER). Faça exercícios de alongamento para os dedos, mãos e pulsos
+                        para manter a flexibilidade.
+                    </div>
+                    <div class="dica">
+                        Descanse os Dedos: Não pressione as teclas com muita força. Toque as teclas suavemente para
+                        evitar fadiga nos dedos.
+                    </div>
+                </div>
+                <div class="navegacao-dicas">
+                    <div class="ponto-dica ativo"></div>
+                    <div class="ponto-dica"></div>
+                    <div class="ponto-dica"></div>
+                    <div class="ponto-dica"></div>
+                    <div class="ponto-dica"></div>
+                    <div class="ponto-dica"></div>
+                    <div class="ponto-dica"></div>
+                </div>
     </section>
 
     <footer>
@@ -124,6 +185,8 @@
     </footer>
 
     <script src="../js/config.js"></script>
+    <script src="../js/script.js"></script>
     <script src="../js/digitaçãoTexto.js"></script>
 </body>
+
 </html>
