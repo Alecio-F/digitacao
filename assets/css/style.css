@@ -322,32 +322,39 @@ header {
     color: #000000ee;
 }
 #dicas {
-    display: block;
   margin-top: 10px;
   font-family: var(--fontTexto);
+  position: relative;
 }
 #dicas .dica:not(:first-child) {
     display: none;
 }
-.navegacao-dicas {
-    display: flex;
-    justify-content: center;
-    margin-top: 10px;
-  }
-  
-  .ponto-dica {
-    width: 10px;
-    height: 10px;
-    background-color: transparent;
-    border: 1px solid #383838;
-    border-radius: 50%;
-    margin: 0 5px;
-    cursor: pointer;
-  }
-  
-  .ponto-dica.ativo {
-    background-color: #080800d5;
-  }
+.dica {
+  height: 65px;
+  text-align: justify;
+  line-height: 1.3em;
+  font-size: 16px;
+}
+.seta {
+  position: absolute;
+  top: 70%;
+}
+.seta-esquerda {
+  position: absolute;
+  left: -35px;
+  border-style: solid;
+  border-width: 10px 15px 10px 0;
+  border-color: transparent #007bff transparent transparent;
+  cursor: pointer;
+}
+.seta-direita {
+  position: absolute;
+  right: -35px;
+  border-style: solid;
+  border-width: 10px 0 10px 15px;
+  border-color: transparent transparent transparent #007bff;
+  cursor: pointer;
+}
   
 
 .resumo {
