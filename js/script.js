@@ -1,24 +1,43 @@
 $(document).ready(function () {
-    const pontosDica = $(".ponto-dica");
-    const dicas = $(".dica");
-  
-    // Inicialmente, exiba a primeira dica e marque o primeiro ponto como ativo
-    mostrarDica(0);
-  
-    pontosDica.on("click", function () {
-      const indice = $(this).index();
-      
-      // Oculte todas as dicas e remova a classe ativa de todos os pontos
-      dicas.hide();
-      pontosDica.removeClass("ativo");
-  
-      // Mostre a dica selecionada e marque o ponto correspondente como ativo
-      mostrarDica(indice);
-      $(this).addClass("ativo");
-    });
-  
-    function mostrarDica(indice) {
-      dicas.eq(indice).show();
+  const dicas = $(".dica");
+  let indiceAtual = 0;
+  let intervalo;
+
+  function mostrarDica(indice) {
+    dicas.fadeOut(300);
+    dicas.eq(indice).delay(300).fadeIn(300);
+  }
+
+  function avancarDica() {
+    if (indiceAtual < dicas.length - 1) {
+      indiceAtual++;
+    } else {
+      indiceAtual = 0;
     }
-  });
-  
+    mostrarDica(indiceAtual);
+    reiniciarIntervalo();
+  }
+
+  function voltarDica() {
+    if (indiceAtual > 0) {
+      indiceAtual--;
+    } else {
+      indiceAtual = dicas.length - 1;
+    }
+    mostrarDica(indiceAtual);
+    reiniciarIntervalo();
+  }
+
+  function reiniciarIntervalo() {
+    clearInterval(intervalo); // Limpa o intervalo atual
+    intervalo = setInterval(avancarDica, 5000); // Define um novo intervalo
+  }
+
+  $(".seta-esquerda").click(voltarDica);
+  $(".seta-direita").click(avancarDica);
+
+  mostrarDica(indiceAtual);
+
+  // Inicie o intervalo inicial
+  reiniciarIntervalo();
+});
