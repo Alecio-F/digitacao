@@ -322,6 +322,8 @@ header {
     color: #000000ee;
 }
 #dicas {
+  width: 760px;
+  height: 70px;
   margin-top: 10px;
   font-family: var(--fontTexto);
   position: relative;
@@ -330,7 +332,6 @@ header {
     display: none;
 }
 .dica {
-  height: 65px;
   text-align: justify;
   line-height: 1.3em;
   font-size: 16px;
@@ -355,6 +356,12 @@ header {
   border-color: transparent transparent transparent #007bff;
   cursor: pointer;
 }
+.seta-esquerda:hover,
+.seta-direita:hover {
+  transform: scale(1.1); /* Escala 10% maior quando o cursor passar sobre as setas */
+  transition: transform 0.2s ease; /* Transição suave de 0.2 segundos */
+}
+
   
 
 .resumo {

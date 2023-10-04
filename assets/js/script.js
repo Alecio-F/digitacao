@@ -2,6 +2,7 @@ $(document).ready(function () {
   const dicas = $(".dica");
   let indiceAtual = 0;
   let intervalo;
+  let podeClicar = true;
 
   function mostrarDica(indice) {
     dicas.fadeOut(300);
@@ -9,6 +10,10 @@ $(document).ready(function () {
   }
 
   function avancarDica() {
+    if (!podeClicar) {
+      return; // Impede a ação se não for possível clicar
+    }
+
     if (indiceAtual < dicas.length - 1) {
       indiceAtual++;
     } else {
@@ -16,9 +21,14 @@ $(document).ready(function () {
     }
     mostrarDica(indiceAtual);
     reiniciarIntervalo();
+    bloquearClique();
   }
 
   function voltarDica() {
+    if (!podeClicar) {
+      return; // Impede a ação se não for possível clicar
+    }
+
     if (indiceAtual > 0) {
       indiceAtual--;
     } else {
@@ -26,6 +36,14 @@ $(document).ready(function () {
     }
     mostrarDica(indiceAtual);
     reiniciarIntervalo();
+    bloquearClique();
+  }
+
+  function bloquearClique() {
+    podeClicar = false;
+    setTimeout(function () {
+      podeClicar = true; // Reabilita o clique após o atraso de 300ms
+    }, 600);
   }
 
   function reiniciarIntervalo() {
