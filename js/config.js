@@ -24,7 +24,7 @@ $(document).ready(function() {
   // mudar tema dark e light
   var ativo = localStorage.getItem("ativo");
   if (ativo !== null) {
-    $(".btn").addClass("ativo");
+    $("#btn").addClass("ativo");
     $('body').addClass('darkTheme');
     $('.inputD').addClass('inputDDark');
     $('.testeDigita').addClass('testeDigitaDarktheme');
@@ -35,7 +35,7 @@ $(document).ready(function() {
     $('.conta').addClass('contaDark');
   }
 
-  $(".btn").on("click", function() {
+  $("#btn").on("click", function() {
     $(this).toggleClass("ativo");
 
     if ($(this).hasClass("ativo")) {

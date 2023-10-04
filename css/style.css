@@ -144,7 +144,7 @@ header {
   padding-bottom: 50px;
 }
 
-.btn {
+#btn {
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -155,7 +155,7 @@ header {
   position: relative;
   cursor: pointer;
 }
-.btn::before {
+#btn::before {
   content: "";
   position: absolute;
   width: 28px;
@@ -167,7 +167,7 @@ header {
   transform: translateY(-50%);
   transition: 0.2s ease-in-out;
 }
-.btn.ativo::before {
+#btn.ativo::before {
   left: 36px;
 }
 
@@ -323,7 +323,7 @@ header {
 }
 #dicas {
   width: 760px;
-  height: 70px;
+  height: 100px;
   margin-top: 10px;
   font-family: var(--fontTexto);
   position: relative;
@@ -338,14 +338,14 @@ header {
 }
 .seta {
   position: absolute;
-  top: 70%;
+  top: 50%;
 }
 .seta-esquerda {
   position: absolute;
   left: -35px;
   border-style: solid;
   border-width: 10px 15px 10px 0;
-  border-color: transparent #007bff transparent transparent;
+  border-color: transparent #BFD7EA transparent transparent;
   cursor: pointer;
 }
 .seta-direita {
@@ -353,13 +353,30 @@ header {
   right: -35px;
   border-style: solid;
   border-width: 10px 0 10px 15px;
-  border-color: transparent transparent transparent #007bff;
+  border-color: transparent transparent transparent #BFD7EA;
   cursor: pointer;
 }
 .seta-esquerda:hover,
 .seta-direita:hover {
   transform: scale(1.1); /* Escala 10% maior quando o cursor passar sobre as setas */
   transition: transform 0.2s ease; /* Transição suave de 0.2 segundos */
+}
+#proxima-acao {
+  margin: 15px auto;
+  width: 600px;
+  display: flex;
+  justify-content: space-between;
+}
+.acao {
+  font-size: 15px;
+  font-weight: 600;
+  background-color: var(--corTitulo);
+  padding: 5px 8px;
+  border: none;
+  border-radius: 7px;
+  box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.10);
+  color: var(--corHeader);
+  cursor: pointer;
 }
 
   
