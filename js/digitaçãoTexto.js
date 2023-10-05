@@ -186,7 +186,8 @@ let totalLetrasIncorretas = 0;
           $(".ppm .numeros").text(ppm);
         } else {
           clearInterval(contagemIntervalo);
-          alert("Tempo esgotado!");
+          $('.paramentros.conteinerDigita').hide();
+          $('#desempenhoTexto').show();
         }
       }, 1000);
     }

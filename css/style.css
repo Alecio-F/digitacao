@@ -316,10 +316,13 @@ header {
 .lado {
     display: flex;
 }
+.lado > div {
+  color: var(--corFooter);
+}
 #desempenhoEstatisticas .numeros {
     font-size: 20px;
     padding-left: 5px;
-    color: #000000ee;
+    color: var(--corTextoGeral);
 }
 #dicas {
   width: 760px;
@@ -358,8 +361,8 @@ header {
 }
 .seta-esquerda:hover,
 .seta-direita:hover {
-  transform: scale(1.1); /* Escala 10% maior quando o cursor passar sobre as setas */
-  transition: transform 0.2s ease; /* Transição suave de 0.2 segundos */
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
 }
 #proxima-acao {
   margin: 15px auto;
@@ -370,13 +373,17 @@ header {
 .acao {
   font-size: 15px;
   font-weight: 600;
-  background-color: var(--corTitulo);
+  background-color: var(--corBanner);
   padding: 5px 8px;
   border: none;
   border-radius: 7px;
   box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.10);
-  color: var(--corHeader);
+  color: var(--corTexto);
   cursor: pointer;
+}
+.acao:hover {
+  transform: scale(1.1);
+  transition: transform 0.3s ease-out;
 }
 
   
