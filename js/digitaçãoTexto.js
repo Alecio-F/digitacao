@@ -156,6 +156,7 @@ let totalLetrasIncorretas = 0;
   }
 
   $("#tempoS").text(formatarTempo(tempoSelecionado * 60));
+  $('.tempo-desempenho .numeros').text(formatarTempo(tempoSelecionado * 60));
   let contagemIntervalo;
   let contagemIniciada = false;
   let digitando = false;
@@ -183,11 +184,12 @@ let totalLetrasIncorretas = 0;
                 60
             );
           }
-          $(".ppm .numeros").text(ppm);
+          $("#ppm .numeros").text(ppm);
         } else {
           clearInterval(contagemIntervalo);
-          $('.paramentros.conteinerDigita').hide();
-          $('#desempenhoTexto').show();
+          $('.parametros').fadeOut(195).hide();
+          $('.conteinerDigita').fadeOut(200).hide();
+          $('#desempenhoTexto').fadeIn(200).show();
         }
       }, 1000);
     }
@@ -213,10 +215,8 @@ let totalLetrasIncorretas = 0;
   
     if (totalLetrasDigitadas > 0) {
       const precisao = (totalLetrasCorretas / totalLetrasDigitadas) * 100;
-      $(".precisao .numeros").text(precisao.toFixed(0) + '%');
-    } else {
-      $(".precisao .numeros").text("0%");
-    }
+      $("#precisao .numeros").text(precisao.toFixed(0) + '%');
+    } 
   }
 
   // Inicio da digitação
