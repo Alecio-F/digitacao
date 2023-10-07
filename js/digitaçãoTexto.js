@@ -21,9 +21,8 @@ $(document).ready(function () {
   const tempo = 30 * 1000;
   window.emPratica = null;
   let letrasDigitadas = [];
-let totalLetrasCorretas = 0;
-let totalLetrasIncorretas = 0;
-
+  let totalLetrasCorretas = 0;
+  let totalLetrasIncorretas = 0;
 
   $("#reset").click(function () {
     digitacaoTexto();
@@ -156,7 +155,7 @@ let totalLetrasIncorretas = 0;
   }
 
   $("#tempoS").text(formatarTempo(tempoSelecionado * 60));
-  $('.tempo-desempenho .numeros').text(formatarTempo(tempoSelecionado * 60));
+  $(".tempo-desempenho .numeros").text(formatarTempo(tempoSelecionado * 60));
   let contagemIntervalo;
   let contagemIniciada = false;
   let digitando = false;
@@ -185,11 +184,22 @@ let totalLetrasIncorretas = 0;
             );
           }
           $("#ppm .numeros").text(ppm);
+          const textoDigitado = $("#digitandoTexto").val();
+          const caracteresDigitados = textoDigitado.length;
+          const minutosDecorridos =
+            (tempoSelecionado * 60 - tempoRestante) / 60;
+
+          // Verifica se minutosDecorridos é maior que zero para evitar divisão por zero
+          const cpm =
+            minutosDecorridos > 0
+              ? Math.round(caracteresDigitados / minutosDecorridos)
+              : 0;
+          $("#cpm .numeros").text(cpm);
         } else {
           clearInterval(contagemIntervalo);
-          $('.parametros').fadeOut(195).hide();
-          $('.conteinerDigita').fadeOut(200).hide();
-          $('#desempenhoTexto').fadeIn(200).show();
+          $(".parametros").fadeOut(195).hide();
+          $(".conteinerDigita").fadeOut(200).hide();
+          $("#desempenhoTexto").fadeIn(200).show();
         }
       }, 1000);
     }
@@ -200,23 +210,24 @@ let totalLetrasIncorretas = 0;
     const letras = $(".letra");
     let totalLetrasCorretas = 0;
     let totalLetrasIncorretas = 0;
-  
+
     letras.each(function () {
       const letra = $(this);
-  
+
       if (letra.hasClass("correto")) {
         totalLetrasCorretas++;
       } else if (letra.hasClass("incorreto")) {
         totalLetrasIncorretas++;
       }
     });
-  
+
     const totalLetrasDigitadas = totalLetrasCorretas + totalLetrasIncorretas;
-  
+
     if (totalLetrasDigitadas > 0) {
       const precisao = (totalLetrasCorretas / totalLetrasDigitadas) * 100;
-      $("#precisao .numeros").text(precisao.toFixed(0) + '%');
-    } 
+      $("#precisao .numeros").text(precisao.toFixed(0) + "%");
+      $("#erros .numeros").text(totalLetrasIncorretas);
+    }
   }
 
   // Inicio da digitação
@@ -246,11 +257,11 @@ let totalLetrasIncorretas = 0;
     if (letra) {
       if (letraAtual[0]) {
         if (tecla === expected) {
-            totalLetrasCorretas++;       
+          totalLetrasCorretas++;
           addClass(letraAtual, "correto");
         } else {
-            totalLetrasIncorretas++;
-            letrasDigitadas.unshift(tecla);
+          totalLetrasIncorretas++;
+          letrasDigitadas.unshift(tecla);
           addClass(letraAtual, "incorreto");
         }
         removeClass(letraAtual, "atual");
@@ -294,7 +305,6 @@ let totalLetrasIncorretas = 0;
       for (let i = letrasDaPalavra.length - 1; i >= 0; i--) {
         const letra = letrasDaPalavra[i];
         if ($(letra).hasClass("incorreto") && $(letra).hasClass("extra")) {
-
           $(letra).remove();
           totalLetrasIncorretas--;
           return;
