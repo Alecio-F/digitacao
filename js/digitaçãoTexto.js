@@ -1,18 +1,24 @@
-import { cursor} from "./cursor";
-import { paramentros, calcularPrecisao } from "./paramentros";
+
+import { eventos } from "./eventos";
+import { cursor } from "./cursor";
+import { calcularPrecisao } from "./paramentros";
+import {
+  palavrasAleatorias,
+  palavrasNaOrdem,
+  formatarPalavras,
+} from "./palavras";
+import { moverLinhasSeNecessario } from "./linhas";
+import { iniciouContagem } from "./tempo";
 
 export function textodigitacao() {
-  const palavras =
-    "casa amor feliz trabalho cidade carro família sol comida rua escola dinheiro gato cachorro rua livro amigo café dia noite amor música filme viagem chuva montanha árvore festa criança jovem velho escola praia mar rio felicidade tristeza computador celular televisão notícia foto comida bebida encontro jantar almoço café da manhã lanche escola universidade professor estudante escritório reunião projeto recompensa desafio conquista esforço sucesso falha vitória derrota argumento opinião política governo democracia liberdade direitos humanos paz guerra casamento divórcio namoro paquera flerte mensagem telefonema reunião conferência estudo aprendizado experiência testemunha crime investigação polícia prisão julgamento sentença juiz júri verdade mentira história romance poesia pintura escultura arte artista música dança teatro ator atriz espetáculo plateia público aplausos palco luz som maquiagem figurino cena beijo abraço sorriso lágrima medo coragem felicidade tristeza surpresa alegria raiva desprezo saudade memória sonho desejo esperança futuro presente passado vida morte nascimento despedida encontro separação viuvez".split(
-      " "
-    );
-  const quantidadePalavras = palavras.length;
-  const tempo = 30 * 1000;
-  window.emPratica = null;
-  let letrasDigitadas = [];
-  let totalLetrasCorretas = 0;
-  let totalLetrasIncorretas = 0;
+const tempo = 30 * 1000;
+let letrasDigitadas = [];
+let totalLetrasCorretas = 0;
+let totalLetrasIncorretas = 0;
 
+  eventos();
+  
+  tempo();
 
   function addClass(el, nome) {
     el.addClass(nome);
@@ -21,6 +27,9 @@ export function textodigitacao() {
   function removeClass(el, nome) {
     el.removeClass(nome);
   }
+
+  palavrasAleatorias();
+  formatarPalavras();
 
   function digitacaoTexto() {
     $("#palavras").html("");
@@ -133,10 +142,11 @@ export function textodigitacao() {
         removeClass(palavraAtual.find(".letra").last(), "incorreto");
       }
     }
-    paramentros()
+    paramentros();
     calcularPrecisao();
   });
 
   digitacaoTexto();
   cursor();
+  moverLinhasSeNecessario();
 }
