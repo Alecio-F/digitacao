@@ -1,14 +1,14 @@
 
-import { eventos } from "./eventos";
-import { cursor } from "./cursor";
-import { calcularPrecisao } from "./paramentros";
+import { eventos } from './eventos';
+import { cursor } from './cursor';
+import { calcularPrecisao } from './paramentros';
 import {
   palavrasAleatorias,
   palavrasNaOrdem,
   formatarPalavras,
-} from "./palavras";
-import { moverLinhasSeNecessario } from "./linhas";
-import { iniciouContagem } from "./tempo";
+} from './palavras';
+import { moverLinhasSeNecessario } from './linhas';
+import { iniciouContagem } from './tempo';
 
 export function textodigitacao() {
 const tempo = 30 * 1000;

@@ -5,13 +5,13 @@ const palavras =
 const quantidadePalavras = palavras.length;
 window.emPratica = null;
 
-function palavrasAleatorias() {
+export function palavrasAleatorias() {
   const aleatorioIndex = Math.ceil(Math.random() * quantidadePalavras);
   return palavras[aleatorioIndex - 1];
 }
 let posicaoAtual = 0;
 
-function palavrasNaOrdem() {
+ export function palavrasNaOrdem() {
   if (posicaoAtual < palavras.length) {
     const palavra = palavras[posicaoAtual];
     posicaoAtual++;
@@ -22,7 +22,7 @@ function palavrasNaOrdem() {
   }
 }
 
-function formatarPalavras(palavra) {
+export function formatarPalavras(palavra) {
   const letras = palavra
     .split("")
     .map((letra) => `<span class="letra">${letra}</span>`)
