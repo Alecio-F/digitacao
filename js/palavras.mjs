@@ -3,6 +3,7 @@ const palavras =
     " "
   );
 const quantidadePalavras = palavras.length;
+let palavra;
 window.emPratica = null;
 
 export function palavrasAleatorias() {
@@ -13,7 +14,7 @@ let posicaoAtual = 0;
 
  export function palavrasNaOrdem() {
   if (posicaoAtual < palavras.length) {
-    const palavra = palavras[posicaoAtual];
+    palavra = palavras[posicaoAtual];
     posicaoAtual++;
     return palavra;
   } else {
