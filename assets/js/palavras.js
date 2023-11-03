@@ -23,14 +23,10 @@ let posicaoAtual = 0;
 }
 
 export function formatarPalavras(palavra) {
-  const letras = palavra
-    .split("")
-    .map((letra) => `<span class="letra">${letra}</span>`)
-    .join("");
+  const letras = palavra.split("").map((letra) => `<span class="letra">${letra}</span>`).join("");
   return `<div class="palavra">${letras}</div>`;
 }
 
 const divAmostraTexto = $("#amostraTexto");
 divAmostraTexto.text(palavras.join(" "));
 
-export { palavrasAleatorias, palavrasNaOrdem, formatarPalavras };
