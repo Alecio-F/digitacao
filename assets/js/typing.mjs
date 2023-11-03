@@ -1,14 +1,14 @@
 
-import { eventos } from './eventos.js';
-import { atualizarCursorContinuamente } from './cursor.js';
-import { calcularPrecisao } from './paramentros.js';
+import { eventos } from './eventos.mjs';
+import { atualizarCursorContinuamente } from './cursor.mjs';
+import { calcularPrecisao } from './paramentros.mjs';
 import {
   palavrasAleatorias,
   palavrasNaOrdem,
   formatarPalavras,
-} from './palavras.js';
-import { moverLinhasSeNecessario } from './linhas.js';
-import { iniciouContagem } from './tempo.js';
+} from './palavras.mjs';
+import { moverLinhasSeNecessario } from './linhas.mjs';
+import { iniciouContagem } from './tempo.mjs';
 
 export function textodigitacao() {
 const tempo = 30 * 1000;
@@ -34,11 +34,13 @@ let totalLetrasIncorretas = 0;
   function digitacaoTexto() {
     $("#palavras").html("");
     for (let i = 0; i < 200; i++) {
-      $("#palavras").append(formatarPalavras(palavrasAleatorias(), i));
+      const palavraAleatoria = palavrasAleatorias();
+      $("#palavras").append(formatarPalavras(palavraAleatoria, i));
     }
     addClass($(".palavra").first(), "atual");
     addClass($(".letra").first(), "atual");
   }
+  
 
   // Inicio da digitação
   $("#digitandoTexto").keydown(function (ev) {
