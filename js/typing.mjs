@@ -1,14 +1,14 @@
 
-import { eventos } from './eventos';
-import { cursor } from './cursor';
-import { calcularPrecisao } from './paramentros';
+import { eventos } from './eventos.js';
+import { atualizarCursorContinuamente } from './cursor.js';
+import { calcularPrecisao } from './paramentros.js';
 import {
   palavrasAleatorias,
   palavrasNaOrdem,
   formatarPalavras,
-} from './palavras';
-import { moverLinhasSeNecessario } from './linhas';
-import { iniciouContagem } from './tempo';
+} from './palavras.js';
+import { moverLinhasSeNecessario } from './linhas.js';
+import { iniciouContagem } from './tempo.js';
 
 export function textodigitacao() {
 const tempo = 30 * 1000;
@@ -18,7 +18,7 @@ let totalLetrasIncorretas = 0;
 
   eventos();
   
-  tempo();
+  iniciouContagem();
 
   function addClass(el, nome) {
     el.addClass(nome);
@@ -147,6 +147,6 @@ let totalLetrasIncorretas = 0;
   });
 
   digitacaoTexto();
-  cursor();
+  atualizarCursorContinuamente();
   moverLinhasSeNecessario();
 }

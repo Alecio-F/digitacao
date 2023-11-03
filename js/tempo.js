@@ -3,7 +3,6 @@ const tempoPraticaSelecionado = localStorage.getItem("tempoPratica") || "1";
 
 $("#tempoPratica").val(tempoPraticaSelecionado);
 const tempoSelecionado = $("#tempoPratica").val();
-tempoRestante = tempoSelecionado * 60;
 
 $("#tempoPratica").change(function () {
   const novoTempoSelecionado = $(this).val();
@@ -25,6 +24,7 @@ $(".tempo-desempenho .numeros").text(formatarTempo(tempoSelecionado * 60));
 let contagemIntervalo;
 let contagemIniciada = false;
 let digitando = false;
+let ppm = 0;
 
 // Função para iniciar a contagem regressiva
 export function iniciouContagem() {
