@@ -1,4 +1,4 @@
-$(document).ready(function () {
+export function dicas() {
   const dicas = $(".dica");
   let indiceAtual = 0;
   let intervalo;
@@ -58,4 +58,4 @@ $(document).ready(function () {
 
   // Inicie o intervalo inicial
   reiniciarIntervalo();
-});
+};

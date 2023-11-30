@@ -1,4 +1,4 @@
-$(document).ready(function() {
+export function config() {
   // animação rotação da img config
   $("body").css("display", "block");
 
@@ -60,6 +60,6 @@ $(document).ready(function() {
       $('.conta').removeClass('contaDark');
     }
   });
-});
+};
 
 
