@@ -1,3 +1,4 @@
+import { moverLinhasSeNecessario } from "./linhas.mjs";
 // mover cursor
 export function atualizarCursorContinuamente() {
   setInterval(function () {

@@ -3,8 +3,7 @@ const palavras =
     " "
   );
 const quantidadePalavras = palavras.length;
-let palavra;
-window.emPratica = null;
+
 
 export function palavrasAleatorias() {
   const aleatorioIndex = Math.ceil(Math.random() * quantidadePalavras);
@@ -28,6 +27,9 @@ export function formatarPalavras(palavra) {
   return `<div class="palavra">${letras}</div>`;
 }
 
-const divAmostraTexto = $("#amostraTexto");
-divAmostraTexto.text(palavras.join(" "));
+$(document).ready(function() {
+  const divAmostraTexto = $("#amostraTexto");
+  divAmostraTexto.text(palavras.join(" "));
+});
+
 

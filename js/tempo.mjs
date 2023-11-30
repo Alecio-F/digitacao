@@ -23,7 +23,7 @@ $("#tempoS").text(formatarTempo(tempoSelecionado * 60));
 $(".tempo-desempenho .numeros").text(formatarTempo(tempoSelecionado * 60));
 let contagemIntervalo;
 let contagemIniciada = false;
-let digitando = false;
+
 let ppm = 0;
 
 // Função para iniciar a contagem regressiva

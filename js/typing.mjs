@@ -15,10 +15,10 @@ const tempo = 30 * 1000;
 let letrasDigitadas = [];
 let totalLetrasCorretas = 0;
 let totalLetrasIncorretas = 0;
+let digitando = false;
+window.emPratica = null;
 
   eventos();
-  
-  iniciouContagem();
 
   function addClass(el, nome) {
     el.addClass(nome);
@@ -29,7 +29,7 @@ let totalLetrasIncorretas = 0;
   }
 
   palavrasAleatorias();
-  formatarPalavras();
+  
 
   function digitacaoTexto() {
     $("#palavras").html("");
@@ -59,7 +59,6 @@ let totalLetrasIncorretas = 0;
     if (!digitando) {
       digitando = true;
       iniciouContagem();
-      inicioDigitacao = new Date().getTime();
     }
 
     // letra extras incorretas
@@ -144,7 +143,6 @@ let totalLetrasIncorretas = 0;
         removeClass(palavraAtual.find(".letra").last(), "incorreto");
       }
     }
-    paramentros();
     calcularPrecisao();
   });
 
