@@ -22,6 +22,7 @@
   --corTitulo: #0b3954;
   --corFooter: #373d45;
   --corFundoConfig: #ffffffe7;
+  --corCorreto: rgba(90, 90, 90, 0.705);
 }
 .darkTheme {
   /* Paleta de cores para dark theme */
@@ -32,6 +33,7 @@
   --corTextoGeral: #c1cbd0;
   --corTitulo: #96b4c6;
   --corFundoConfig: #2e2e2ee5;
+  --corCorreto: rgba(90, 90, 90, 0.562);
 }
 
 body {
@@ -642,7 +644,7 @@ footer div {
   transition: 0.04s ease-in-out;
 }
 .correto {
-  color: #00000080;
+  color: var(--corCorreto);
 }
 .incorreto {
   color: rgba(224, 26, 0, 0.945);

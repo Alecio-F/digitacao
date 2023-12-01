@@ -23,7 +23,6 @@ $("#tempoS").text(formatarTempo(tempoSelecionado * 60));
 $(".tempo-desempenho .numeros").text(formatarTempo(tempoSelecionado * 60));
 let contagemIntervalo;
 let contagemIniciada = false;
-
 let ppm = 0;
 
 // Função para iniciar a contagem regressiva
@@ -63,6 +62,7 @@ export function iniciouContagem() {
       } else {
         clearInterval(contagemIntervalo);
         $(".parametros").fadeOut(195).hide();
+        $(".h1Teste").fadeOut(195).hide();
         $(".conteinerDigita").fadeOut(200).hide();
         $("#desempenhoTexto").fadeIn(200).show();
       }
