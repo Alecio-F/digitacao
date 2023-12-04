@@ -136,14 +136,26 @@ header {
   transition: 1s 0.05s ease-in-out;
 }
 .menuConfig {
+  border-left: var(--corTexto) solid;
+  padding-left: 10px;
   font-weight: 600;
   font-size: 1.4em;
 }
 .menuConfig > div {
-  color: rgba(0, 0, 0, 0.7);
+  color: var(--corTexto);
 }
 .menuConfig > div:not(:last-child) {
-  padding-bottom: 50px;
+  padding-bottom: 30px;
+}
+#tempoPratica {
+  padding: 5px;
+  font-size: 20px;
+  color: var(--corTexto);
+  width: 90px; 
+  border: none;
+  border-radius: 5px; 
+  background-color: transparent;
+  cursor: pointer;
 }
 
 #btn {
@@ -656,7 +668,7 @@ footer div {
   line-height: 1.5em;
   height: 110px;
   font-size: 17px;
-  color: #00000059;
+  color: var(--corTexto);
   text-align: justify;
   overflow-y: auto;
 }
