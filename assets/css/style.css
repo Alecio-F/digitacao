@@ -667,10 +667,11 @@ footer div {
   font-family: var(--fontTexto);
   line-height: 1.5em;
   height: 110px;
-  font-size: 17px;
   color: var(--corTexto);
-  text-align: justify;
   overflow-y: auto;
+}
+#amostraTexto > .palavra {
+  font-size: 17px;
 }
 #amostraTexto::-webkit-scrollbar {
   width: 8px;

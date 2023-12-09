@@ -1,14 +1,18 @@
 const palavras =
-  "casa amor feliz trabalho cidade carro família sol comida rua escola dinheiro gato cachorro rua livro amigo café dia noite amor música filme viagem chuva montanha árvore festa criança jovem velho escola praia mar rio felicidade tristeza computador celular televisão notícia foto comida bebida encontro jantar almoço café da manhã lanche escola universidade professor estudante escritório reunião projeto recompensa desafio conquista esforço sucesso falha vitória derrota argumento opinião política governo democracia liberdade direitos humanos paz guerra casamento divórcio namoro paquera flerte mensagem telefonema reunião conferência estudo aprendizado experiência testemunha crime investigação polícia prisão julgamento sentença juiz júri verdade mentira história romance poesia pintura escultura arte artista música dança teatro ator atriz espetáculo plateia público aplausos palco luz som maquiagem figurino cena beijo abraço sorriso lágrima medo coragem felicidade tristeza surpresa alegria raiva desprezo saudade memória sonho desejo esperança futuro presente passado vida morte nascimento despedida encontro separação viuvez".split(
-    " "
-  );
-const quantidadePalavras = palavras.length;
+  "olá bom dia boa tarde boa noite oi tchau adeus por favor obrigado desculpe sim não talvez hoje ontem amanhã agora logo sempre nunca aqui lá ali aí acolá bem mal rápido devagar alto baixo longe perto dentro fora hoje em dia às vezes muito pouco mais menos com sem também já ainda só apenas até depois antes então assim como porque se mas e ou para por comigo contigo conosco convosco ele ela nós vós eles elas você vocês eu tu meu minha teu tua seu sua nosso nossa vosso vossa dele dela nele nela aquilo este esta isso isso aí aqui ali lá muitos poucos algum nenhum todo nenhum cada qualquer esteja seja faça está estamos sejam tenha tenham fazer pode poder pode poderia podia vai indo vem vindo aqui ali lá para por sobre entre sob acima abaixo através a partir de para com contra durante antes depois enquanto quando onde quem cujo qual quanto quantos quantas quem cujo qual quanto quantos quantas neste nesse aqui ali lá agora antes depois ainda quando onde quem cujo qual quanto quantos quantas comigo contigo conosco convosco para por sob sobre sob acima abaixo através em porque mas então quanto como quando onde quem cujo qual quanto quantos quantas minha meu tua teu nossa nosso vossa vosso nesta neste nesse nesse aqui ali lá agora antes depois ainda quando onde quem cujo qual quanto quantos quantas nesta neste nesse nesse minha meu tua teu nossa nosso vossa vosso seja este esta isto estas estes estas esses essas o a os as um uma uns umas outro outra outros outras alguma algum algumas alguns algumas pouco pouca poucos poucas muita muito muitas muitos muitas estávamos estiveram esteve estavam estive estivemos estiveste estivestes esteve estiveram estivéramos estejamos estejam esteja seja sendo sido que se você está como ir pelo pela pelos pelas para por sob sobre sob acima abaixo através em porque mas então quanto como quando onde quem cujo qual quanto quantos quantas minha meu tua teu nossa nosso vossa vosso nesta neste nesse nesse aqui ali lá agora antes depois ainda quando onde quem cujo qual quanto quantos quantas comigo contigo conosco convosco para por sob sobre sob acima abaixo através em porque mas então quanto como quando onde quem cujo qual quanto quantos quantas minha meu tua teu nossa nosso vossa vosso seja este esta isto estas estes estas esses essas o a os as um uma uns umas outro outra outros outras alguma algum".split(" ");
+shuffle(palavras);
 
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
 
 export function palavrasAleatorias() {
-  const aleatorioIndex = Math.ceil(Math.random() * quantidadePalavras);
-  return palavras[aleatorioIndex - 1];
+  return palavras.pop();
 }
+
 let posicaoAtual = 0;
 
  export function palavrasNaOrdem() {
@@ -26,10 +30,4 @@ export function formatarPalavras(palavra) {
   const letras = palavra.split("").map((letra) => `<span class="letra">${letra}</span>`).join("");
   return `<div class="palavra">${letras}</div>`;
 }
-
-$(document).ready(function() {
-  const divAmostraTexto = $("#amostraTexto");
-  divAmostraTexto.text(palavras.join(" "));
-});
-
 

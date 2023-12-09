@@ -33,9 +33,14 @@ window.emPratica = null;
 
   function digitacaoTexto() {
     $("#palavras").html("");
+    $("#amostraTexto").html("");
+
     for (let i = 0; i < 200; i++) {
       const palavraAleatoria = palavrasAleatorias();
-      $("#palavras").append(formatarPalavras(palavraAleatoria, i));
+      const palavraFormatada = formatarPalavras(palavraAleatoria, i);
+
+      $("#palavras").append(palavraFormatada);
+      $("#amostraTexto").append(palavraFormatada);
     }
     addClass($(".palavra").first(), "atual");
     addClass($(".letra").first(), "atual");
