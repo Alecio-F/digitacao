@@ -20,18 +20,4 @@ export function eventos() {
     window.timer = null;
   });
 
-  const btnFazerNovamente = document.querySelector(
-    "#proxima-acao .acao:nth-child(1)"
-  );
-  btnFazerNovamente.addEventListener("click", function () {
-
-    location.reload();
-  });
-
-  const btnProximoTexto = document.querySelector(
-    "#proxima-acao .acao:nth-child(2)"
-  );
-  btnProximoTexto.addEventListener("click", function () {
-    location.reload();
-  });
 }
