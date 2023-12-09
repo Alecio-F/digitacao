@@ -175,7 +175,17 @@
         </div>
     </footer>
     <script>
-        document.querySelector('.label').click();
+        const btnFazerNovamente = document.querySelector("#proxima-acao .acao:nth-child(1)");
+        btnFazerNovamente.addEventListener("click", function () {
+            location.reload();
+        });
+
+        const btnProximoTexto = document.querySelector(
+            "#proxima-acao .acao:nth-child(2)"
+        );
+        btnProximoTexto.addEventListener("click", function () {
+            location.reload();
+        });
     </script>
     <script type="module" src="../js/allScript.js"></script>
 </body>
