@@ -495,7 +495,7 @@ footer div {
   background-image: url(../img/fundo.png);
   background-repeat: no-repeat;
   background-position: top;
-  height: 700px;
+  min-height: 700px;
 }
 .pratiqueDark {
   background-image: url(../img/fundoConteinerDark.png);
