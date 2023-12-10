@@ -20,4 +20,14 @@ export function eventos() {
     window.timer = null;
   });
 
+  $(window).scroll(function() {
+    var configIcon = $('#animaConfigOne');
+
+    if ($(this).scrollTop() > 40) { 
+      configIcon.css("position", "")
+      configIcon.addClass('fixed-icon');
+    } else {
+      configIcon.removeClass('fixed-icon');
+    }
+  });
 }
