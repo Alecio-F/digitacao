@@ -95,13 +95,19 @@ header {
   transition: box-shadow 0.25s ease-in-out;
   border-radius: 50%;
   z-index: 1;
+  
 }
 #animaConfigOne {
-  position: relative;
   box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.45);
   transition: box-shadow 0.3s ease-in-out;
+  position: relative;
   border-radius: 50%;
   z-index: 1;
+}
+.fixed-icon {
+  position: fixed !important;
+  top: 10px; 
+  right: 20px;
 }
 #config {
   display: block;
@@ -120,8 +126,8 @@ header {
 }
 .menu-engrenagem {
   position: fixed;
-  top: 13%;
-  right: 8%;
+  top: 100px;
+  right: 130px;
   opacity: 0;
   pointer-events: none;
 }
