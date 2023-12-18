@@ -1,22 +1,21 @@
-
-import { eventos } from './eventos.mjs';
-import { atualizarCursorContinuamente } from './cursor.mjs';
-import { calcularPrecisao } from './paramentros.mjs';
+import { eventos } from "./eventos.mjs";
+import { atualizarCursorContinuamente } from "./cursor.mjs";
+import { calcularPrecisao } from "./paramentros.mjs";
 import {
   palavrasAleatorias,
   palavrasNaOrdem,
   formatarPalavras,
-} from './palavras.mjs';
-import { moverLinhasSeNecessario } from './linhas.mjs';
-import { iniciouContagem } from './tempo.mjs';
+} from "./palavras.mjs";
+import { moverLinhasSeNecessario } from "./linhas.mjs";
+import { iniciouContagem } from "./tempo.mjs";
 
 export function textodigitacao() {
-const tempo = 30 * 1000;
-let letrasDigitadas = [];
-let totalLetrasCorretas = 0;
-let totalLetrasIncorretas = 0;
-let digitando = false;
-window.emPratica = null;
+  const tempo = 30 * 1000;
+  let letrasDigitadas = [];
+  let totalLetrasCorretas = 0;
+  let totalLetrasIncorretas = 0;
+  let digitando = false;
+  window.emPratica = null;
 
   eventos();
 
@@ -29,7 +28,6 @@ window.emPratica = null;
   }
 
   palavrasAleatorias();
-  
 
   function digitacaoTexto() {
     $("#palavras").html("");
@@ -45,10 +43,9 @@ window.emPratica = null;
     addClass($(".palavra").first(), "atual");
     addClass($(".letra").first(), "atual");
   }
-  
 
   // Inicio da digitação
-  $("#digitandoTexto").keydown(function (ev) {
+  $("#digitandoTexto").on("input keydown", function (ev) {
     const tecla = ev.key;
     const palavraAtual = $(".palavra.atual");
     const letraAtual = $(".letra.atual");
