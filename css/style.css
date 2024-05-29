@@ -443,6 +443,22 @@ footer div {
   font-size: 13px;
   text-align: center;
 }
+footer .icons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+footer a {
+  color: inherit; 
+}
+footer .linkedin {
+  font-size: 1.5em;
+  color: #0073b1
+}
+footer .github  {
+  font-size: 1.5em;
+  color: #222222;
+}
 
 .aprendaS {
   background-image: url(../img/img-fundo-longo.png);
