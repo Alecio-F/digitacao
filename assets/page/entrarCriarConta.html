@@ -1,108 +1,95 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Criar Conta/Entrar</title>
+    <title>Conta do Dojo - PandaDigitações</title>
     <link rel="stylesheet" href="../css/style.css">
-    <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5454761144486752"
-     crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
-    <link rel="shortcut icon" href="../img/1PandaDigitacoes-logo.ico" type="image/x-icon">
     <link rel="stylesheet" href="../css/mediaquery.css">
+    <link rel="stylesheet" href="../css/dojo.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <script src="https://code.jquery.com/jquery-3.6.3.js"
+        integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5454761144486752"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link rel="shortcut icon" href="../img/1PandaDigitacoes-logo.ico" type="image/x-icon">
 </head>
+
 <body style="display: none;">
-    <header>
-        <div class="center">
-            <div class="logo">
-                <a href="../index.html"><img src="../img/PandaDigitacoes-logo.png" alt="PandaDigitações" width="50" height="60"></a>
+    <header></header>
+
+    <main class="dojo-page account-page">
+        <section class="dojo-container account-layout" aria-labelledby="account-title">
+            <div class="dojo-page-hero compact">
+                <span class="dojo-kicker">Conta do Dojo</span>
+                <h1 id="account-title" class="dojo-section-title">Entre na sua área de treino.</h1>
+                <p>Sistema de conta em desenvolvimento. Por enquanto, seu progresso é salvo neste navegador.</p>
             </div>
-            <nav class="menu">
-                <ul>
-                    <li><a href="../index.html">Início</a></li>
-                    <li><a href="digitando.html">Digitando</a></li>
-                    <li><a href="aprenda.html">Aprenda</a></li>
-                    <li><a href="pratique.html">Pratique</a></li>
-                </ul>
-            </nav>
-            <div class="contaeConfig">
-                <div>
-                    <a href="entrarCriarConta.html">Criar conta/Entrar</a>
-                    <input type="checkbox" id="inputConfig" style="display: none;">
-                    <label for="inputConfig">
-                        <div id="animaConfigOne">
-                            <div class="animaConfig">
-                                <img id="config" src="../img/Configuracoes.png" alt="Configurações" width="30" height="30">
-                            </div>
-                        </div>
-                    </label>
-                    <div class="menu-engrenagem">
-                        <div class="menuConfig">
-                            <div>
-                                <div id="btn">
-                                    <span class="material-symbols-outlined" style="color: rgba(43, 80, 150, 0.822);">
-                                        dark_mode
-                                    </span>
-                                    <span class="material-symbols-outlined" style="color: rgb(156, 156, 27);">
-                                        light_mode
-                                    </span>
-                                </div>
-                            </div>
-                            <div>
-                                Tempo praticando:
-                                <select id="tempoPratica">
-                                    <option value="0.25">15 seg</option>
-                                    <option value="0.50">30 seg</option>
-                                    <option value="1">1 min</option>
-                                    <option value="2">2 min</option>
-                                    <option value="3">3 min</option>
-                                    <option value="5">5 min</option>
-                                    <option value="10">10 min</option>
-                                    <option value="15">15 min</option>
-                                </select>
-                            </div>
-                        </div>
+
+            <div class="account-grid">
+                <section class="dojo-panel account-card" aria-label="Formulários de conta">
+                    <div class="account-tabs" role="tablist" aria-label="Alternar entre entrar e criar conta">
+                        <button class="dojo-button secondary botaoEntrar" type="button">Entrar</button>
+                        <button class="dojo-button primary botaoCriarConta" type="button">Criar conta</button>
                     </div>
-                </div>
+
+                    <div class="criarConta">
+                        <h2>Criar conta</h2>
+                        <form class="login">
+                            <label>
+                                <span>Nome</span>
+                                <input type="text" placeholder="Seu nome" autocomplete="name" required minlength="6">
+                            </label>
+                            <label>
+                                <span>E-mail</span>
+                                <input type="email" placeholder="voce@email.com" autocomplete="email" required minlength="8">
+                            </label>
+                            <label>
+                                <span>Senha</span>
+                                <input type="password" placeholder="Mínimo 5 caracteres" autocomplete="new-password" required minlength="5">
+                            </label>
+                        </form>
+                        <button class="dojo-button primary" type="submit" id="criarConta" disabled>Criar conta</button>
+                    </div>
+
+                    <div class="entrar" style="display: none;">
+                        <h2>Entrar</h2>
+                        <form class="login">
+                            <label>
+                                <span>E-mail</span>
+                                <input type="email" autocomplete="email" placeholder="voce@email.com" required>
+                            </label>
+                            <label>
+                                <span>Senha</span>
+                                <input type="password" placeholder="Sua senha" autocomplete="current-password" required>
+                            </label>
+                        </form>
+                        <a href="#">Esqueci a senha</a>
+                        <button class="dojo-button primary" type="submit" id="entrar" disabled>Entrar</button>
+                    </div>
+                </section>
+
+                <aside class="dojo-panel benefits-card" aria-labelledby="benefits-title">
+                    <span class="dojo-kicker">Benefícios planejados</span>
+                    <h2 id="benefits-title">Quando as contas chegarem</h2>
+                    <ul>
+                        <li><span class="material-symbols-outlined" aria-hidden="true">save</span> Salvar progresso entre dispositivos.</li>
+                        <li><span class="material-symbols-outlined" aria-hidden="true">monitoring</span> Acompanhar evolução por período.</li>
+                        <li><span class="material-symbols-outlined" aria-hidden="true">military_tech</span> Liberar conquistas do Dojo.</li>
+                        <li><span class="material-symbols-outlined" aria-hidden="true">leaderboard</span> Participar do ranking.</li>
+                    </ul>
+                    <p class="dojo-progress-caption">Hoje, XP, histórico e recordes ficam no `localStorage` deste navegador.</p>
+                </aside>
             </div>
-        </div>
-    </header>
-    <section class="pratique account">
-        <div class="conteinerDois conta">
-            <div class="criarConta">
-                <p style="color: rgb(92, 92, 0);">Essa área ainda não funciona. Em desenvolvimento.</p>
-                <h1>Criar conta</h1>
-                <form class="login">
-                    <input type="text" placeholder="Nome" autocomplete="none" required minlength="6">
-                    <input type="email" placeholder="E-mail" autocomplete="none" required minlength="8">
-                    <input type="password" placeholder="Senha" autocomplete="none" required minlength="5">
-                </form>
-                <div class="botao">
-                    <button type="submit" id="criarConta" disabled>Criar conta</button>
-                    <button type="submit" class="botaoEntrar">Entrar</button>
-                </div>
-            </div>
-            <div class="entrar"  style="display: none;">
-                <h1>Entrar</h1>
-                <form class="login">
-                    <input type="email" autocomplete="none" placeholder="E-mail" required>
-                    <input type="password" placeholder="Senha" required>
-                </form>
-                <a href="#">Esqueci a senha</a>
-                <div class="botao">
-                    <button type="submit" id="entrar" disabled>Entrar</button>
-                    <button type="submit" class="botaoCriarConta">Criar conta</button>
-                </div>
-            </div>
-        </div>
-        
-    </section>
+        </section>
+    </main>
+
     <footer>
-        <div>
-            © 2023 PandaDigitaçôes.
-        </div>
+        <div>&copy; 2023 PandaDigitações.</div>
     </footer>
 
     <script>
@@ -110,16 +97,23 @@
             $(".botaoCriarConta").click(function() {
                 $(".criarConta").css("display", "flex");
                 $(".entrar").css("display", "none");
+                $(".botaoCriarConta").removeClass("secondary").addClass("primary");
+                $(".botaoEntrar").removeClass("primary").addClass("secondary");
             });
 
             $(".botaoEntrar").click(function() {
                 $(".criarConta").css("display", "none");
                 $(".entrar").css("display", "flex");
+                $(".botaoEntrar").removeClass("secondary").addClass("primary");
+                $(".botaoCriarConta").removeClass("primary").addClass("secondary");
             });
         });
-
     </script>
 
     <script type="module" src="../js/allScript.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+    <script type="module" src="../js/animations.mjs"></script>
 </body>
+
 </html>
