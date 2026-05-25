@@ -1,0 +1,524 @@
+:root {
+  --dojo-duration-fast: 160ms;
+  --dojo-duration: 260ms;
+  --dojo-duration-slow: 560ms;
+  --dojo-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dojo-glow: 0 0 24px rgba(0, 168, 204, 0.18);
+}
+
+.dojo-bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.44;
+}
+
+body {
+  isolation: isolate;
+}
+
+.dojo-page,
+header,
+footer {
+  position: relative;
+  z-index: 1;
+}
+
+.js-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.dojo-page-ready .js-reveal {
+  will-change: transform, opacity;
+}
+
+.dojo-nav-link,
+.menu a {
+  position: relative;
+  transition: color var(--dojo-duration-fast) var(--dojo-ease), transform var(--dojo-duration-fast) var(--dojo-ease), text-shadow var(--dojo-duration-fast) var(--dojo-ease);
+}
+
+.dojo-nav-link::after,
+.menu a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--corAtivo), var(--corEspecial));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dojo-duration) var(--dojo-ease);
+}
+
+.dojo-nav-link:hover,
+.dojo-nav-link:focus-visible,
+.menu a:hover,
+.menu a:focus-visible {
+  transform: translateY(-2px);
+  text-shadow: 0 0 14px rgba(0, 168, 204, 0.22);
+}
+
+.dojo-nav-link:hover::after,
+.dojo-nav-link:focus-visible::after,
+.dojo-nav-active::after,
+.menu a:hover::after,
+.menu a:focus-visible::after,
+.menu a.selecionado::after {
+  transform: scaleX(1);
+}
+
+.dojo-cta,
+.dojo-button.primary,
+.dojo-card-button,
+.game-button {
+  position: relative;
+  overflow: hidden;
+  transform: translateZ(0);
+}
+
+.dojo-cta::before,
+.dojo-button.primary::before,
+.dojo-card-button::before,
+.game-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+  transform: translateX(-120%);
+  transition: transform 540ms var(--dojo-ease);
+}
+
+.dojo-cta:hover::before,
+.dojo-button.primary:hover::before,
+.dojo-card-button:hover::before,
+.game-button:hover::before {
+  transform: translateX(120%);
+}
+
+.dojo-button:active,
+.dojo-card-button:active,
+.game-button:active,
+.dojo-icon-button:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.dojo-settings-button .material-symbols-outlined,
+.dojo-icon-button .material-symbols-outlined {
+  transition: transform var(--dojo-duration) var(--dojo-ease);
+}
+
+.dojo-drawer-open .dojo-settings-button .material-symbols-outlined,
+.dojo-drawer-open label[for="inputConfig"] .material-symbols-outlined {
+  transform: rotate(90deg);
+}
+
+.dojo-card,
+.dojo-panel,
+.dojo-stage,
+.dojo-phase-card,
+.stage-option {
+  transition: transform var(--dojo-duration) var(--dojo-ease), box-shadow var(--dojo-duration) var(--dojo-ease), border-color var(--dojo-duration) var(--dojo-ease), opacity var(--dojo-duration) var(--dojo-ease);
+}
+
+.dojo-card-interactive,
+.dojo-card,
+.dojo-panel,
+.dojo-stage,
+.stage-option {
+  will-change: transform;
+}
+
+.dojo-card:hover,
+.dojo-panel:hover,
+.dojo-stage:hover,
+.stage-option:hover {
+  border-color: rgba(0, 168, 204, 0.42);
+  box-shadow: var(--sombraDojo), var(--dojo-glow);
+  transform: translateY(-6px);
+}
+
+.dojo-stage.locked,
+.dojo-locked {
+  filter: grayscale(0.28);
+}
+
+.dojo-stage:not(.locked)::after,
+.dojo-unlocked::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(40, 168, 107, 0.16);
+}
+
+.letra.correto,
+.char-correct {
+  animation: dojoCharCorrect 260ms var(--dojo-ease);
+}
+
+.letra.incorreto,
+.char-wrong {
+  animation: dojoCharWrong 240ms var(--dojo-ease);
+}
+
+.letra.atual,
+.char-current {
+  box-shadow: 0 0 0 2px rgba(0, 168, 204, 0.18);
+}
+
+.letra.extra,
+.char-extra {
+  animation: dojoCharWrong 240ms var(--dojo-ease);
+}
+
+@keyframes dojoCharCorrect {
+  0% { text-shadow: 0 0 0 rgba(40, 168, 107, 0); transform: translateY(0); }
+  45% { text-shadow: 0 0 12px rgba(40, 168, 107, 0.55); transform: translateY(-1px); }
+  100% { text-shadow: 0 0 0 rgba(40, 168, 107, 0); transform: translateY(0); }
+}
+
+@keyframes dojoCharWrong {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  50% { transform: translateX(2px); }
+  75% { transform: translateX(-1px); }
+}
+
+.dojo-feedback-message,
+.dojo-feedback {
+  transition: color var(--dojo-duration-fast) var(--dojo-ease), transform var(--dojo-duration-fast) var(--dojo-ease);
+}
+
+.dojo-feedback.is-pulsing {
+  animation: dojoFeedbackPulse 420ms var(--dojo-ease);
+}
+
+@keyframes dojoFeedbackPulse {
+  0% { transform: translateY(0); opacity: 0.78; }
+  50% { transform: translateY(-2px); opacity: 1; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.dojo-combo-hud,
+.dojo-combo {
+  transition: transform var(--dojo-duration-fast) var(--dojo-ease), filter var(--dojo-duration-fast) var(--dojo-ease);
+}
+
+.dojo-combo.is-active {
+  transform: scale(1.04);
+  filter: drop-shadow(0 0 12px rgba(124, 92, 255, 0.24));
+}
+
+.dojo-progress-fill,
+#barra-progresso {
+  transition: width 1s linear, filter var(--dojo-duration-fast) var(--dojo-ease);
+}
+
+.dojo-progress-fill.is-low,
+#barra-progresso.is-low {
+  filter: hue-rotate(120deg) saturate(1.2);
+}
+
+.dojo-keyboard {
+  position: relative;
+  display: grid;
+  gap: 9px;
+  width: min(860px, calc(100% - 30px));
+  margin: 20px auto 0;
+  padding: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(20, 184, 212, 0.2);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(20, 184, 212, 0.16), transparent 34%),
+    radial-gradient(circle at 82% 18%, rgba(124, 92, 255, 0.16), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(191, 215, 234, 0.32));
+  box-shadow: 0 18px 42px rgba(11, 57, 84, 0.14), inset 0 -4px 0 rgba(11, 57, 84, 0.08);
+}
+
+.dojo-keyboard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(20, 184, 212, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 184, 212, 0.08) 1px, transparent 1px);
+  background-size: 38px 38px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.68), transparent);
+  opacity: 0.42;
+}
+
+.darkTheme .dojo-keyboard {
+  border-color: rgba(114, 245, 255, 0.18);
+  background:
+    radial-gradient(circle at 18% 0%, rgba(20, 184, 212, 0.18), transparent 36%),
+    radial-gradient(circle at 82% 18%, rgba(124, 92, 255, 0.18), transparent 36%),
+    linear-gradient(180deg, rgba(17, 26, 34, 0.96), rgba(6, 10, 14, 0.94));
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28), inset 0 -4px 0 rgba(114, 245, 255, 0.05);
+}
+
+.dojo-keyboard-top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 3px;
+  color: var(--corTexto);
+  font-family: var(--fontTitulo);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dojo-keyboard-lights {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.dojo-keyboard-lights span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--corAtivo);
+  box-shadow: 0 0 14px rgba(20, 184, 212, 0.55);
+}
+
+.dojo-keyboard-lights span:nth-child(2) {
+  background: var(--corEspecial);
+  box-shadow: 0 0 14px rgba(124, 92, 255, 0.5);
+}
+
+.dojo-keyboard-lights span:nth-child(3) {
+  background: var(--corConquista);
+  box-shadow: 0 0 14px rgba(217, 154, 23, 0.48);
+}
+
+.dojo-key-row {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  gap: clamp(5px, 0.8vw, 9px);
+}
+
+.dojo-key-row-home {
+  transform: translateX(16px);
+}
+
+.dojo-key-row-bottom {
+  transform: translateX(40px);
+}
+
+.dojo-key {
+  display: inline-grid;
+  min-width: clamp(32px, 5.1vw, 54px);
+  height: clamp(34px, 4.8vw, 48px);
+  place-items: center;
+  border: 1px solid rgba(8, 124, 167, 0.22);
+  border-radius: 11px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(218, 235, 246, 0.78));
+  color: var(--corTitulo);
+  font-family: var(--fontTitulo);
+  font-size: clamp(12px, 1.7vw, 16px);
+  font-weight: 900;
+  line-height: 1;
+  text-align: center;
+  box-shadow: inset 0 -4px 0 rgba(11, 57, 84, 0.14), 0 7px 14px rgba(11, 57, 84, 0.1);
+  transition: transform var(--dojo-duration-fast) var(--dojo-ease), box-shadow var(--dojo-duration-fast) var(--dojo-ease), border-color var(--dojo-duration-fast) var(--dojo-ease), background var(--dojo-duration-fast) var(--dojo-ease), color var(--dojo-duration-fast) var(--dojo-ease);
+}
+
+.darkTheme .dojo-key {
+  border-color: rgba(114, 245, 255, 0.16);
+  background: linear-gradient(180deg, rgba(35, 45, 56, 0.95), rgba(12, 18, 25, 0.95));
+  color: #e6fbff;
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.38), 0 7px 14px rgba(0, 0, 0, 0.22);
+}
+
+.dojo-key-home {
+  border-color: rgba(40, 168, 107, 0.34);
+  color: var(--corAcerto);
+}
+
+.dojo-key-space {
+  width: min(380px, 64vw);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+.dojo-key-active,
+.dojo-key-correct {
+  border-color: var(--corAtivo);
+  background: linear-gradient(180deg, rgba(20, 184, 212, 0.24), rgba(255, 255, 255, 0.84));
+  box-shadow: 0 0 20px rgba(20, 184, 212, 0.32), inset 0 -2px 0 rgba(0, 0, 0, 0.14);
+  transform: translateY(3px) scale(0.96);
+}
+
+.darkTheme .dojo-key-active,
+.darkTheme .dojo-key-correct {
+  background: linear-gradient(180deg, rgba(20, 184, 212, 0.35), rgba(12, 18, 25, 0.95));
+}
+
+.dojo-key-next {
+  border-color: var(--corConquista);
+  color: var(--corTitulo);
+  box-shadow: 0 0 18px rgba(217, 154, 23, 0.34), inset 0 -4px 0 rgba(11, 57, 84, 0.14);
+  animation: dojoKeyNext 1.35s var(--dojo-ease) infinite;
+}
+
+.dojo-key-error {
+  border-color: var(--corErro);
+  color: var(--corErro);
+  box-shadow: 0 0 16px rgba(214, 69, 69, 0.3), inset 0 -2px 0 rgba(0, 0, 0, 0.14);
+  animation: dojoCharWrong 220ms var(--dojo-ease);
+}
+
+.dojo-achievement-toast {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 120;
+  width: min(360px, calc(100vw - 36px));
+  border: 1px solid rgba(217, 154, 23, 0.34);
+  border-radius: 8px;
+  padding: 14px 16px;
+  background: var(--corCard);
+  color: var(--corTitulo);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.22);
+  transform: translateY(24px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dojo-achievement-toast.is-visible {
+  animation: dojoToastIn 4s var(--dojo-ease) forwards;
+}
+
+.dojo-achievement-toast strong,
+.dojo-achievement-badge {
+  display: block;
+  color: var(--corConquista);
+  font-family: var(--fontTitulo);
+}
+
+.dojo-achievement-toast span {
+  display: block;
+  margin-top: 4px;
+  color: var(--corTexto);
+  font-family: var(--fontTexto);
+  font-size: 14px;
+}
+
+@keyframes dojoToastIn {
+  0% { opacity: 0; transform: translateY(24px); }
+  12%, 86% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(18px); }
+}
+
+.dojo-confetti-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.dojo-confetti-piece {
+  position: absolute;
+  top: -12px;
+  width: 8px;
+  height: 12px;
+  border-radius: 2px;
+  animation: dojoConfettiFall linear forwards;
+}
+
+@keyframes dojoConfettiFall {
+  to { transform: translateY(110vh) rotate(620deg); opacity: 0; }
+}
+
+.panda-mascot {
+  will-change: transform;
+}
+
+.panda-mascot.is-success {
+  animation: pandaSuccess 420ms var(--dojo-ease);
+}
+
+.panda-mascot.is-error {
+  animation: dojoCharWrong 260ms var(--dojo-ease);
+}
+
+@keyframes pandaSuccess {
+  0%, 100% { transform: translateY(0) scale(1); }
+  45% { transform: translateY(-6px) scale(1.03); }
+}
+
+@keyframes dojoKeyNext {
+  0%, 100% {
+    transform: translateY(0);
+    filter: drop-shadow(0 0 0 rgba(217, 154, 23, 0));
+  }
+
+  50% {
+    transform: translateY(-2px);
+    filter: drop-shadow(0 0 10px rgba(217, 154, 23, 0.35));
+  }
+}
+
+@media (max-width: 640px) {
+  .dojo-keyboard-top {
+    font-size: 9px;
+  }
+
+  .dojo-key {
+    min-width: 28px;
+    height: 30px;
+    font-size: 12px;
+  }
+
+  .dojo-key-row {
+    gap: 4px;
+  }
+
+  .dojo-keyboard {
+    margin-inline: 0;
+    padding: 10px;
+  }
+
+  .dojo-key-row-home {
+    transform: translateX(8px);
+  }
+
+  .dojo-key-row-bottom {
+    transform: translateX(18px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .dojo-bg-canvas {
+    display: none;
+  }
+
+  .js-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

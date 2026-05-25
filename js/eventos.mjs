@@ -1,33 +1,38 @@
+import { pausar } from "./tempo.mjs";
+
 export function eventos() {
-  let minhaDiv = document.querySelector(".inputD");
-  let meuLabel = document.querySelector(".label");
+  const minhaDiv = document.querySelector(".inputD");
+  const meuLabel = document.querySelector(".label");
 
   minhaDiv.addEventListener("click", function () {
     meuLabel.click();
   });
 
-  // Manipulador de cliques para o botão #reset
   $("#reset").click(function () {
-    if ($(this).closest(".testeDigita").length > 0) {
-      location.reload();
+    location.reload();
+  });
+
+  // Pausar / retomar o timer
+  $("#start").on("click", function () {
+    const resultado = pausar();
+    if (resultado === null) return; // timer ainda não iniciado
+
+    if (resultado) {
+      $(this).text("play_circle");
+      $(".conteinerDigita").css("opacity", "0.45");
+    } else {
+      $(this).text("pause_circle");
+      $(".conteinerDigita").css("opacity", "1");
     }
   });
 
-  $("#reset").click(function () {
-    digitacaoTexto();
-    atualizarCursorContinuamente();
-    $("#palavras").css("margin-top", "0px");
-    window.timer = null;
-  });
-
-  $(window).scroll(function() {
-    var configIcon = $('#animaConfigOne');
-
-    if ($(this).scrollTop() > 40) { 
-      configIcon.css("position", "")
-      configIcon.addClass('fixed-icon');
+  $(window).scroll(function () {
+    const configIcon = $("#animaConfigOne");
+    if ($(this).scrollTop() > 40) {
+      configIcon.css("position", "");
+      configIcon.addClass("fixed-icon");
     } else {
-      configIcon.removeClass('fixed-icon');
+      configIcon.removeClass("fixed-icon");
     }
   });
 }

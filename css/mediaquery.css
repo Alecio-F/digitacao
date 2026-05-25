@@ -1,3 +1,249 @@
-@media(max-width: 880px) {
+/* ============================================================
+   RESPONSIVIDADE — PandaDigitações
+   Breakpoints: 900px | 768px | 480px
+   ============================================================ */
 
+/* ---------- 900px: tablet largo (container ultrapassa a tela) ---------- */
+@media (max-width: 900px) {
+  .conteiner {
+    max-width: 100%;
+    padding: 0 15px;
+  }
+
+  /* Banner */
+  .banner {
+    height: auto;
+    padding: 30px 15px;
+  }
+  .copy p:not(:last-child) {
+    width: 100%;
+    font-size: 28px;
+  }
+  .copy p:not(:first-child) {
+    width: 100%;
+    font-size: 17px;
+  }
+  .panda img {
+    height: 340px;
+  }
+
+  /* Containers de digitação / aprenda / pratique */
+  .conteinerDois {
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+    min-height: 300px;
+    border-radius: 0 0 12px 12px;
+  }
+  .inputD {
+    width: 100%;
+  }
+  .testeDigita,
+  .resumo {
+    height: auto;
+    min-height: 600px;
+    padding-bottom: 30px;
+  }
+  .textoParaDigitar {
+    width: 100%;
+  }
+  #dicas {
+    width: 100%;
+  }
+  #proxima-acao {
+    width: 90%;
+  }
+
+  /* Página Aprenda */
+  .aprendaS {
+    height: auto;
+    min-height: 900px;
+    padding-bottom: 40px;
+  }
+  .conteinerAprenda {
+    max-width: 100%;
+    height: auto;
+    min-height: 800px;
+  }
+
+  /* Página Pratique */
+  .opcoes ul {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .conta {
+    width: 100%;
+  }
+}
+
+/* ---------- 768px: tablet ---------- */
+@media (max-width: 768px) {
+  /* Header: empilha logo + nav + config */
+  .center {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 0 15px;
+  }
+  .menu ul {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .menu ul li:not(:last-child) {
+    padding-right: 10px;
+  }
+  .menu a {
+    font-size: 14px;
+  }
+  .contaeConfig > div {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .contaeConfig a {
+    font-size: 15px;
+    padding-right: 10px;
+  }
+
+  /* Banner: empilha texto e imagem */
+  .conteiner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .copy p:not(:last-child) {
+    font-size: 24px;
+    line-height: 32px;
+  }
+  .copy p:not(:first-child) {
+    font-size: 15px;
+    text-align: center;
+  }
+  .panda img {
+    height: 260px;
+    margin-top: 20px;
+  }
+  .pandas {
+    display: none;
+  }
+
+  /* Área de digitação */
+  #digitacaoDoTexto {
+    height: 90px;
+  }
+  .palavra {
+    font-size: 20px;
+  }
+  .parametros {
+    padding: 0 15px;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: space-between;
+  }
+
+  /* Dicas e ações */
+  .seta-esquerda {
+    left: -20px;
+  }
+  .seta-direita {
+    right: -20px;
+  }
+  #proxima-acao {
+    width: 95%;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  /* Aprenda: postura correta empilhada */
+  .posturaCorreta {
+    flex-direction: column;
+  }
+  .posturaCorreta img {
+    flex: none;
+    width: 100%;
+    padding-right: 0;
+    padding-bottom: 10px;
+  }
+  .posturaCorreta p {
+    flex: none;
+    width: 100%;
+  }
+
+  /* Pratique: lições em 2 colunas */
+  .licao {
+    width: 45%;
+    padding: 10px 20px;
+  }
+  .textos div {
+    width: 90%;
+    padding: 10px 20px;
+  }
+
+  /* Conta */
+  .login input {
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+/* ---------- 480px: mobile ---------- */
+@media (max-width: 480px) {
+  .banner {
+    padding: 20px 10px;
+  }
+  .copy p:not(:last-child) {
+    font-size: 20px;
+    line-height: 28px;
+    padding-bottom: 12px;
+  }
+  .copy p:not(:first-child) {
+    font-size: 14px;
+  }
+  .panda img {
+    height: 200px;
+  }
+
+  /* Header mais compacto */
+  .menu a {
+    font-size: 13px;
+  }
+  header {
+    padding: 12px 0;
+  }
+
+  /* Estatísticas de desempenho */
+  #desempenhoEstatisticas {
+    font-size: 15px;
+  }
+  #desempenhoEstatisticas .numeros {
+    font-size: 16px;
+  }
+
+  /* Palavras menores para caber na tela */
+  .palavra {
+    font-size: 18px;
+  }
+  #amostraTexto > .palavra {
+    font-size: 14px;
+  }
+
+  /* Lições em coluna única */
+  .licao {
+    width: 90%;
+    padding: 10px 15px;
+  }
+  .textos div {
+    width: 90%;
+    padding: 10px 15px;
+  }
+
+  /* Menu de configurações fica mais próximo */
+  .menu-engrenagem {
+    top: 70px;
+    right: 10px;
+  }
+  .menuConfig {
+    font-size: 1.1em;
+  }
 }

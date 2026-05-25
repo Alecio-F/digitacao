@@ -1,28 +1,33 @@
 import { moverLinhasSeNecessario } from "./linhas.mjs";
-// mover cursor
+
 export function atualizarCursorContinuamente() {
-  setInterval(function () {
+  function loop() {
     moverLinhasSeNecessario();
     const proximaLetra = $(".letra.atual");
     const proximaPalavra = $(".palavra.atual");
     const cursor = $("#cursor");
     const digitacaoDoTexto = $("#digitacaoDoTexto");
-    const parentRect = digitacaoDoTexto[0].getBoundingClientRect();
-    const letraRect = proximaLetra[0]?.getBoundingClientRect();
-    const palavraRect = proximaPalavra[0].getBoundingClientRect();
 
-    cursor.css("top", (letraRect || palavraRect).top - parentRect.top + "px");
-    cursor.css(
-      "left",
-      (letraRect || palavraRect)[proximaLetra[0] ? "left" : "right"] -
-        parentRect.left +
-        -2 +
-        "px"
-    );
-  });
+    if (proximaPalavra[0] && digitacaoDoTexto[0]) {
+      const parentRect = digitacaoDoTexto[0].getBoundingClientRect();
+      const letraRect = proximaLetra[0]?.getBoundingClientRect();
+      const palavraRect = proximaPalavra[0].getBoundingClientRect();
+
+      cursor.css("top", (letraRect || palavraRect).top - parentRect.top + "px");
+      cursor.css(
+        "left",
+        (letraRect || palavraRect)[proximaLetra[0] ? "left" : "right"] -
+          parentRect.left - 2 + "px"
+      );
+    }
+
+    requestAnimationFrame(loop);
+  }
+
+  requestAnimationFrame(loop);
 }
 
-// animação do cursor; não piscar enquanto digita e voltar a piscar quando parar a digitação
+// animação do cursor: não pisca durante a digitação, retoma 700ms após parar
 const cursor = $("#cursor");
 const inputElement = $("#digitandoTexto");
 let isTyping = false;

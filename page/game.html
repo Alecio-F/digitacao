@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcade do Panda - PandaDigitações</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/mediaquery.css">
+    <link rel="stylesheet" href="../css/dojo.css">
+    <link rel="stylesheet" href="../css/game.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <script src="https://code.jquery.com/jquery-3.6.3.js"
+        integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link rel="shortcut icon" href="../img/1PandaDigitacoes-logo.ico" type="image/x-icon">
+</head>
+
+<body style="display: none;">
+    <header></header>
+
+    <main class="game-page dojo-page">
+        <section class="dojo-container" aria-labelledby="arcade-title">
+            <div class="dojo-page-hero compact">
+                <span class="dojo-kicker">Arcade do Panda</span>
+                <h1 id="arcade-title" class="dojo-section-title">Escolha seu desafio.</h1>
+                <p>Minigames para treinar reflexo, precisão e sequência sem sair do navegador.</p>
+            </div>
+
+            <section class="game-shell dojo-panel panda-keys-card" aria-labelledby="game-title">
+                <div class="game-topbar">
+                    <div class="game-title">
+                        <span class="dojo-chip special">Jogo principal</span>
+                        <h2 id="game-title">Panda Keys</h2>
+                        <p data-game-description>Escolha uma etapa e treine digitação no ritmo de Piano Tiles.</p>
+                    </div>
+                    <div class="game-actions">
+                        <button class="game-button" type="button" data-game-start>Iniciar</button>
+                        <button class="game-button secondary" type="button" data-game-pause disabled>Pausar</button>
+                        <button class="game-button secondary" type="button" data-game-reset>Reiniciar</button>
+                    </div>
+                </div>
+
+                <div class="stage-panel" data-game-stages aria-label="Etapas do minigame"></div>
+
+                <div class="game-frame">
+                    <canvas id="game-canvas" aria-label="Pista do minigame Panda Keys"></canvas>
+                    <div class="game-ui">
+                        <div class="game-hud" aria-hidden="true">
+                            <div class="hud-item">
+                                <span class="hud-label">Pontuação</span>
+                                <span class="hud-value" data-game-score>0</span>
+                            </div>
+                            <div class="hud-item">
+                                <span class="hud-label">Combo</span>
+                                <span class="hud-value" data-game-combo>0x</span>
+                            </div>
+                            <div class="hud-item">
+                                <span class="hud-label">Vidas</span>
+                                <span class="hud-value" data-game-lives>3</span>
+                            </div>
+                            <div class="hud-item">
+                                <span class="hud-label">Nível</span>
+                                <span class="hud-value" data-game-level>1</span>
+                            </div>
+                            <div class="hud-item">
+                                <span class="hud-label">Etapa</span>
+                                <span class="hud-value" data-game-stage>ASDF</span>
+                            </div>
+                            <div class="hud-item">
+                                <span class="hud-label">Recorde</span>
+                                <span class="hud-value" data-game-best>0</span>
+                            </div>
+                        </div>
+
+                        <div class="game-status">
+                            <div class="status-panel" data-game-status>
+                                <h2 data-game-status-title>Panda Keys</h2>
+                                <p data-game-status-text>Acerte A, S, D e F quando os tiles cruzarem a linha. As três primeiras perdas de tile não tiram vida.</p>
+                                <button class="game-button" type="button" data-game-again>Jogar</button>
+                            </div>
+                        </div>
+
+                        <div class="countdown" data-game-countdown hidden>3</div>
+                        <div class="floating-layer" data-game-floating></div>
+                        <div class="sr-only" aria-live="polite" data-game-live></div>
+                    </div>
+
+                    <input id="game-key-catcher" type="text" inputmode="none" autocomplete="off" aria-label="Entrada de teclas do jogo">
+                    <div class="game-touch-controls" data-game-touch-controls aria-label="Botões de toque para jogar"></div>
+                </div>
+            </section>
+
+            <section class="dojo-game-challenges" aria-labelledby="dojo-challenges-title">
+                <span class="dojo-kicker">Novos desafios do Dojo</span>
+                <h2 id="dojo-challenges-title" class="dojo-section-title">Protótipos arcade</h2>
+                <div class="dojo-challenge-grid">
+                    <article class="dojo-card seal-prototype" data-seal-prototype>
+                        <div>
+                            <span class="dojo-card-icon">SE</span>
+                            <h3>Selos do Teclado</h3>
+                            <p>Ative selos digitando palavras em sequência. Cada acerto aumenta o combo e carrega uma técnica do panda.</p>
+                        </div>
+                        <strong class="seal-word" data-seal-word>foco</strong>
+                        <label class="sr-only" for="seal-input">Digite o selo atual</label>
+                        <input id="seal-input" data-seal-input type="text" autocomplete="off" spellcheck="false"
+                            placeholder="Digite o selo">
+                        <div class="dojo-chip-row">
+                            <span class="dojo-chip special">Combo <strong data-seal-combo>0x</strong></span>
+                            <span class="dojo-chip" data-seal-status>Complete o primeiro selo.</span>
+                        </div>
+                    </article>
+
+                    <article class="dojo-card">
+                        <div>
+                            <span class="dojo-card-icon">BC</span>
+                            <h3>Expedição Bamboo Code</h3>
+                            <p>Resolva obstáculos digitando comandos como “abrir passagem”, “ativar ponte” e “coletar bambu”.</p>
+                        </div>
+                        <span class="dojo-chip muted">Interface preparada</span>
+                    </article>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <footer>
+        <div>&copy; 2023 PandaDigitações.</div>
+    </footer>
+
+    <script type="module" src="../js/game/game.mjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+    <script type="module" src="../js/animations.mjs"></script>
+</body>
+
+</html>
