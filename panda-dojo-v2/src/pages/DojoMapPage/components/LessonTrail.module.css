@@ -1,0 +1,108 @@
+.trail {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
+.trail::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--dojo-border-soft);
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+/* ── Step ─────────────────────────────────── */
+.step {
+  display: grid;
+  grid-template-columns: 1fr 56px 1fr;
+  align-items: center;
+  gap: var(--dojo-space-4);
+  position: relative;
+  padding: var(--dojo-space-4) 0;
+}
+
+/* ── Node ─────────────────────────────────── */
+.node {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--dojo-surface-soft);
+  border: 2px solid var(--dojo-border-soft);
+  z-index: 1;
+  justify-self: center;
+  transition: border-color var(--dojo-duration-fast) var(--dojo-ease),
+              background var(--dojo-duration-fast) var(--dojo-ease);
+}
+
+.nodeCompleted {
+  background: var(--dojo-primary);
+  border-color: var(--dojo-primary);
+  color: #fff;
+}
+
+.nodeCurrent {
+  border-color: var(--dojo-primary);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--dojo-primary) 20%, transparent);
+}
+
+.nodeLocked {
+  opacity: 0.5;
+}
+
+.nodeIcon {
+  font-size: 1.4rem;
+  color: var(--dojo-text-muted);
+  font-variation-settings: 'FILL' 1;
+}
+
+.nodeCompleted .nodeIcon {
+  color: #fff;
+}
+
+.nodeCurrent .nodeIcon {
+  color: var(--dojo-primary);
+}
+
+/* ── Spacer ───────────────────────────────── */
+.spacer {
+  /* intentionally empty — fills the opposite side */
+}
+
+/* ── Card side positioning ────────────────── */
+.cardLeft {
+  justify-self: end;
+  text-align: right;
+}
+
+.cardRight {
+  justify-self: start;
+  text-align: left;
+}
+
+/* override card alignment inside trail */
+.cardLeft .card,
+.cardRight .card {
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .trail::before { left: 28px; }
+
+  .step {
+    grid-template-columns: 56px 1fr;
+  }
+
+  /* On mobile always render: node | card */
+  .spacer { display: none; }
+  .cardLeft { grid-column: 2; justify-self: start; text-align: left; }
+  .cardRight { grid-column: 2; justify-self: start; }
+}

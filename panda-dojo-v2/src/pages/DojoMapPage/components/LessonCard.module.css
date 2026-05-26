@@ -1,0 +1,107 @@
+.card {
+  background: var(--dojo-surface-soft);
+  border: 1px solid var(--dojo-border-soft);
+  border-radius: var(--dojo-radius-md);
+  padding: var(--dojo-space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--dojo-space-2);
+  max-width: 320px;
+  width: 100%;
+  transition: border-color var(--dojo-duration-fast) var(--dojo-ease),
+              box-shadow var(--dojo-duration-fast) var(--dojo-ease);
+}
+
+.card.recommended {
+  border-color: var(--dojo-primary);
+  box-shadow: 0 0 0 1px var(--dojo-primary), var(--dojo-shadow-glow);
+}
+
+.card.locked {
+  opacity: 0.55;
+  filter: grayscale(0.3);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--dojo-space-2);
+  flex-wrap: wrap;
+}
+
+.number {
+  font-family: var(--font-title);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--dojo-text-muted);
+  letter-spacing: 0.06em;
+}
+
+.chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.xpChip {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--dojo-primary);
+  background: var(--dojo-surface-tint);
+  border: 1px solid var(--dojo-border-soft);
+  border-radius: var(--dojo-radius-xs);
+  padding: 2px 7px;
+  white-space: nowrap;
+}
+
+.title {
+  font-family: var(--font-title);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--dojo-text-strong);
+}
+
+.objective {
+  font-size: 0.82rem;
+  color: var(--dojo-text-muted);
+  line-height: 1.5;
+}
+
+.focus {
+  font-size: 0.78rem;
+  color: var(--dojo-text-muted);
+  font-style: italic;
+}
+
+.cta {
+  margin-top: var(--dojo-space-2);
+  align-self: flex-start;
+  padding: 8px 16px;
+  border-radius: var(--dojo-radius-sm);
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: var(--font-title);
+  border: none;
+  cursor: pointer;
+  background: var(--dojo-primary);
+  color: #fff;
+  transition: opacity var(--dojo-duration-fast) var(--dojo-ease);
+}
+
+.cta:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+.cta:disabled {
+  background: var(--dojo-border-strong);
+  color: var(--dojo-text-muted);
+  cursor: not-allowed;
+}
+
+.ctaCompleted {
+  background: var(--dojo-surface-tint);
+  color: var(--dojo-text-muted);
+  border: 1px solid var(--dojo-border-soft);
+}

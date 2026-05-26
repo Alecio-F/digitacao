@@ -1,0 +1,34 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dojo-space-2);
+  padding: var(--dojo-space-5);
+  background: var(--dojo-surface-soft);
+  border: 1px solid var(--dojo-border-soft);
+  border-radius: var(--dojo-radius-lg);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--dojo-space-3);
+}
+
+.title {
+  font-family: var(--font-title);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--dojo-text-strong);
+}
+
+.level {
+  font-size: 0.82rem;
+  color: var(--dojo-text-muted);
+}
+
+.xpLabel {
+  font-size: 0.82rem;
+  color: var(--dojo-primary);
+  font-weight: 600;
+}
