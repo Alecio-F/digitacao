@@ -1,0 +1,16 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--dojo-space-3);
+  border-radius: var(--dojo-radius-pill);
+  font-family: var(--font-title);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.success  { background: rgba(40, 168, 107, 0.16); color: var(--dojo-success); }
+.warning  { background: rgba(217, 154, 23, 0.16); color: var(--dojo-warning); }
+.danger   { background: rgba(214, 69, 69, 0.16);  color: var(--dojo-danger); }
+.muted    { background: var(--dojo-surface-soft); color: var(--dojo-text-muted); }

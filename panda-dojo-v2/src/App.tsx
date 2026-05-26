@@ -1,9 +1,7 @@
+import { DevPage } from '@/pages/DevPage';
+
 function App() {
-  return (
-    <main>
-      <h1>Panda Dojo v2</h1>
-    </main>
-  );
+  return <DevPage />;
 }
 
 export default App;

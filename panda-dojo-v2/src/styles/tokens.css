@@ -1,0 +1,93 @@
+/* ─── Panda Dojo Arcade — Design Tokens ────────────────────────────────── */
+:root {
+  /* Fontes */
+  --font-body: 'Work Sans', sans-serif;
+  --font-title: 'Quicksand', sans-serif;
+
+  /* Semânticos (light) */
+  --dojo-primary: #00a8cc;
+  --dojo-secondary: #7c5cff;
+  --dojo-success: #28a86b;
+  --dojo-warning: #d99a17;
+  --dojo-danger: #d64545;
+  --dojo-text: #000;
+  --dojo-text-muted: #087ca7;
+  --dojo-text-strong: #0b3954;
+
+  /* Superfícies */
+  --dojo-surface: rgba(255, 255, 255, 0.62);
+  --dojo-surface-soft: rgba(255, 255, 255, 0.42);
+  --dojo-surface-strong: rgba(255, 255, 255, 0.82);
+  --dojo-surface-tint: rgba(20, 184, 212, 0.08);
+
+  /* Bordas */
+  --dojo-border-soft: rgba(8, 124, 167, 0.14);
+  --dojo-border: rgba(8, 124, 167, 0.22);
+  --dojo-border-strong: rgba(20, 184, 212, 0.4);
+  --dojo-border-neon: rgba(0, 214, 255, 0.28);
+
+  /* Sombras */
+  --dojo-shadow-soft: 0 6px 16px rgba(11, 57, 84, 0.08);
+  --dojo-shadow-card: 0 16px 40px rgba(11, 57, 84, 0.18);
+  --dojo-shadow-elevated: 0 24px 60px rgba(11, 57, 84, 0.24);
+  --dojo-glow: 0 0 24px rgba(0, 168, 204, 0.18);
+
+  /* Raios */
+  --dojo-radius-xs: 6px;
+  --dojo-radius-sm: 8px;
+  --dojo-radius-md: 12px;
+  --dojo-radius-lg: 16px;
+  --dojo-radius-xl: 22px;
+  --dojo-radius-pill: 999px;
+
+  /* Espaçamento */
+  --dojo-space-1: 4px;
+  --dojo-space-2: 6px;
+  --dojo-space-3: 8px;
+  --dojo-space-4: 12px;
+  --dojo-space-5: 16px;
+  --dojo-space-6: 20px;
+  --dojo-space-7: 28px;
+  --dojo-space-8: 36px;
+
+  /* Layout */
+  --dojo-pad-x: clamp(16px, 2.1vw, 26px);
+  --dojo-header-height: 64px;
+
+  /* Acessibilidade */
+  --dojo-focus-ring: 0 0 0 3px rgba(0, 168, 204, 0.42);
+
+  /* Background page */
+  --dojo-bg: #a5b5c1;
+  --dojo-card-bg: rgba(255, 255, 255, 0.82);
+}
+
+.dark {
+  --dojo-primary: #72f5ff;
+  --dojo-secondary: #a992ff;
+  --dojo-success: #46d98c;
+  --dojo-warning: #ffd166;
+  --dojo-danger: #ff6b6b;
+  --dojo-text: #c1cbd0;
+  --dojo-text-muted: #c1cbd0;
+  --dojo-text-strong: #96b4c6;
+
+  --dojo-surface: rgba(255, 255, 255, 0.06);
+  --dojo-surface-soft: rgba(255, 255, 255, 0.04);
+  --dojo-surface-strong: rgba(31, 31, 31, 0.86);
+  --dojo-surface-tint: rgba(20, 184, 212, 0.08);
+
+  --dojo-border-soft: rgba(114, 245, 255, 0.08);
+  --dojo-border: rgba(114, 245, 255, 0.16);
+  --dojo-border-strong: rgba(114, 245, 255, 0.32);
+  --dojo-border-neon: rgba(114, 245, 255, 0.28);
+
+  --dojo-shadow-soft: 0 6px 16px rgba(0, 0, 0, 0.32);
+  --dojo-shadow-card: 0 16px 40px rgba(0, 0, 0, 0.4);
+  --dojo-shadow-elevated: 0 24px 60px rgba(0, 0, 0, 0.5);
+
+  --dojo-focus-ring: 0 0 0 3px rgba(114, 245, 255, 0.42);
+
+  --dojo-bg: #131313;
+  --dojo-card-bg: rgba(31, 31, 31, 0.86);
+}

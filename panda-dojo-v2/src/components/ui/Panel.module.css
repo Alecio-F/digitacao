@@ -1,0 +1,7 @@
+.panel {
+  background: var(--dojo-surface);
+  border: 1px solid var(--dojo-border-soft);
+  border-radius: var(--dojo-radius-xl);
+  box-shadow: var(--dojo-shadow-soft);
+  padding: var(--dojo-space-7);
+}

@@ -1,0 +1,19 @@
+.track {
+  width: 100%;
+  height: 8px;
+  background: var(--dojo-surface-soft);
+  border-radius: var(--dojo-radius-pill);
+  overflow: hidden;
+  border: 1px solid var(--dojo-border-soft);
+}
+
+.fill {
+  height: 100%;
+  border-radius: var(--dojo-radius-pill);
+  background: linear-gradient(90deg, var(--dojo-primary), var(--dojo-secondary));
+  transition: width 0.6s var(--dojo-ease);
+}
+
+.animated .fill {
+  box-shadow: 0 0 10px rgba(0, 168, 204, 0.4);
+}

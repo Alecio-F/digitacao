@@ -1,0 +1,16 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--dojo-space-2);
+  padding: var(--dojo-space-2) var(--dojo-space-4);
+  border-radius: var(--dojo-radius-pill);
+  border: 1px solid transparent;
+  font-family: var(--font-title);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.special { background: rgba(124, 92, 255, 0.14); border-color: rgba(124, 92, 255, 0.28); color: var(--dojo-secondary); }
+.success { background: rgba(40, 168, 107, 0.12); border-color: rgba(40, 168, 107, 0.26); color: var(--dojo-success); }
+.danger  { background: rgba(214, 69, 69, 0.12);  border-color: rgba(214, 69, 69, 0.26);  color: var(--dojo-danger); }
+.muted   { background: var(--dojo-surface-soft); border-color: var(--dojo-border-soft);  color: var(--dojo-text-muted); }

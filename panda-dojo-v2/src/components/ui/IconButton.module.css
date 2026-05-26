@@ -1,0 +1,36 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--dojo-radius-sm);
+  border: 1px solid var(--dojo-border);
+  background: var(--dojo-card-bg);
+  color: var(--dojo-text-strong);
+  transition: transform var(--dojo-duration-fast) var(--dojo-ease),
+    border-color var(--dojo-duration-fast) var(--dojo-ease);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  border-color: var(--dojo-border-strong);
+}
+
+.btn:active {
+  transform: translateY(1px) scale(0.96);
+}
+
+.btn:disabled {
+  opacity: 0.46;
+  cursor: not-allowed;
+}
+
+.icon {
+  font-size: 20px;
+  transition: transform var(--dojo-duration) var(--dojo-ease);
+}
+
+.btn.active .icon {
+  transform: rotate(90deg);
+}

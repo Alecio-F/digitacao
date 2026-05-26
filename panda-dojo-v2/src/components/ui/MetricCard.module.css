@@ -1,0 +1,33 @@
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dojo-space-2);
+  padding: var(--dojo-space-5);
+  background: var(--dojo-surface);
+  border: 1px solid var(--dojo-border-soft);
+  border-radius: var(--dojo-radius-md);
+  min-width: 80px;
+  text-align: center;
+}
+
+.label {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dojo-text-muted);
+}
+
+.value {
+  font-family: var(--font-title);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--dojo-text-strong);
+  line-height: 1;
+}
+
+.highlight .value {
+  color: var(--dojo-primary);
+  text-shadow: 0 0 18px rgba(0, 168, 204, 0.28);
+}
