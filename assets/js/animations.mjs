@@ -3,6 +3,7 @@ import { initPandaMascot } from "./pandaMascot.mjs";
 
 let reducedMotion = false;
 let gsapInstance = null;
+let nextKeyInterval = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   window.setTimeout(initDojoAnimations, 40);
@@ -221,7 +222,12 @@ function initVirtualKeyboard() {
   });
 
   updateNextKey();
-  window.setInterval(updateNextKey, 140);
+  if (!nextKeyInterval && !reducedMotion) {
+    nextKeyInterval = window.setInterval(() => {
+      if (document.hidden) return;
+      updateNextKey();
+    }, 180);
+  }
 }
 
 function animateKey(key, className) {

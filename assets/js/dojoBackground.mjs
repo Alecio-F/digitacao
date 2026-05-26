@@ -4,6 +4,7 @@ let ctx = null;
 let particles = [];
 let reducedMotion = false;
 let paused = false;
+let eventsBound = false;
 
 const SYMBOLS = ["A", "S", "D", "F", "J", "K", "L", "Ç"];
 const COLORS = ["rgba(0,168,204,0.22)", "rgba(124,92,255,0.16)", "rgba(217,154,23,0.12)", "rgba(40,168,107,0.14)"];
@@ -35,11 +36,19 @@ function getDensity() {
 }
 
 function bindEvents() {
+  if (eventsBound) return;
+  eventsBound = true;
   window.addEventListener("resize", handleResize, { passive: true });
-  document.addEventListener("visibilitychange", () => {
-    paused = document.hidden;
-    if (!paused) start();
-  });
+  document.addEventListener("visibilitychange", handleVisibilityChange);
+}
+
+function handleVisibilityChange() {
+  paused = document.hidden;
+  if (paused) {
+    stop();
+    return;
+  }
+  start();
 }
 
 function handleResize() {
@@ -89,6 +98,8 @@ function stop() {
 function destroy() {
   stop();
   window.removeEventListener("resize", handleResize);
+  document.removeEventListener("visibilitychange", handleVisibilityChange);
+  eventsBound = false;
   canvas?.remove();
   canvas = null;
   ctx = null;
@@ -96,8 +107,11 @@ function destroy() {
 }
 
 function loop() {
+  if (!ctx || paused) {
+    animationFrame = null;
+    return;
+  }
   animationFrame = requestAnimationFrame(loop);
-  if (!ctx || paused) return;
 
   ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
   drawSoftGradient();

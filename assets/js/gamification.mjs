@@ -59,7 +59,7 @@ const ACHIEVEMENTS = Object.freeze([
 ]);
 
 export function getHistory() {
-  return readJson(KEYS.historico, []);
+  return readArray(KEYS.historico);
 }
 
 export function getDojoProfile() {
@@ -96,7 +96,7 @@ export function getDojoProfile() {
     lastPrecision,
     lastResult,
     history: historico,
-    lastMistakes: readJson(KEYS.lastMistakes, []),
+    lastMistakes: readArray(KEYS.lastMistakes),
     gameBestScore: Number(localStorage.getItem(KEYS.gameBestScore) || 0),
   };
 }
@@ -155,7 +155,7 @@ export function awardXp(amount, reason = "generic") {
   const safeAmount = Math.max(0, Number(amount) || 0);
   if (!safeAmount) return getDojoProfile();
 
-  const awards = readJson(KEYS.xpAwards, []);
+  const awards = readArray(KEYS.xpAwards);
   if (reason && awards.includes(reason)) {
     return getDojoProfile();
   }
@@ -163,7 +163,7 @@ export function awardXp(amount, reason = "generic") {
   const currentXp = Math.max(0, Number(localStorage.getItem(KEYS.xp) || 0));
   const xp = currentXp + safeAmount;
   const level = calculateLevel(xp);
-  const achievements = readJson(KEYS.achievements, []);
+  const achievements = readArray(KEYS.achievements);
 
   if (reason) {
     awards.push(reason);
@@ -178,7 +178,7 @@ export function awardXp(amount, reason = "generic") {
 
 export function unlockAchievement(id) {
   if (!getAchievementById(id)) return false;
-  const achievements = new Set(readJson(KEYS.achievements, []));
+  const achievements = new Set(readArray(KEYS.achievements));
   if (achievements.has(id)) return false;
 
   achievements.add(id);
@@ -241,7 +241,7 @@ function deriveXpFromHistory(historico) {
 }
 
 function getUnlockedAchievements(historico, current = {}) {
-  const stored = readJson(KEYS.achievements, []);
+  const stored = readArray(KEYS.achievements);
   const unlocked = new Set(stored);
   const bestPrecision = Math.max(
     0,
@@ -303,4 +303,9 @@ function readJson(key, fallback) {
   } catch (error) {
     return fallback;
   }
+}
+
+function readArray(key) {
+  const value = readJson(key, []);
+  return Array.isArray(value) ? value : [];
 }

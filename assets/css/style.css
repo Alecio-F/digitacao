@@ -797,12 +797,59 @@ footer .github  {
   }
 }
 #cursor {
-  width: 3px;
-  height: 1.7em;
-  background: var(--corTitulo);
   position: absolute;
-  animation: blink 0.5s infinite;
-  transition: 0.04s ease-in-out;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  width: clamp(3px, 0.35vw, 5px);
+  height: var(--cursor-height, 1.7em);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #72f5ff 0%, var(--corAtivo) 48%, var(--corEspecial) 100%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.72),
+    0 0 12px rgba(0, 168, 204, 0.68),
+    0 0 26px rgba(124, 92, 255, 0.34);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(var(--cursor-x, 0), var(--cursor-y, 0), 0);
+  transition:
+    transform 70ms linear,
+    height 90ms ease,
+    opacity 120ms ease,
+    box-shadow 160ms ease;
+  will-change: transform, height;
+}
+#cursor::after {
+  content: "";
+  position: absolute;
+  inset: -6px -4px;
+  border-radius: inherit;
+  background: radial-gradient(circle, rgba(114, 245, 255, 0.28), transparent 68%);
+  opacity: 0.65;
+  z-index: -1;
+}
+#cursor.is-visible {
+  opacity: 1;
+}
+#cursor.is-idle {
+  animation: dojoCursorPulse 0.95s ease-in-out infinite;
+}
+#cursor.is-typing {
+  animation: none;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.82),
+    0 0 14px rgba(0, 168, 204, 0.78),
+    0 0 32px rgba(124, 92, 255, 0.42);
+}
+@keyframes dojoCursorPulse {
+  0%, 100% {
+    opacity: 1;
+    filter: saturate(1);
+  }
+  50% {
+    opacity: 0.45;
+    filter: saturate(1.35);
+  }
 }
 .correto {
   color: var(--corCorreto);

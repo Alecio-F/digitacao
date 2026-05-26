@@ -1,216 +1,70 @@
 # PandaDigitações
 
-PandaDigitações é uma aplicação web estática para treino de digitação em português. O projeto evoluiu para a identidade **Panda Dojo Arcade**, unindo teste cronometrado, prática educativa, progressão local, minigames e microinterações com estética de jogo.
+PandaDigitações é uma aplicação web estática para treino de digitação em português. A versão atual consolida a identidade **Panda Dojo Arcade** com Type Arena, Mapa do Dojo, Arcade, progressão local e recursos de treino inteligente usando apenas HTML, CSS, JavaScript com ES Modules, Canvas API e localStorage.
 
-> Status: em desenvolvimento ativo.
+Não há backend, framework, etapa de build, React, Vue, Vite ou Next.
 
-## Visão Geral
+## Versão atual — Panda Dojo Arcade Local v1
 
-O objetivo do projeto é oferecer uma experiência simples, rápida e acessível para treinar velocidade, precisão e foco no teclado. A aplicação roda diretamente no navegador, sem backend, sem framework e sem etapa de build.
+Esta versão é uma edição local estável e pronta para compartilhamento. Ela mantém todo o progresso no navegador do usuário e organiza a experiência em páginas estáticas com caminhos relativos, adequadas para execução por servidor local simples ou publicação via GitHub Pages.
 
-A experiência atual é organizada como uma plataforma de treino:
+## Recursos prontos na v1
 
-- **Início:** entrada do Panda Dojo Arcade, atalhos de treino, progresso local e ranking visual.
-- **Type Arena:** teste cronometrado com métricas em tempo real, combo, feedback visual e teclado virtual.
-- **Aprenda:** tutorial gamificado "Aprenda com o Mestre Panda", com módulos, cards, checklist e CTA para prática.
-- **Mapa do Dojo:** trilhas e fases visuais para treinos guiados.
-- **Arcade do Panda:** minigame Panda Keys em Canvas e protótipos de novos desafios.
-- **Conta:** tela visual para login/cadastro futuro, com progresso salvo localmente por enquanto.
+- Home com atalhos, progresso local, ranking visual e recomendações.
+- Type Arena com treino cronometrado, PPM, CPM, precisão, erros, combo, histórico e tela final.
+- Aprenda com módulos educativos, checklist e CTAs para prática.
+- Mapa do Dojo com fases, bloqueios, medalhas, XP e integração com a Type Arena.
+- Arcade do Panda com Panda Keys em Canvas.
+- Protótipo jogável de Selos do Teclado.
+- Conta visual para login/cadastro futuro.
+- XP, níveis, títulos e conquistas locais.
+- Missões diárias e recomendações inteligentes locais.
+- Tema claro/escuro persistido.
+- Drawer de configurações.
+- Teclado virtual da Type Arena.
+- Histórico local e recordes locais.
+- Layout responsivo para desktop, notebook, tablet e celular.
+- Animações com fallback e respeito a `prefers-reduced-motion`.
 
-## Recursos
+## Recursos locais
 
-- Teste de digitação cronometrado.
-- Seleção de tempo de prática: 15 segundos a 15 minutos.
-- Cálculo de PPM, CPM, precisão e erros.
-- Destaque de caracteres corretos, incorretos, extras e caractere atual.
-- Pausa, reinício e troca de texto.
-- Histórico local dos últimos resultados.
-- Recorde pessoal por PPM.
-- Teclas mais erradas na rodada.
-- Sistema local de XP, nível, títulos e conquistas.
-- Status de jogador no header com nível, XP e barra de progresso.
-- Tema claro/escuro persistido no navegador.
-- Drawer lateral de configurações.
-- Fundo animado em Canvas com elementos de teclado, arcade e dojo.
-- Microinterações com GSAP quando disponível, com fallback seguro.
-- Teclado virtual animado na Type Arena.
-- Minigame **Panda Keys** em Canvas, com pontuação, combo, vidas, níveis e recorde local.
-- Protótipo visual/interativo de **Selos do Teclado**.
-- Layout responsivo para desktop, tablet e celular.
-- Suporte a `prefers-reduced-motion` para reduzir animações.
+A aplicação usa `localStorage` para salvar preferências e progresso. Principais chaves:
 
-## Tecnologias
-
-- HTML5
-- CSS3
-- JavaScript moderno com ES Modules
-- jQuery via CDN
-- GSAP e ScrollTrigger via CDN
-- Canvas API
-- Web Storage API (`localStorage`)
-- Google Material Symbols
-- Google AdSense
-
-Não há React, Vue, Vite, Next, backend ou dependências de build.
-
-## Como Executar Localmente
-
-Como o projeto usa ES Modules, execute por um servidor local estático.
-
-### Python
-
-```bash
-cd assets
-python -m http.server 5500
-```
-
-Acesse:
-
-```text
-http://localhost:5500
-```
-
-### Node.js
-
-```bash
-npx serve assets
-```
-
-Depois, abra a URL exibida no terminal.
-
-## Estrutura
-
-```text
-.
-|-- README.md
-|-- LICENSE
-`-- assets
-    |-- index.html
-    |-- css
-    |   |-- style.css
-    |   |-- mediaquery.css
-    |   |-- dojo.css
-    |   |-- animations.css
-    |   `-- game.css
-    |-- img
-    |   |-- PandaDigitacoes-logo.png
-    |   |-- logoDarktheme.png
-    |   |-- mentor-panda.png
-    |   `-- ...
-    |-- js
-    |   |-- allScript.js
-    |   |-- config.mjs
-    |   |-- typing.mjs
-    |   |-- tempo.mjs
-    |   |-- paramentros.mjs
-    |   |-- historico.mjs
-    |   |-- estado.mjs
-    |   |-- gamification.mjs
-    |   |-- animations.mjs
-    |   |-- dojoBackground.mjs
-    |   |-- pandaMascot.mjs
-    |   |-- dojo-home.mjs
-    |   |-- confete.mjs
-    |   `-- game
-    |       |-- game.mjs
-    |       |-- state.mjs
-    |       |-- loop.mjs
-    |       |-- renderer.mjs
-    |       |-- spawner.mjs
-    |       |-- input.mjs
-    |       |-- score.mjs
-    |       |-- audio.mjs
-    |       `-- dojo-challenges.mjs
-    `-- page
-        |-- digitando.html
-        |-- aprenda.html
-        |-- pratique.html
-        |-- game.html
-        `-- entrarCriarConta.html
-```
-
-## Páginas
-
-| Página | Caminho | Descrição |
-| --- | --- | --- |
-| Início | `assets/index.html` | Home do Panda Dojo Arcade com atalhos, progresso e ranking visual. |
-| Type Arena | `assets/page/digitando.html` | Teste de digitação com HUD, métricas, feedback e teclado virtual. |
-| Aprenda | `assets/page/aprenda.html` | Tutorial gamificado com módulos do Mestre Panda. |
-| Mapa do Dojo | `assets/page/pratique.html` | Mapa visual de fases e lições. |
-| Arcade do Panda | `assets/page/game.html` | Panda Keys e protótipos de minigames. |
-| Conta | `assets/page/entrarCriarConta.html` | Interface de conta futura; progresso salvo no navegador. |
-
-## Persistência Local
-
-A aplicação salva preferências e progresso no `localStorage`.
-
-Principais chaves:
-
-- `ativo`: tema escuro.
-- `tempoPratica`: tempo padrão do teste.
-- `historico`: últimos resultados de digitação.
-- `pandaXp`: XP local do jogador.
+- `ativo`: preferência de tema.
+- `tempoPratica`: tempo padrão de treino.
+- `historico`: resultados recentes da Type Arena.
+- `pandaXp`: XP local.
 - `pandaLevel`: nível local.
 - `pandaAchievements`: conquistas desbloqueadas.
-- `pandaDailyStreak`: sequência diária local.
+- `pandaDailyStreak`: sequência diária.
 - `pandaLastTrainingDate`: data do último treino.
 - `pandaLastMistakes`: teclas mais erradas recentes.
-- `pandaKeysBestScore`: recorde local do Panda Keys.
+- `pandaKeysBestScore`: melhor pontuação do Panda Keys.
+- `pandaDailyMissions`: missões diárias locais.
+- `pandaMissionDate`: data das missões atuais.
+- `pandaLessonProgress`: progresso das fases do Mapa.
+- `pandaTrainingRecommendations`: recomendações recentes.
 
-Esses dados ficam apenas no navegador do usuário.
+Os dados não saem do navegador e podem ser limpos nas ferramentas de desenvolvedor.
 
-## Gamificação
+## Recursos ainda protótipos
 
-O módulo `assets/js/gamification.mjs` calcula progresso local com base no histórico. A lógica atual considera:
+- Conta ainda é visual, sem autenticação real.
+- Ranking é local/visual, sem placar global.
+- Selos do Teclado está em MVP.
+- Algumas fases do Mapa usam conjuntos de textos simples e podem evoluir.
+- Recomendações são heurísticas locais, não personalização por backend.
 
-- XP por treino concluído.
-- Bônus por precisão alta.
-- Bônus por novo recorde.
-- Títulos de progressão por nível.
-- Conquistas simples como primeiro treino, precisão alta e rotina de treinos.
+## Como executar localmente
 
-Exemplos de títulos:
-
-- Nível 1: Filhote de Panda.
-- Nível 5: Aprendiz do Dojo.
-- Nível 10: Panda Ágil.
-- Nível 20: Mestre das Teclas.
-- Nível 30: Guardião do Teclado.
-
-## Animações e UX
-
-A camada visual usa `assets/js/animations.mjs` e `assets/js/dojoBackground.mjs`.
-
-Principais pontos:
-
-- Animações globais com GSAP quando disponível.
-- Reveals por scroll com ScrollTrigger.
-- Microinterações em cards, botões, header e teclado virtual.
-- Fundo animado em Canvas com partículas, teclas, bambus e grade arcade.
-- Toasts e feedback visual para conquistas/recordes.
-- Fallback seguro caso GSAP não carregue.
-- Respeito a `prefers-reduced-motion`.
-
-## Boas Práticas do Projeto
-
-- Manter a arquitetura estática.
-- Não adicionar framework ou etapa de build.
-- Preservar ES Modules.
-- Não quebrar a compatibilidade com `python -m http.server`.
-- Centralizar estilos visuais da identidade Dojo em `dojo.css` e `animations.css`.
-- Usar `localStorage` apenas para progresso local e preferências.
-- Garantir contraste, foco visível e responsividade.
-
-## Verificação Manual
-
-Após alterações, recomenda-se validar:
+Como o projeto usa ES Modules, execute por um servidor estático:
 
 ```bash
 cd assets
 python -m http.server 5500
 ```
 
-Abrir no navegador:
+URLs principais:
 
 ```text
 http://localhost:5500
@@ -221,18 +75,83 @@ http://localhost:5500/page/game.html
 http://localhost:5500/page/entrarCriarConta.html
 ```
 
-Também é útil conferir o console do navegador para garantir que os módulos carregaram sem erro.
+## Estrutura
 
-## Próximos Passos
+```text
+.
+|-- README.md
+|-- QA_CHECKLIST.md
+|-- RELEASE_NOTES.md
+|-- LICENSE
+`-- assets
+    |-- index.html
+    |-- css
+    |   |-- style.css
+    |   |-- mediaquery.css
+    |   |-- dojo.css
+    |   |-- animations.css
+    |   `-- game.css
+    |-- js
+    |   |-- constants.mjs
+    |   |-- config.mjs
+    |   |-- typing.mjs
+    |   |-- tempo.mjs
+    |   |-- historico.mjs
+    |   |-- gamification.mjs
+    |   |-- trainingRecommendations.mjs
+    |   |-- dojoLessons.mjs
+    |   |-- dailyMissions.mjs
+    |   |-- utils
+    |   `-- game
+    `-- page
+        |-- digitando.html
+        |-- aprenda.html
+        |-- pratique.html
+        |-- game.html
+        `-- entrarCriarConta.html
+```
 
-- Implementar lições reais no Mapa do Dojo.
-- Evoluir os protótipos Selos do Teclado e Expedição Bamboo Code.
-- Melhorar acessibilidade com testes de navegação por teclado e leitores de tela.
-- Revisar textos e acentuação em arquivos legados.
-- Criar testes automatizados para cálculo de métricas e gamificação.
-- Avaliar remoção gradual de jQuery em favor de JavaScript nativo.
-- Implementar autenticação apenas se o projeto deixar de ser exclusivamente local.
+## Publicação via GitHub Pages
+
+Se o conteúdo publicado for a pasta `assets`, uma opção é enviar essa pasta para a branch `gh-pages`:
+
+```bash
+git subtree push --prefix assets origin gh-pages
+```
+
+Se for necessário sobrescrever a branch publicada:
+
+```bash
+git push origin `git subtree split --prefix assets main`:gh-pages --force
+```
+
+No GitHub Pages, configure a publicação para:
+
+```text
+Branch: gh-pages
+Folder: / (root)
+```
+
+Não há etapa de build. Os caminhos do projeto foram mantidos relativos para funcionar tanto localmente quanto no GitHub Pages.
+
+## Limitações conhecidas
+
+- Progresso ainda é local por navegador.
+- Não há login real.
+- Não há ranking global real.
+- Não há backend.
+- Alguns minigames ainda são protótipos.
+- A conta ainda é uma tela visual.
+- CDNs externos precisam estar disponíveis no primeiro carregamento para jQuery, GSAP e ícones.
+
+## Boas práticas para manutenção
+
+- Não adicionar backend ou framework sem uma decisão explícita de arquitetura.
+- Preservar ES Modules e caminhos relativos.
+- Não remover IDs usados pelo JavaScript.
+- Testar com localStorage limpo e com dados antigos.
+- Validar console, responsividade e ausência de scroll horizontal após cada alteração visual.
 
 ## Licença
 
-Este projeto está licenciado sob os termos da licença MIT. Consulte o arquivo [LICENSE](LICENSE) para mais detalhes.
+Este projeto está licenciado sob os termos da licença MIT. Consulte [LICENSE](LICENSE).

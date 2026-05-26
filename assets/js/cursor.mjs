@@ -1,24 +1,39 @@
 import { moverLinhasSeNecessario } from "./linhas.mjs";
 
+let cursorLoopStarted = false;
+let cursorAnimationTimeout = null;
+
 export function atualizarCursorContinuamente() {
+  bindCursorTypingState();
+  if (cursorLoopStarted) return;
+  cursorLoopStarted = true;
+
   function loop() {
+    if (document.hidden) {
+      requestAnimationFrame(loop);
+      return;
+    }
+
     moverLinhasSeNecessario();
-    const proximaLetra = $(".letra.atual");
-    const proximaPalavra = $(".palavra.atual");
-    const cursor = $("#cursor");
-    const digitacaoDoTexto = $("#digitacaoDoTexto");
 
-    if (proximaPalavra[0] && digitacaoDoTexto[0]) {
-      const parentRect = digitacaoDoTexto[0].getBoundingClientRect();
-      const letraRect = proximaLetra[0]?.getBoundingClientRect();
-      const palavraRect = proximaPalavra[0].getBoundingClientRect();
+    const cursor = document.getElementById("cursor");
+    const digitacaoDoTexto = document.getElementById("digitacaoDoTexto");
+    const target = getCursorTarget();
 
-      cursor.css("top", (letraRect || palavraRect).top - parentRect.top + "px");
-      cursor.css(
-        "left",
-        (letraRect || palavraRect)[proximaLetra[0] ? "left" : "right"] -
-          parentRect.left - 2 + "px"
-      );
+    if (cursor && digitacaoDoTexto && target) {
+      const rect = target.element.getBoundingClientRect();
+      const parentRect = digitacaoDoTexto.getBoundingClientRect();
+      const cursorWidth = cursor.offsetWidth || 4;
+      const cursorHeight = Math.max(24, Math.round(rect.height * 0.92));
+      const x = (target.atEnd ? rect.right : rect.left) - parentRect.left - cursorWidth / 2;
+      const y = rect.top - parentRect.top + (rect.height - cursorHeight) / 2;
+
+      cursor.style.setProperty("--cursor-x", `${Math.round(x)}px`);
+      cursor.style.setProperty("--cursor-y", `${Math.round(y)}px`);
+      cursor.style.setProperty("--cursor-height", `${cursorHeight}px`);
+      cursor.classList.add("is-visible");
+    } else if (cursor) {
+      cursor.classList.remove("is-visible");
     }
 
     requestAnimationFrame(loop);
@@ -27,21 +42,33 @@ export function atualizarCursorContinuamente() {
   requestAnimationFrame(loop);
 }
 
-// animação do cursor: não pisca durante a digitação, retoma 700ms após parar
-const cursor = $("#cursor");
-const inputElement = $("#digitandoTexto");
-let isTyping = false;
-let cursorAnimationTimeout;
-
-inputElement.on("input", function () {
-  if (!isTyping) {
-    cursor.css("animation", "none");
-    isTyping = true;
+function getCursorTarget() {
+  const currentLetter = document.querySelector(".palavra.atual .letra.atual");
+  if (currentLetter) {
+    return { element: currentLetter, atEnd: false };
   }
 
-  clearTimeout(cursorAnimationTimeout);
-  cursorAnimationTimeout = setTimeout(function () {
-    cursor.css("animation", "blink 0.8s infinite");
-    isTyping = false;
-  }, 700);
-});
+  const currentWord = document.querySelector(".palavra.atual");
+  const lastLetter = currentWord?.querySelector(".letra:last-child");
+  return lastLetter ? { element: lastLetter, atEnd: true } : null;
+}
+
+function bindCursorTypingState() {
+  const cursor = document.getElementById("cursor");
+  const inputElement = document.getElementById("digitandoTexto");
+  if (!cursor || !inputElement || inputElement.dataset.cursorBound === "true") return;
+
+  inputElement.dataset.cursorBound = "true";
+  cursor.classList.add("is-idle");
+
+  inputElement.addEventListener("input", () => {
+    cursor.classList.add("is-typing");
+    cursor.classList.remove("is-idle");
+
+    clearTimeout(cursorAnimationTimeout);
+    cursorAnimationTimeout = setTimeout(() => {
+      cursor.classList.remove("is-typing");
+      cursor.classList.add("is-idle");
+    }, 700);
+  });
+}

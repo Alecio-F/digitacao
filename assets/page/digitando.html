@@ -28,42 +28,40 @@
                 <div class="parametros arena-hud">
                     <header class="arena-topbar">
                         <div class="arena-title-group">
-                            <span class="arena-eyebrow">Modo foco</span>
                             <h1 id="type-arena-title" class="arena-title">Type Arena</h1>
+                            <span id="tituloTexto" class="dojo-chip special arena-mode-chip">Palavras aleatórias</span>
+                        </div>
+                        <div class="arena-metrics dojo-metrics-grid" aria-label="Métricas em tempo real">
+                            <div class="arena-metric dojo-metric" aria-label="Tempo restante">
+                                <span class="arena-metric-label">TEMPO</span>
+                                <strong class="arena-metric-value" id="tempoS" data-live-time>01:00</strong>
+                            </div>
+                            <div class="arena-metric dojo-metric" aria-label="Palavras por minuto">
+                                <span class="arena-metric-label">PPM</span>
+                                <strong class="arena-metric-value" data-live-ppm>0</strong>
+                            </div>
+                            <div class="arena-metric dojo-metric" aria-label="Caracteres por minuto">
+                                <span class="arena-metric-label">CPM</span>
+                                <strong class="arena-metric-value" data-live-cpm>0</strong>
+                            </div>
+                            <div class="arena-metric dojo-metric" aria-label="Precisão">
+                                <span class="arena-metric-label">PRECISÃO</span>
+                                <strong class="arena-metric-value" data-live-precision>0%</strong>
+                            </div>
+                            <div class="arena-metric dojo-metric" aria-label="Erros">
+                                <span class="arena-metric-label">Erros</span>
+                                <strong class="arena-metric-value" data-live-errors>0</strong>
+                            </div>
+                            <div class="arena-metric dojo-metric" aria-label="Combo">
+                                <span class="arena-metric-label">Combo</span>
+                                <strong class="arena-metric-value" id="dojo-combo-value">0x</strong>
+                            </div>
                         </div>
                         <div class="arena-controls">
-                            <span id="tituloTexto" class="dojo-chip special arena-mode-chip">Palavras aleatórias</span>
                             <button id="start" class="dojo-icon-button arena-control-btn material-symbols-outlined" type="button" aria-label="Pausar ou continuar">pause_circle</button>
                             <button id="reset" class="dojo-icon-button arena-control-btn material-symbols-outlined" type="button" aria-label="Reiniciar treino">restart_alt</button>
                         </div>
                     </header>
-
-                    <div class="arena-metrics dojo-metrics-grid" aria-label="Métricas em tempo real">
-                        <div class="arena-metric dojo-metric">
-                            <span class="arena-metric-label">Tempo</span>
-                            <strong class="arena-metric-value" id="tempoS" data-live-time>01:00</strong>
-                        </div>
-                        <div class="arena-metric dojo-metric">
-                            <span class="arena-metric-label">PPM</span>
-                            <strong class="arena-metric-value" data-live-ppm>0</strong>
-                        </div>
-                        <div class="arena-metric dojo-metric">
-                            <span class="arena-metric-label">CPM</span>
-                            <strong class="arena-metric-value" data-live-cpm>0</strong>
-                        </div>
-                        <div class="arena-metric dojo-metric">
-                            <span class="arena-metric-label">Precisão</span>
-                            <strong class="arena-metric-value" data-live-precision>0%</strong>
-                        </div>
-                        <div class="arena-metric dojo-metric">
-                            <span class="arena-metric-label">Erros</span>
-                            <strong class="arena-metric-value" data-live-errors>0</strong>
-                        </div>
-                        <div class="arena-metric dojo-metric">
-                            <span class="arena-metric-label">Combo</span>
-                            <strong class="arena-metric-value" id="dojo-combo-value">0x</strong>
-                        </div>
-                    </div>
                 </div>
 
                 <div id="barra-progresso-container" class="arena-progress" aria-hidden="true">
@@ -88,7 +86,6 @@
                         <div id="cursor" aria-hidden="true"></div>
                         <div id="palavras" aria-hidden="true"></div>
                     </div>
-                    <div id="amostraTexto" class="typing-preview" aria-hidden="true"></div>
                 </div>
 
                 <div id="desempenhoTexto" class="dojo-results-panel result-screen" style="display: none;">

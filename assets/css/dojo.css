@@ -922,9 +922,9 @@
 .type-arena-page {
   min-height: calc(100svh - var(--dojo-header-height, 88px));
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: clamp(10px, 1.6svh, 18px) 24px;
+  padding: clamp(8px, 1.2svh, 14px) 22px;
   overflow-x: hidden;
 }
 
@@ -934,28 +934,28 @@
 
 .arena-shell,
 .type-arena-shell {
-  width: min(1120px, 100%);
+  width: min(1180px, 100%);
   max-width: none;
   padding: 0;
 }
 
 .arena-card,
 .type-arena-card {
-  --arena-pad-x: clamp(16px, 2.1vw, 26px);
+  --arena-pad-x: clamp(16px, 2vw, 24px);
   position: relative;
   display: grid;
-  width: min(1120px, 100%);
+  width: min(1180px, 100%);
   margin: 0 auto;
   gap: 8px;
   overflow: visible;
   border: 1px solid rgba(20, 184, 212, 0.22);
-  border-radius: 24px;
-  padding: 0 0 16px;
+  border-radius: 22px;
+  padding: 8px 0 18px;
   background-image:
-    radial-gradient(circle at 14% 0%, rgba(20, 184, 212, 0.18), transparent 30%),
-    radial-gradient(circle at 90% 6%, rgba(124, 92, 255, 0.13), transparent 28%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(191, 215, 234, 0.38));
-  box-shadow: 0 28px 70px rgba(11, 57, 84, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.52);
+    radial-gradient(circle at 18% -10%, rgba(20, 184, 212, 0.18), transparent 34%),
+    radial-gradient(circle at 86% 0%, rgba(124, 92, 255, 0.15), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(230, 246, 255, 0.44));
+  box-shadow: 0 24px 60px rgba(11, 57, 84, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.42);
 }
 
 .darkTheme .arena-card,
@@ -965,29 +965,41 @@
     radial-gradient(circle at 14% 0%, rgba(20, 184, 212, 0.16), transparent 32%),
     radial-gradient(circle at 90% 6%, rgba(124, 92, 255, 0.16), transparent 30%),
     linear-gradient(180deg, rgba(18, 24, 31, 0.94), rgba(7, 10, 14, 0.88));
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(114, 245, 255, 0.08);
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(114, 245, 255, 0.08);
 }
 
 .arena-hud {
   display: grid;
   gap: 4px;
   padding: 0;
+  width: 100%;
+  border: 0;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none;
 }
 
 .arena-topbar {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(390px, 410px) minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 14px var(--arena-pad-x, 22px) 4px;
+  gap: 10px;
+  padding: 8px var(--arena-pad-x, 24px) 4px;
+  width: 100%;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none;
 }
 
 .arena-title-group {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 12px;
   min-width: 0;
-  flex: 1 1 auto;
+  white-space: nowrap;
+  justify-self: start;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .arena-eyebrow {
@@ -1001,10 +1013,12 @@
 }
 
 .arena-title {
+  flex: 1 1 auto;
+  min-width: 0;
   margin: 0;
   color: var(--corTitulo);
   font-family: var(--fontTitulo);
-  font-size: clamp(1.18rem, 1.85vw, 1.6rem);
+  font-size: clamp(1.25rem, 1.75vw, 1.55rem);
   line-height: 1;
   white-space: nowrap;
   overflow: hidden;
@@ -1015,16 +1029,18 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 6px;
   margin-left: auto;
   flex-shrink: 0;
+  justify-self: end;
 }
 
 .arena-mode-chip {
-  height: 32px;
-  padding: 0 14px;
+  flex: 0 0 auto;
+  height: 30px;
+  padding: 0 16px;
   border-radius: 999px;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.02em;
   white-space: nowrap;
@@ -1033,30 +1049,35 @@
 }
 
 .arena-control-btn {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 12px;
-  font-size: 22px;
+  font-size: 20px;
 }
 
 .arena-metrics,
 .type-arena-card .dojo-metrics-grid {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 6px;
-  padding: 0 var(--arena-pad-x, 22px) 2px;
+  gap: 8px;
+  padding: 0;
+  min-width: 0;
+  width: 100%;
+  justify-self: center;
 }
 
 .arena-metric,
 .type-arena-card .dojo-metric {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   justify-content: center;
-  min-height: 42px;
-  border: 1px solid rgba(20, 184, 212, 0.12);
+  min-height: 46px;
+  border: 1px solid rgba(20, 184, 212, 0.08);
   border-radius: 10px;
-  padding: 5px 10px;
-  background: rgba(255, 255, 255, 0.32);
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 10px 22px rgba(11, 57, 84, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.58);
 }
 
 .darkTheme .arena-metric,
@@ -1069,15 +1090,22 @@
 .arena-metric span,
 .type-arena-card .dojo-metric span {
   display: block;
-  margin-bottom: 2px;
-  margin-top: 0;
-  font-family: var(--fontTexto);
-  font-size: 0.58rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  opacity: 0.7;
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0 0 3px;
+  overflow: visible;
+  clip: auto;
+  white-space: nowrap;
+  border: 0;
   color: var(--corTexto);
+  font-family: var(--fontTexto);
+  font-size: 0.55rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  opacity: 0.68;
 }
 
 .arena-metric .arena-metric-value,
@@ -1087,7 +1115,7 @@
   margin-top: 0;
   color: var(--corTitulo);
   font-family: var(--fontTitulo);
-  font-size: clamp(0.95rem, 1.2vw, 1.15rem);
+  font-size: clamp(0.92rem, 1.05vw, 1.08rem);
   font-weight: 800;
   line-height: 1;
 }
@@ -1095,11 +1123,11 @@
 .master-feedback {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   gap: 10px;
-  min-height: 32px;
-  margin: 2px var(--arena-pad-x, 22px) 0;
-  padding: 6px 12px;
+  min-height: 30px;
+  margin: 0 var(--arena-pad-x, 20px);
+  padding: 5px 12px;
   border: 1px solid rgba(20, 184, 212, 0.12);
   border-radius: 10px;
   background: rgba(20, 184, 212, 0.045);
@@ -1154,7 +1182,7 @@
   line-height: 1.3;
   color: var(--corTexto);
   opacity: 0.7;
-  text-align: left;
+  text-align: right;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1179,7 +1207,7 @@
 .type-arena-card #barra-progresso-container {
   height: 3px;
   width: auto;
-  margin: 0 var(--arena-pad-x, 22px);
+  margin: 0 var(--arena-pad-x, 20px);
   border: none;
   border-radius: 999px;
   overflow: hidden;
@@ -1200,7 +1228,7 @@
 
 .type-arena-text {
   width: auto;
-  margin: 4px var(--arena-pad-x, 22px) 0;
+  margin: 6px var(--arena-pad-x, 20px) 0;
   padding: 0;
 }
 
@@ -1208,15 +1236,15 @@
 .type-arena-text #digitacaoDoTexto {
   position: relative;
   display: block;
-  min-height: 180px;
-  max-height: 220px;
-  height: clamp(180px, 24svh, 220px);
-  line-height: 1.6;
+  min-height: 208px;
+  max-height: 252px;
+  height: clamp(208px, 30svh, 252px);
+  line-height: 1.5;
   overflow: hidden;
   border: 1px solid rgba(20, 184, 212, 0.22);
-  border-radius: 18px;
-  padding: clamp(20px, 2.2vw, 28px) clamp(22px, 2.6vw, 30px);
-  background: rgba(255, 255, 255, 0.62);
+  border-radius: 16px;
+  padding: clamp(18px, 2vw, 24px) clamp(24px, 2.7vw, 32px);
+  background: rgba(255, 255, 255, 0.68);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.32), 0 10px 28px rgba(11, 57, 84, 0.06);
 }
 
@@ -1231,9 +1259,9 @@
   display: inline-block;
   font-family: var(--fontTexto), monospace;
   font-weight: 500;
-  font-size: clamp(1.3rem, 1.7vw, 1.55rem);
-  line-height: 1.6;
-  margin: 0 0.28em;
+  font-size: clamp(1.5rem, 1.95vw, 1.78rem);
+  line-height: 1.5;
+  margin: 0 0.24em;
   vertical-align: top;
 }
 
@@ -1253,17 +1281,7 @@
 
 .typing-preview,
 #amostraTexto.typing-preview {
-  max-height: 30px;
-  height: 28px;
-  margin: 6px var(--arena-pad-x, 22px) 0;
-  padding: 0;
-  overflow: hidden;
-  color: var(--corTexto);
-  opacity: 0.4;
-  font-family: var(--fontTexto);
-  font-size: 0.8rem;
-  line-height: 1.4;
-  mask-image: linear-gradient(90deg, #000 70%, transparent);
+  display: none;
 }
 
 .typing-preview > .palavra,
@@ -1993,7 +2011,7 @@
   }
 
   .arena-topbar {
-    flex-wrap: wrap;
+    grid-template-columns: 1fr auto;
     gap: 10px;
   }
 
@@ -2010,6 +2028,7 @@
 
   .arena-metrics,
   .type-arena-card .dojo-metrics-grid {
+    grid-column: 1 / -1;
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
@@ -2086,6 +2105,7 @@
   }
 
   .arena-topbar {
+    grid-template-columns: 1fr auto;
     padding-top: 12px;
     padding-bottom: 2px;
   }
@@ -2095,7 +2115,7 @@
   }
 
   .arena-controls {
-    width: 100%;
+    width: auto;
     justify-content: flex-end;
     flex-wrap: wrap;
   }
@@ -2106,6 +2126,7 @@
 
   .arena-metrics,
   .type-arena-card .dojo-metrics-grid {
+    grid-column: 1 / -1;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -2182,8 +2203,8 @@
 
   .arena-metric,
   .type-arena-card .dojo-metric {
-    min-height: 38px;
-    padding: 4px 9px;
+    min-height: 44px;
+    padding: 5px 10px;
   }
 
   .arena-metric .arena-metric-value,
@@ -2199,9 +2220,9 @@
 
   .typing-focus-box,
   .type-arena-text #digitacaoDoTexto {
-    min-height: 160px;
-    max-height: 200px;
-    height: clamp(160px, 24svh, 200px);
+    min-height: 198px;
+    max-height: 238px;
+    height: clamp(198px, 28svh, 238px);
     padding-block: 18px;
   }
 }
@@ -2221,9 +2242,9 @@
 
   .typing-focus-box,
   .type-arena-text #digitacaoDoTexto {
-    min-height: 140px;
-    max-height: 170px;
-    height: 150px;
+    min-height: 172px;
+    max-height: 190px;
+    height: 178px;
   }
 }
 
