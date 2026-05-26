@@ -1,14 +1,18 @@
 import { salvarResultado, obterRecordePPM, renderizarHistorico } from "./historico.mjs";
 import { dispararConfetes } from "./confete.mjs";
-import { getTopErros } from "./estado.mjs";
+import { getTopErros, getMaxCombo } from "./estado.mjs";
 import { registerTrainingResult } from "./gamification.mjs";
+import { KEYS, TOP_ERRORS_COUNT } from "./constants.mjs";
+import { completeLesson, getLessonById } from "./dojoLessons.mjs";
+import { updateMissionProgress } from "./dailyMissions.mjs";
+import { generateTrainingRecommendations } from "./trainingRecommendations.mjs";
 
 // ─── Persistência do seletor de tempo ────────────────────────────────────────
-const tempoPraticaSalvo = localStorage.getItem("tempoPratica") || "1";
+const tempoPraticaSalvo = localStorage.getItem(KEYS.tempoPratica) || "1";
 $("#tempoPratica").val(tempoPraticaSalvo);
 
 $("#tempoPratica").change(function () {
-  localStorage.setItem("tempoPratica", $(this).val());
+  localStorage.setItem(KEYS.tempoPratica, $(this).val());
   if (!contagemIniciada) {
     const t = parseFloat($(this).val());
     $("#tempoS").text(formatarTempo(Math.round(t * 60)));
@@ -18,7 +22,7 @@ $("#tempoPratica").change(function () {
 
 // ─── Utilitários ─────────────────────────────────────────────────────────────
 function getTempoSelecionado() {
-  return parseFloat($("#tempoPratica").val() || localStorage.getItem("tempoPratica") || "1");
+  return parseFloat($("#tempoPratica").val() || localStorage.getItem(KEYS.tempoPratica) || "1");
 }
 
 function formatarTempo(segundos) {
@@ -94,6 +98,108 @@ function tick() {
   }
 }
 
+// ─── Recomendação adaptativa ──────────────────────────────────────────────────
+function gerarRecomendacao({ precision, ppm, topErros }) {
+  if (Array.isArray(topErros) && topErros.length >= 3 && (topErros[0]?.[1] || 0) >= 4) {
+    const letras = topErros
+      .slice(0, 3)
+      .map(([letra]) => (letra === " " ? "Espaço" : letra.toUpperCase()))
+      .join(", ");
+    return {
+      text: `Você errou mais nas teclas ${letras}. Reforce essas teclas no Mapa do Dojo.`,
+      href: "pratique.html",
+      linkText: "Ir para o Mapa",
+    };
+  }
+  if (precision > 0 && precision < 85) {
+    return {
+      text: "Precisão abaixo de 85%. Diminua o ritmo e foque em digitar cada letra corretamente.",
+      href: "aprenda.html",
+      linkText: "Ver dicas de precisão",
+    };
+  }
+  if (precision >= 90 && ppm > 0 && ppm < 35) {
+    return {
+      text: "Boa precisão! Agora foque em ritmo — treine reflexo com o Panda Keys.",
+      href: "game.html",
+      linkText: "Abrir Arcade",
+    };
+  }
+  if (precision >= 92 && ppm >= 60) {
+    return {
+      text: "Excelente combinação de ritmo e precisão. Tente aumentar a duração do treino.",
+      href: null,
+      linkText: null,
+    };
+  }
+  return {
+    text: "Continue praticando todo dia — a consistência é o segredo do Dojo.",
+    href: null,
+    linkText: null,
+  };
+}
+
+function aplicarRecomendacao(recomendacao) {
+  const card = document.querySelector("[data-result-recommendation]");
+  const text = document.querySelector("[data-recommendation-text]");
+  const link = document.querySelector("[data-recommendation-link]");
+  if (!card || !text || !link) return;
+
+  text.textContent = recomendacao.text;
+
+  if (recomendacao.href && recomendacao.linkText) {
+    link.href = recomendacao.href;
+    link.textContent = recomendacao.linkText;
+    link.hidden = false;
+  } else {
+    link.hidden = true;
+  }
+
+  card.hidden = false;
+}
+
+function aplicarRecomendacaoInteligente(recomendacoes) {
+  const principal = recomendacoes?.[0];
+  if (!principal) return;
+
+  aplicarRecomendacao({
+    text: principal.message,
+    href: principal.targetPage?.replace("./", "") || null,
+    linkText: principal.targetLessonId ? "Ir para o Mapa" : "Treinar agora",
+  });
+}
+
+function renderLessonResult(lessonResult) {
+  if (!lessonResult) return;
+
+  let medal = document.querySelector("[data-lesson-medal]");
+  if (!medal) {
+    medal = document.createElement("div");
+    medal.className = "lesson-medal dojo-chip special";
+    medal.dataset.lessonMedal = "";
+    document.querySelector(".result-header")?.appendChild(medal);
+  }
+
+  const labels = { bronze: "Bronze", silver: "Prata", gold: "Ouro", none: "Sem medalha" };
+  medal.textContent = `${lessonResult.lesson.title}: ${labels[lessonResult.medal] || "Sem medalha"}`;
+}
+
+function renderCompletedMissions(missions) {
+  if (!missions?.length) return;
+
+  let container = document.querySelector("[data-daily-mission-completed]");
+  if (!container) {
+    container = document.createElement("div");
+    container.className = "daily-mission-completed";
+    container.dataset.dailyMissionCompleted = "";
+    document.querySelector("[data-result-recommendation]")?.after(container);
+  }
+
+  container.innerHTML = missions
+    .map((mission) => `<span class="dojo-chip success">Missão concluída: ${mission.title} (+${mission.rewardXp} XP)</span>`)
+    .join("");
+}
+
 // ─── Mostrar resultados ───────────────────────────────────────────────────────
 function mostrarResultados() {
   const ppmFinal = ppm;
@@ -102,20 +208,40 @@ function mostrarResultados() {
   const precisaoNum = parseInt(precisaoTexto) || 0;
   const errosFinal = parseInt($("#erros .numeros").text()) || 0;
   const tempoAtual = getTempoSelecionado();
+  const comboMax = getMaxCombo();
 
   const recordeAnterior = obterRecordePPM();
   const ehRecorde = ppmFinal > 0 && ppmFinal > recordeAnterior;
-  const topErros = getTopErros(5);
+  const topErros = getTopErros(TOP_ERRORS_COUNT);
 
-  salvarResultado({ ppm: ppmFinal, cpm: cpmFinal, precisao: precisaoTexto, erros: errosFinal, tempo: tempoAtual });
+  const selectedLessonId = localStorage.getItem(KEYS.selectedLessonId);
+  const selectedLesson = getLessonById(selectedLessonId);
+  const resultPayload = {
+    ppm: ppmFinal,
+    cpm: cpmFinal,
+    precisao: precisaoTexto,
+    erros: errosFinal,
+    tempo: tempoAtual,
+    lessonId: selectedLessonId || null,
+    novoRecorde: ehRecorde,
+  };
+
+  salvarResultado(resultPayload);
   const progressoDojo = registerTrainingResult(
-    { ppm: ppmFinal, cpm: cpmFinal, precisao: precisaoTexto, erros: errosFinal, tempo: tempoAtual },
-    { novoRecorde: ehRecorde, semPausa: !pausaUsada, topErros }
+    resultPayload,
+    { novoRecorde: ehRecorde, semPausa: !pausaUsada, topErros, combo: comboMax }
   );
+  const lessonResult = selectedLesson ? completeLesson(selectedLesson.id, resultPayload) : null;
+  const completedMissions = [
+    ...updateMissionProgress("training:complete", resultPayload),
+    ...(ehRecorde ? updateMissionProgress("training:record", resultPayload) : []),
+  ];
+  const recomendacoes = generateTrainingRecommendations();
 
   $(".parametros").fadeOut(195).hide();
-  $(".h1Teste").fadeOut(195).hide();
   $(".dojo-typing-panel").fadeOut(195).hide();
+  $(".arena-progress").fadeOut(195).hide();
+  $(".dojo-keyboard").fadeOut(195).hide();
   $(".conteinerDigita").fadeOut(200, function () {
     $(this).hide();
 
@@ -128,7 +254,13 @@ function mostrarResultados() {
       $("#badge-recorde").hide();
     }
 
-    $("#dojo-xp-gain").text(`+${progressoDojo.gainedXp} XP - Nível ${progressoDojo.level}: ${progressoDojo.title}`);
+    // Nível e título separados, XP destacado
+    $("[data-result-level]").text(`Nível ${progressoDojo.level} · ${progressoDojo.title}`);
+    const xpExtra = (lessonResult?.xpAward || 0) + completedMissions.reduce((sum, mission) => sum + (mission.rewardXp || 0), 0);
+    $("[data-result-xp]").text(`+${progressoDojo.gainedXp + xpExtra} XP`);
+
+    // Combo final
+    $("[data-result-combo]").text(`${comboMax}x`);
 
     // Animação count-up nos números
     animarContagem("#ppm .numeros", ppmFinal);
@@ -140,14 +272,24 @@ function mostrarResultados() {
     const containerErros = $("#top-erros");
     if (containerErros.length && topErros.length > 0) {
       const itens = topErros
-        .map(([letra, qtd]) => `<span class="erro-letra">${letra} <small>${qtd}×</small></span>`)
+        .map(([letra, qtd]) => {
+          const display = letra === " " ? "␣" : letra;
+          return `<span class="erro-letra">${display} <small>${qtd}×</small></span>`;
+        })
         .join("");
       containerErros.html(`<strong>Teclas mais erradas:</strong> ${itens}`);
-      containerErros.show();
+      containerErros.css("display", "flex");
+    } else if (containerErros.length) {
+      containerErros.hide();
     }
 
+    // Recomendação adaptativa
+    aplicarRecomendacaoInteligente(recomendacoes);
+    renderLessonResult(lessonResult);
+    renderCompletedMissions(completedMissions);
+
     // Histórico
-    renderizarHistorico();
+    renderizarHistorico({ ppmFinal });
 
     $("#desempenhoTexto").fadeIn(200).show();
 

@@ -21,69 +21,69 @@
 <body style="display: none;">
     <header></header>
 
-    <main class="game-page dojo-page">
-        <section class="dojo-container" aria-labelledby="arcade-title">
-            <div class="dojo-page-hero compact">
-                <span class="dojo-kicker">Arcade do Panda</span>
-                <h1 id="arcade-title" class="dojo-section-title">Escolha seu desafio.</h1>
-                <p>Minigames para treinar reflexo, precisão e sequência sem sair do navegador.</p>
-            </div>
+    <main class="game-page dojo-page arcade-page">
+        <section class="dojo-container arcade-shell" aria-labelledby="arcade-title">
+            <header class="arcade-hero">
+                <span class="arcade-eyebrow">Arcade do Panda</span>
+                <h1 id="arcade-title" class="arcade-hero-title">Escolha seu desafio</h1>
+                <p class="arcade-hero-text">Minigames para treinar reflexo, precisão e sequência no ritmo do Dojo.</p>
+            </header>
 
-            <section class="game-shell dojo-panel panda-keys-card" aria-labelledby="game-title">
-                <div class="game-topbar">
-                    <div class="game-title">
-                        <span class="dojo-chip special">Jogo principal</span>
-                        <h2 id="game-title">Panda Keys</h2>
-                        <p data-game-description>Escolha uma etapa e treine digitação no ritmo de Piano Tiles.</p>
+            <section class="game-shell dojo-panel panda-keys-card panda-arcade-card" aria-labelledby="game-title">
+                <header class="game-topbar arcade-card-header">
+                    <div class="game-title arcade-title-block">
+                        <span class="dojo-chip special arcade-badge">Jogo principal</span>
+                        <h2 id="game-title" class="arcade-card-title">Panda Keys</h2>
+                        <p class="arcade-card-text" data-game-description>Escolha uma etapa e treine digitação no ritmo de Piano Tiles.</p>
                     </div>
-                    <div class="game-actions">
-                        <button class="game-button" type="button" data-game-start>Iniciar</button>
-                        <button class="game-button secondary" type="button" data-game-pause disabled>Pausar</button>
-                        <button class="game-button secondary" type="button" data-game-reset>Reiniciar</button>
+                    <div class="game-actions arcade-actions">
+                        <button class="game-button arcade-btn arcade-btn-primary" type="button" data-game-start>Iniciar</button>
+                        <button class="game-button secondary arcade-btn" type="button" data-game-pause disabled>Pausar</button>
+                        <button class="game-button secondary arcade-btn" type="button" data-game-reset>Reiniciar</button>
                     </div>
-                </div>
+                </header>
 
-                <div class="stage-panel" data-game-stages aria-label="Etapas do minigame"></div>
+                <div class="stage-panel arcade-mode-grid" data-game-stages aria-label="Etapas do minigame"></div>
 
-                <div class="game-frame">
+                <div class="game-frame arcade-stage">
                     <canvas id="game-canvas" aria-label="Pista do minigame Panda Keys"></canvas>
                     <div class="game-ui">
-                        <div class="game-hud" aria-hidden="true">
-                            <div class="hud-item">
-                                <span class="hud-label">Pontuação</span>
-                                <span class="hud-value" data-game-score>0</span>
+                        <div class="game-hud arcade-hud" aria-hidden="true">
+                            <div class="hud-item arcade-hud-item">
+                                <span class="hud-label arcade-hud-label">Pontuação</span>
+                                <span class="hud-value arcade-hud-value" data-game-score>0</span>
                             </div>
-                            <div class="hud-item">
-                                <span class="hud-label">Combo</span>
-                                <span class="hud-value" data-game-combo>0x</span>
+                            <div class="hud-item arcade-hud-item">
+                                <span class="hud-label arcade-hud-label">Combo</span>
+                                <span class="hud-value arcade-hud-value" data-game-combo>0x</span>
                             </div>
-                            <div class="hud-item">
-                                <span class="hud-label">Vidas</span>
-                                <span class="hud-value" data-game-lives>3</span>
+                            <div class="hud-item arcade-hud-item">
+                                <span class="hud-label arcade-hud-label">Vidas</span>
+                                <span class="hud-value arcade-hud-value" data-game-lives>3</span>
                             </div>
-                            <div class="hud-item">
-                                <span class="hud-label">Nível</span>
-                                <span class="hud-value" data-game-level>1</span>
+                            <div class="hud-item arcade-hud-item">
+                                <span class="hud-label arcade-hud-label">Nível</span>
+                                <span class="hud-value arcade-hud-value" data-game-level>1</span>
                             </div>
-                            <div class="hud-item">
-                                <span class="hud-label">Etapa</span>
-                                <span class="hud-value" data-game-stage>ASDF</span>
+                            <div class="hud-item arcade-hud-item">
+                                <span class="hud-label arcade-hud-label">Etapa</span>
+                                <span class="hud-value arcade-hud-value" data-game-stage>ASDF</span>
                             </div>
-                            <div class="hud-item">
-                                <span class="hud-label">Recorde</span>
-                                <span class="hud-value" data-game-best>0</span>
-                            </div>
-                        </div>
-
-                        <div class="game-status">
-                            <div class="status-panel" data-game-status>
-                                <h2 data-game-status-title>Panda Keys</h2>
-                                <p data-game-status-text>Acerte A, S, D e F quando os tiles cruzarem a linha. As três primeiras perdas de tile não tiram vida.</p>
-                                <button class="game-button" type="button" data-game-again>Jogar</button>
+                            <div class="hud-item arcade-hud-item">
+                                <span class="hud-label arcade-hud-label">Recorde</span>
+                                <span class="hud-value arcade-hud-value" data-game-best>0</span>
                             </div>
                         </div>
 
-                        <div class="countdown" data-game-countdown hidden>3</div>
+                        <div class="game-status arcade-stage-intro">
+                            <div class="status-panel arcade-stage-card" data-game-status>
+                                <h2 class="arcade-stage-card-title" data-game-status-title>Panda Keys</h2>
+                                <p class="arcade-stage-card-text" data-game-status-text>Acerte A, S, D e F quando os tiles cruzarem a linha. As três primeiras perdas de tile não tiram vida.</p>
+                                <button class="game-button arcade-btn arcade-stage-cta" type="button" data-game-again>Jogar</button>
+                            </div>
+                        </div>
+
+                        <div class="countdown arcade-countdown" data-game-countdown hidden>3</div>
                         <div class="floating-layer" data-game-floating></div>
                         <div class="sr-only" aria-live="polite" data-game-live></div>
                     </div>
@@ -93,33 +93,43 @@
                 </div>
             </section>
 
-            <section class="dojo-game-challenges" aria-labelledby="dojo-challenges-title">
-                <span class="dojo-kicker">Novos desafios do Dojo</span>
-                <h2 id="dojo-challenges-title" class="dojo-section-title">Protótipos arcade</h2>
-                <div class="dojo-challenge-grid">
-                    <article class="dojo-card seal-prototype" data-seal-prototype>
-                        <div>
+            <section class="dojo-game-challenges arcade-side-challenges" aria-labelledby="dojo-challenges-title">
+                <header class="arcade-side-header">
+                    <span class="arcade-eyebrow">Em desenvolvimento</span>
+                    <h2 id="dojo-challenges-title" class="arcade-side-title">Protótipos arcade</h2>
+                </header>
+                <div class="dojo-challenge-grid arcade-side-grid">
+                    <article class="dojo-card seal-prototype arcade-side-card" data-seal-prototype>
+                        <div class="arcade-side-card-head">
                             <span class="dojo-card-icon">SE</span>
-                            <h3>Selos do Teclado</h3>
-                            <p>Ative selos digitando palavras em sequência. Cada acerto aumenta o combo e carrega uma técnica do panda.</p>
+                            <div>
+                                <h3>Selos do Teclado</h3>
+                                <p>Ative selos digitando palavras em sequência. Cada acerto aumenta o combo e carrega uma técnica do panda.</p>
+                            </div>
                         </div>
                         <strong class="seal-word" data-seal-word>foco</strong>
+                        <div class="seal-token-list" data-seal-list aria-label="Selos da sequência"></div>
                         <label class="sr-only" for="seal-input">Digite o selo atual</label>
                         <input id="seal-input" data-seal-input type="text" autocomplete="off" spellcheck="false"
                             placeholder="Digite o selo">
                         <div class="dojo-chip-row">
                             <span class="dojo-chip special">Combo <strong data-seal-combo>0x</strong></span>
+                            <span class="dojo-chip">Pontos <strong data-seal-score>0</strong></span>
+                            <span class="dojo-chip">Recorde <strong data-seal-best>0</strong></span>
                             <span class="dojo-chip" data-seal-status>Complete o primeiro selo.</span>
                         </div>
+                        <button class="dojo-card-button" type="button" data-seal-start>Jogar protótipo</button>
                     </article>
 
-                    <article class="dojo-card">
-                        <div>
+                    <article class="dojo-card arcade-side-card arcade-side-card-soon">
+                        <div class="arcade-side-card-head">
                             <span class="dojo-card-icon">BC</span>
-                            <h3>Expedição Bamboo Code</h3>
-                            <p>Resolva obstáculos digitando comandos como “abrir passagem”, “ativar ponte” e “coletar bambu”.</p>
+                            <div>
+                                <h3>Expedição Bamboo Code</h3>
+                                <p>Resolva obstáculos digitando comandos como “abrir passagem”, “ativar ponte” e “coletar bambu”.</p>
+                            </div>
                         </div>
-                        <span class="dojo-chip muted">Interface preparada</span>
+                        <span class="dojo-chip muted">Em breve</span>
                     </article>
                 </div>
             </section>

@@ -22,95 +22,196 @@
 <body style="display: none;">
     <header></header>
 
-    <main class="dojo-page">
-        <section class="dojo-container" aria-labelledby="practice-title">
-            <div class="dojo-page-hero compact">
-                <span class="dojo-kicker">Mapa do Dojo</span>
-                <h1 id="practice-title" class="dojo-section-title">Escolha sua próxima fase.</h1>
-                <p>As fases ainda são locais e visuais, mas já organizam o caminho de evolução do treino.</p>
+    <main class="dojo-page dojo-map-page">
+        <section class="dojo-container dojo-map-container" aria-labelledby="map-title">
+
+            <!-- Hero -->
+            <div class="dojo-map-hero">
+                <div class="map-hero-text">
+                    <span class="dojo-kicker">Mapa do Dojo</span>
+                    <h1 id="map-title" class="dojo-section-title">Trilha de Evolução</h1>
+                    <p class="map-hero-desc">Cada fase desbloqueia novos desafios. Complete treinos para avançar na trilha.</p>
+                </div>
+                <div class="map-player-card dojo-panel" aria-label="Perfil do jogador">
+                    <div class="map-player-avatar" aria-hidden="true">🐼</div>
+                    <div class="map-player-info">
+                        <span class="map-player-title" data-map-title>Filhote de Panda</span>
+                        <span class="map-player-level" data-map-level>Nível 1</span>
+                    </div>
+                    <div class="map-player-xp">
+                        <div class="map-xp-bar-track" role="progressbar" aria-label="XP do nível atual" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" data-map-xp-progress>
+                            <div class="map-xp-bar-fill" data-map-xp-bar style="width: 0%"></div>
+                        </div>
+                        <span class="map-xp-label" data-map-xp>0 XP</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="dojo-phase-grid">
-                <article class="dojo-stage dojo-phase-card" data-step="01">
-                    <h3>Fase 01 — Teclas Base</h3>
-                    <p>ASDF e JKLÇ para estabilizar a posição inicial dos dedos.</p>
-                    <div class="dojo-chip-row">
-                        <span class="dojo-chip success">Fácil</span>
-                        <span class="dojo-chip success">Desbloqueada</span>
-                    </div>
-                    <a class="dojo-card-button" href="digitando.html">Iniciar lição</a>
-                </article>
+            <!-- Trail -->
+            <div class="dojo-map-trail" aria-label="Trilha de fases" role="list">
 
-                <article class="dojo-stage dojo-phase-card" data-step="02">
-                    <h3>Fase 02 — Mão Esquerda</h3>
-                    <p>Sequências curtas para ganhar agilidade sem perder controle.</p>
-                    <div class="dojo-chip-row">
-                        <span class="dojo-chip success">Fácil</span>
-                        <span class="dojo-chip success">Desbloqueada</span>
+                <!-- Fase 01 — left -->
+                <div class="trail-step is-current" data-phase="1" role="listitem">
+                    <article class="trail-card dojo-stage-card">
+                        <header class="stage-card-head">
+                            <span class="stage-number">01</span>
+                            <div class="stage-chips">
+                                <span class="dojo-chip success stage-diff-chip">Fácil</span>
+                                <span class="stage-xp-chip">+50 XP</span>
+                            </div>
+                        </header>
+                        <h3 class="stage-title">Teclas Base</h3>
+                        <p class="stage-desc">ASDF e JKLÇ para estabilizar a posição inicial dos dedos.</p>
+                        <a class="dojo-card-button stage-cta" href="digitando.html">Iniciar lição</a>
+                    </article>
+                    <div class="trail-node" aria-hidden="true">
+                        <span class="trail-node-icon material-symbols-outlined">play_arrow</span>
                     </div>
-                    <a class="dojo-card-button" href="digitando.html">Iniciar lição</a>
-                </article>
+                    <div class="trail-spacer"></div>
+                </div>
 
-                <article class="dojo-stage dojo-phase-card" data-step="03">
-                    <h3>Fase 03 — Mão Direita</h3>
-                    <p>Ritmo com J, K, L, Ç e combinações próximas.</p>
-                    <div class="dojo-chip-row">
-                        <span class="dojo-chip">Fácil</span>
-                        <span class="dojo-chip success">Desbloqueada</span>
+                <!-- Fase 02 — right -->
+                <div class="trail-step is-unlocked" data-phase="2" role="listitem">
+                    <div class="trail-spacer"></div>
+                    <div class="trail-node" aria-hidden="true">
+                        <span class="trail-node-icon material-symbols-outlined">arrow_forward</span>
                     </div>
-                    <a class="dojo-card-button" href="digitando.html">Iniciar lição</a>
-                </article>
+                    <article class="trail-card dojo-stage-card">
+                        <header class="stage-card-head">
+                            <span class="stage-number">02</span>
+                            <div class="stage-chips">
+                                <span class="dojo-chip success stage-diff-chip">Fácil</span>
+                                <span class="stage-xp-chip">+60 XP</span>
+                            </div>
+                        </header>
+                        <h3 class="stage-title">Mão Esquerda</h3>
+                        <p class="stage-desc">Sequências curtas para ganhar agilidade sem perder controle.</p>
+                        <a class="dojo-card-button stage-cta" href="digitando.html">Iniciar lição</a>
+                    </article>
+                </div>
 
-                <article class="dojo-stage dojo-phase-card" data-step="04">
-                    <h3>Fase 04 — Acentuação</h3>
-                    <p>Palavras em português com atenção à precisão.</p>
-                    <div class="dojo-chip-row">
-                        <span class="dojo-chip special">Médio</span>
-                        <span class="dojo-chip">Pronto para treino</span>
+                <!-- Fase 03 — left -->
+                <div class="trail-step is-unlocked" data-phase="3" role="listitem">
+                    <article class="trail-card dojo-stage-card">
+                        <header class="stage-card-head">
+                            <span class="stage-number">03</span>
+                            <div class="stage-chips">
+                                <span class="dojo-chip success stage-diff-chip">Fácil</span>
+                                <span class="stage-xp-chip">+60 XP</span>
+                            </div>
+                        </header>
+                        <h3 class="stage-title">Mão Direita</h3>
+                        <p class="stage-desc">Ritmo com J, K, L, Ç e combinações próximas.</p>
+                        <a class="dojo-card-button stage-cta" href="digitando.html">Iniciar lição</a>
+                    </article>
+                    <div class="trail-node" aria-hidden="true">
+                        <span class="trail-node-icon material-symbols-outlined">arrow_forward</span>
                     </div>
-                    <a class="dojo-card-button" href="digitando.html">Iniciar lição</a>
-                </article>
+                    <div class="trail-spacer"></div>
+                </div>
 
-                <article class="dojo-stage dojo-phase-card" data-step="05">
-                    <h3>Fase 05 — Números</h3>
-                    <p>Alternância entre letras e linha numérica.</p>
-                    <div class="dojo-chip-row">
-                        <span class="dojo-chip special">Médio</span>
-                        <span class="dojo-chip muted">Visual</span>
+                <!-- Fase 04 — right -->
+                <div class="trail-step is-unlocked" data-phase="4" role="listitem">
+                    <div class="trail-spacer"></div>
+                    <div class="trail-node" aria-hidden="true">
+                        <span class="trail-node-icon material-symbols-outlined">arrow_forward</span>
                     </div>
-                    <button class="dojo-card-button" type="button" disabled>Em breve</button>
-                </article>
+                    <article class="trail-card dojo-stage-card">
+                        <header class="stage-card-head">
+                            <span class="stage-number">04</span>
+                            <div class="stage-chips">
+                                <span class="dojo-chip special stage-diff-chip">Médio</span>
+                                <span class="stage-xp-chip">+80 XP</span>
+                            </div>
+                        </header>
+                        <h3 class="stage-title">Acentuação</h3>
+                        <p class="stage-desc">Palavras em português com atenção à precisão.</p>
+                        <a class="dojo-card-button stage-cta" href="digitando.html">Iniciar lição</a>
+                    </article>
+                </div>
 
-                <article class="dojo-stage dojo-phase-card" data-step="06">
-                    <h3>Fase 06 — Pontuação</h3>
-                    <p>Vírgulas, pontos, sinais e controle de pausas.</p>
-                    <div class="dojo-chip-row">
-                        <span class="dojo-chip special">Médio</span>
-                        <span class="dojo-chip muted">Visual</span>
+                <!-- Fase 05 — left -->
+                <div class="trail-step is-soon" data-phase="5" role="listitem">
+                    <article class="trail-card dojo-stage-card">
+                        <header class="stage-card-head">
+                            <span class="stage-number">05</span>
+                            <div class="stage-chips">
+                                <span class="dojo-chip special stage-diff-chip">Médio</span>
+                                <span class="stage-xp-chip">+80 XP</span>
+                            </div>
+                        </header>
+                        <h3 class="stage-title">Números</h3>
+                        <p class="stage-desc">Alternância entre letras e linha numérica.</p>
+                        <button class="dojo-card-button stage-cta" type="button" disabled>Em breve</button>
+                    </article>
+                    <div class="trail-node" aria-hidden="true">
+                        <span class="trail-node-icon material-symbols-outlined">schedule</span>
                     </div>
-                    <button class="dojo-card-button" type="button" disabled>Em breve</button>
-                </article>
+                    <div class="trail-spacer"></div>
+                </div>
 
-                <article class="dojo-stage dojo-phase-card locked" data-step="07">
-                    <h3>Fase 07 — Frases Curtas</h3>
-                    <p>Treino de fluidez em frases completas.</p>
-                    <div class="dojo-chip-row">
-                        <span class="dojo-chip danger">Avançado</span>
-                        <span class="dojo-chip muted">Bloqueada</span>
+                <!-- Fase 06 — right -->
+                <div class="trail-step is-soon" data-phase="6" role="listitem">
+                    <div class="trail-spacer"></div>
+                    <div class="trail-node" aria-hidden="true">
+                        <span class="trail-node-icon material-symbols-outlined">schedule</span>
                     </div>
-                    <button class="dojo-card-button" type="button" disabled>Bloqueada</button>
-                </article>
+                    <article class="trail-card dojo-stage-card">
+                        <header class="stage-card-head">
+                            <span class="stage-number">06</span>
+                            <div class="stage-chips">
+                                <span class="dojo-chip special stage-diff-chip">Médio</span>
+                                <span class="stage-xp-chip">+90 XP</span>
+                            </div>
+                        </header>
+                        <h3 class="stage-title">Pontuação</h3>
+                        <p class="stage-desc">Vírgulas, pontos, sinais e controle de pausas.</p>
+                        <button class="dojo-card-button stage-cta" type="button" disabled>Em breve</button>
+                    </article>
+                </div>
 
-                <article class="dojo-stage dojo-phase-card locked" data-step="08">
-                    <h3>Fase 08 — Desafio Final</h3>
-                    <p>Meta de velocidade, precisão e consistência no mesmo treino.</p>
-                    <div class="dojo-chip-row">
-                        <span class="dojo-chip danger">Avançado</span>
-                        <span class="dojo-chip muted">Bloqueada</span>
+                <!-- Fase 07 — left -->
+                <div class="trail-step is-locked" data-phase="7" role="listitem">
+                    <article class="trail-card dojo-stage-card">
+                        <header class="stage-card-head">
+                            <span class="stage-number">07</span>
+                            <div class="stage-chips">
+                                <span class="dojo-chip danger stage-diff-chip">Avançado</span>
+                                <span class="stage-xp-chip">+110 XP</span>
+                            </div>
+                        </header>
+                        <h3 class="stage-title">Frases Curtas</h3>
+                        <p class="stage-desc">Treino de fluidez em frases completas.</p>
+                        <button class="dojo-card-button stage-cta" type="button" disabled>Bloqueada</button>
+                    </article>
+                    <div class="trail-node" aria-hidden="true">
+                        <span class="trail-node-icon material-symbols-outlined">lock</span>
                     </div>
-                    <button class="dojo-card-button" type="button" disabled>Bloqueada</button>
-                </article>
-            </div>
+                    <div class="trail-spacer"></div>
+                </div>
+
+                <!-- Fase 08 — right -->
+                <div class="trail-step is-locked" data-phase="8" role="listitem">
+                    <div class="trail-spacer"></div>
+                    <div class="trail-node" aria-hidden="true">
+                        <span class="trail-node-icon material-symbols-outlined">lock</span>
+                    </div>
+                    <article class="trail-card dojo-stage-card">
+                        <header class="stage-card-head">
+                            <span class="stage-number">08</span>
+                            <div class="stage-chips">
+                                <span class="dojo-chip danger stage-diff-chip">Avançado</span>
+                                <span class="stage-xp-chip">+150 XP</span>
+                            </div>
+                        </header>
+                        <h3 class="stage-title">Desafio Final</h3>
+                        <p class="stage-desc">Meta de velocidade, precisão e consistência no mesmo treino.</p>
+                        <button class="dojo-card-button stage-cta" type="button" disabled>Bloqueada</button>
+                    </article>
+                </div>
+
+            </div><!-- /.dojo-map-trail -->
+
         </section>
     </main>
 
@@ -122,6 +223,7 @@
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
     <script type="module" src="../js/animations.mjs"></script>
+    <script type="module" src="../js/pratique.mjs"></script>
 </body>
 
 </html>

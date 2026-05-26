@@ -1,5 +1,7 @@
 import { config } from "./config.mjs";
 import { getDojoProfile } from "./gamification.mjs";
+import { getDailyMissions } from "./dailyMissions.mjs";
+import { getTrainingRecommendations } from "./trainingRecommendations.mjs";
 
 $(document).ready(function () {
   config();
@@ -33,6 +35,8 @@ function renderHomeProgress() {
   renderMistakes(profile);
   renderAchievements(profile);
   renderRanking(profile);
+  renderHomeRecommendations();
+  renderHomeMissions();
 }
 
 function renderHistory(profile) {
@@ -108,6 +112,53 @@ function renderRanking(profile) {
       </li>
     `)
     .join("");
+}
+
+function renderHomeRecommendations() {
+  let container = document.querySelector("[data-home-recommendations]");
+  const progressPanel = document.querySelector("#progresso .dojo-panel");
+  if (!container && progressPanel) {
+    container = document.createElement("section");
+    container.className = "home-smart-panel";
+    container.dataset.homeRecommendations = "";
+    progressPanel.appendChild(container);
+  }
+  if (!container) return;
+
+  const recommendation = getTrainingRecommendations()[0];
+  const href = recommendation.targetPage
+    ? recommendation.targetPage.replace("./", "page/")
+    : "page/pratique.html";
+  container.innerHTML = `
+    <h3>Próximo treino recomendado</h3>
+    <article class="recommendation-card">
+      <strong>${recommendation.title}</strong>
+      <p>${recommendation.message}</p>
+      <a class="dojo-card-button" href="${href}">Abrir treino</a>
+    </article>`;
+}
+
+function renderHomeMissions() {
+  let container = document.querySelector("[data-home-daily-missions]");
+  const rankingPanel = document.querySelector("[aria-labelledby='ranking-title']");
+  if (!container && rankingPanel) {
+    container = document.createElement("section");
+    container.className = "home-smart-panel";
+    container.dataset.homeDailyMissions = "";
+    rankingPanel.appendChild(container);
+  }
+  if (!container) return;
+
+  container.innerHTML = `
+    <h3>Missões de hoje</h3>
+    <div class="daily-mission-list compact">
+      ${getDailyMissions().slice(0, 3).map((mission) => `
+        <article class="daily-mission ${mission.completed ? "is-completed" : ""}">
+          <strong>${mission.title}</strong>
+          <span>${mission.completed ? "Concluída" : mission.description}</span>
+        </article>
+      `).join("")}
+    </div>`;
 }
 
 function setText(selector, value) {

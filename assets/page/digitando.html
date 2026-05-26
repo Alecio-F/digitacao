@@ -22,53 +22,57 @@
 <body style="display: none;">
     <header></header>
 
-    <main class="dojo-page type-arena-page">
-        <section class="dojo-container type-arena-shell" aria-labelledby="type-arena-title">
-            <div class="dojo-page-hero compact">
-                <span class="dojo-kicker">Type Arena</span>
-                <h1 id="type-arena-title" class="dojo-section-title">Type Arena</h1>
-                <p>Treine velocidade, precisão e foco em tempo real.</p>
-            </div>
+    <main class="dojo-page arena-page type-arena-page">
+        <section class="dojo-container arena-shell type-arena-shell" aria-labelledby="type-arena-title">
+            <section class="dojo-panel arena-card type-arena-card inputD" aria-label="Arena de digitação">
+                <div class="parametros arena-hud">
+                    <header class="arena-topbar">
+                        <div class="arena-title-group">
+                            <span class="arena-eyebrow">Modo foco</span>
+                            <h1 id="type-arena-title" class="arena-title">Type Arena</h1>
+                        </div>
+                        <div class="arena-controls">
+                            <span id="tituloTexto" class="dojo-chip special arena-mode-chip">Palavras aleatórias</span>
+                            <button id="start" class="dojo-icon-button arena-control-btn material-symbols-outlined" type="button" aria-label="Pausar ou continuar">pause_circle</button>
+                            <button id="reset" class="dojo-icon-button arena-control-btn material-symbols-outlined" type="button" aria-label="Reiniciar treino">restart_alt</button>
+                        </div>
+                    </header>
 
-            <section class="dojo-panel type-arena-card inputD" aria-label="Arena de digitação">
-                <div class="parametros type-arena-toolbar">
-                    <div class="dojo-metrics-grid" aria-label="Métricas em tempo real">
-                        <div class="dojo-metric">
-                            <span>Tempo</span>
-                            <strong id="tempoS" data-live-time>01:00</strong>
+                    <div class="arena-metrics dojo-metrics-grid" aria-label="Métricas em tempo real">
+                        <div class="arena-metric dojo-metric">
+                            <span class="arena-metric-label">Tempo</span>
+                            <strong class="arena-metric-value" id="tempoS" data-live-time>01:00</strong>
                         </div>
-                        <div class="dojo-metric">
-                            <span>PPM</span>
-                            <strong data-live-ppm>0</strong>
+                        <div class="arena-metric dojo-metric">
+                            <span class="arena-metric-label">PPM</span>
+                            <strong class="arena-metric-value" data-live-ppm>0</strong>
                         </div>
-                        <div class="dojo-metric">
-                            <span>CPM</span>
-                            <strong data-live-cpm>0</strong>
+                        <div class="arena-metric dojo-metric">
+                            <span class="arena-metric-label">CPM</span>
+                            <strong class="arena-metric-value" data-live-cpm>0</strong>
                         </div>
-                        <div class="dojo-metric">
-                            <span>Precisão</span>
-                            <strong data-live-precision>0%</strong>
+                        <div class="arena-metric dojo-metric">
+                            <span class="arena-metric-label">Precisão</span>
+                            <strong class="arena-metric-value" data-live-precision>0%</strong>
                         </div>
-                        <div class="dojo-metric">
-                            <span>Erros</span>
-                            <strong data-live-errors>0</strong>
+                        <div class="arena-metric dojo-metric">
+                            <span class="arena-metric-label">Erros</span>
+                            <strong class="arena-metric-value" data-live-errors>0</strong>
                         </div>
-                        <div class="dojo-metric">
-                            <span>Combo</span>
-                            <strong id="dojo-combo-value">0x</strong>
+                        <div class="arena-metric dojo-metric">
+                            <span class="arena-metric-label">Combo</span>
+                            <strong class="arena-metric-value" id="dojo-combo-value">0x</strong>
                         </div>
-                    </div>
-
-                    <div class="type-arena-actions">
-                        <span id="tituloTexto" class="dojo-chip special">Palavras aleatórias</span>
-                        <button id="start" class="dojo-icon-button material-symbols-outlined" type="button" aria-label="Pausar ou continuar">pause_circle</button>
-                        <button id="reset" class="dojo-icon-button material-symbols-outlined" type="button" aria-label="Reiniciar treino">restart_alt</button>
                     </div>
                 </div>
 
-                <div class="dojo-typing-panel" aria-live="polite">
+                <div id="barra-progresso-container" class="arena-progress" aria-hidden="true">
+                    <div id="barra-progresso"></div>
+                </div>
+
+                <div class="master-feedback dojo-typing-panel" aria-live="polite">
                     <div class="dojo-combo" id="dojo-combo">
-                        <span>Feedback do mestre</span>
+                        <span>🐼 Mestre Panda</span>
                         <strong>Foco</strong>
                     </div>
                     <div class="dojo-feedback" id="dojo-feedback" data-tone="neutral">
@@ -76,71 +80,78 @@
                     </div>
                 </div>
 
-                <div id="barra-progresso-container" aria-label="Progresso do tempo">
-                    <div id="barra-progresso"></div>
-                </div>
-
                 <div class="conteinerDigita type-arena-text">
-                    <div id="digitacaoDoTexto">
+                    <div id="digitacaoDoTexto" class="typing-focus-box">
                         <label for="digitandoTexto" class="label inputD"></label>
                         <input id="digitandoTexto" type="text" tabindex="0" spellcheck="false" autocapitalize="none"
-                            autocomplete="off" autocorrect="off">
-                        <div id="cursor"></div>
-                        <div id="palavras"></div>
+                            autocomplete="off" autocorrect="off" aria-label="Digite aqui para treinar">
+                        <div id="cursor" aria-hidden="true"></div>
+                        <div id="palavras" aria-hidden="true"></div>
                     </div>
-                    <div id="amostraTexto"></div>
+                    <div id="amostraTexto" class="typing-preview" aria-hidden="true"></div>
                 </div>
 
-                <div id="desempenhoTexto" class="dojo-results-panel" style="display: none;">
-                    <div id="badge-recorde">Novo recorde do Dojo!</div>
-                    <div id="dojo-xp-gain" class="dojo-xp-gain"></div>
+                <div id="desempenhoTexto" class="dojo-results-panel result-screen" style="display: none;">
+                    <header class="result-header">
+                        <div id="badge-recorde" class="result-record-badge" role="status">Novo recorde do Dojo!</div>
+                        <div class="result-level-row">
+                            <div class="result-level-info">
+                                <span class="result-level-label">Nível atual</span>
+                                <strong class="result-level-value" data-result-level>Nível 1 · Filhote de Panda</strong>
+                            </div>
+                            <div id="dojo-xp-gain" class="dojo-xp-gain xp-earned" data-result-xp></div>
+                        </div>
+                    </header>
 
-                    <h2 class="dojo-section-title">Desempenho</h2>
+                    <h2 class="result-section-title">Desempenho</h2>
 
-                    <div id="desempenhoEstatisticas" class="dojo-result-grid">
-                        <div id="tempo" class="dojo-metric tempo-desempenho">
-                            <span>Tempo</span>
-                            <strong class="numeros">60s</strong>
+                    <div id="desempenhoEstatisticas" class="dojo-result-grid result-metrics">
+                        <div id="tempo" class="dojo-metric result-metric tempo-desempenho">
+                            <span class="result-metric-label">Tempo</span>
+                            <strong class="numeros result-metric-value">60s</strong>
                         </div>
-                        <div id="ppm" class="dojo-metric">
-                            <span>PPM</span>
-                            <strong class="numeros">0</strong>
+                        <div id="ppm" class="dojo-metric result-metric result-metric-highlight">
+                            <span class="result-metric-label">PPM</span>
+                            <strong class="numeros result-metric-value">0</strong>
                         </div>
-                        <div id="cpm" class="dojo-metric">
-                            <span>CPM</span>
-                            <strong class="numeros">0</strong>
+                        <div id="cpm" class="dojo-metric result-metric">
+                            <span class="result-metric-label">CPM</span>
+                            <strong class="numeros result-metric-value">0</strong>
                         </div>
-                        <div id="precisao" class="dojo-metric">
-                            <span>Precisão</span>
-                            <strong class="numeros">0%</strong>
+                        <div id="precisao" class="dojo-metric result-metric">
+                            <span class="result-metric-label">Precisão</span>
+                            <strong class="numeros result-metric-value">0%</strong>
                         </div>
-                        <div id="erros" class="dojo-metric">
-                            <span>Erros</span>
-                            <strong class="numeros">0</strong>
+                        <div id="erros" class="dojo-metric result-metric">
+                            <span class="result-metric-label">Erros</span>
+                            <strong class="numeros result-metric-value">0</strong>
+                        </div>
+                        <div id="combo-final" class="dojo-metric result-metric" data-result-combo-card>
+                            <span class="result-metric-label">Combo máx.</span>
+                            <strong class="result-metric-value" data-result-combo>0x</strong>
                         </div>
                     </div>
 
-                    <div id="top-erros"></div>
+                    <div id="top-erros" class="mistake-list" data-result-mistakes></div>
 
-                    <div id="dicas" class="dojo-panel type-arena-tips">
-                        <h3>Orientações do Mestre Panda</h3>
-                        <div class="dica">Mantenha uma postura confortável, costas retas e pés apoiados. Ombros relaxados ajudam a manter o ritmo.</div>
-                        <div class="dica">Se errar, reduza a velocidade por alguns segundos e recupere precisão antes de acelerar.</div>
-                        <div class="dica">Evite olhar para o teclado. Use a memória muscular para encontrar a linha base.</div>
-                        <div class="dica">Pratique em ciclos curtos e frequentes. Consistência vale mais que sessões longas sem foco.</div>
-                        <div class="seta seta-esquerda" aria-label="Dica anterior"></div>
-                        <div class="seta seta-direita" aria-label="Próxima dica"></div>
-                    </div>
+                    <aside class="training-recommendation" data-result-recommendation hidden>
+                        <span class="recommendation-icon material-symbols-outlined" aria-hidden="true">tips_and_updates</span>
+                        <div class="recommendation-body">
+                            <strong class="recommendation-title">Recomendação do Mestre Panda</strong>
+                            <p class="recommendation-text" data-recommendation-text>Continue praticando para evoluir no Dojo.</p>
+                        </div>
+                        <a class="recommendation-link" href="pratique.html" data-recommendation-link hidden>Ir para o Mapa</a>
+                    </aside>
 
-                    <div id="proxima-acao">
+                    <div id="proxima-acao" class="result-actions">
                         <button class="dojo-button secondary acao" type="button">Fazer novamente</button>
                         <button class="dojo-button primary acao" type="button">Próximo texto</button>
                     </div>
 
-                    <div class="historico-secao dojo-panel">
-                        <h2>Últimos resultados</h2>
-                        <div id="historico-resultados"></div>
-                    </div>
+                    <section class="historico-secao result-history" aria-labelledby="historico-titulo">
+                        <h2 id="historico-titulo" class="result-section-title">Últimos resultados</h2>
+                        <div id="historico-resultados" class="history-grid"></div>
+                    </section>
                 </div>
             </section>
         </section>

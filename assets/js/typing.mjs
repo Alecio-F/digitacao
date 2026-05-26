@@ -4,7 +4,11 @@ import { calcularPrecisao } from "./paramentros.mjs";
 import { palavrasAleatorias, formatarPalavras } from "./palavras.mjs";
 import { moverLinhasSeNecessario } from "./linhas.mjs";
 import { iniciouContagem, isPausado, resetTempo } from "./tempo.mjs";
-import { registrarErro, resetarEstado } from "./estado.mjs";
+import { registrarErro, resetarEstado, atualizarMaxCombo } from "./estado.mjs";
+import { WORDS_COUNT, MAX_EXTRA_LETTERS, COMBO_MILESTONE } from "./constants.mjs";
+import { KEYS } from "./constants.mjs";
+import { getLessonById } from "./dojoLessons.mjs";
+import { getWordsForLesson } from "./lessonTexts.mjs";
 
 export function textodigitacao() {
   let totalLetrasCorretas = 0;
@@ -12,6 +16,10 @@ export function textodigitacao() {
   let comboAtual = 0;
   let digitando = false;
   window.emPratica = null;
+  const selectedLessonId = localStorage.getItem(KEYS.selectedLessonId);
+  const selectedLesson = getLessonById(selectedLessonId);
+  const lessonWords = selectedLesson ? getWordsForLesson(selectedLesson.id) : null;
+  let lessonWordIndex = 0;
 
   eventos();
 
@@ -35,13 +43,29 @@ export function textodigitacao() {
     $("#palavras").html("");
     $("#amostraTexto").html("");
 
-    for (let i = 0; i < 200; i++) {
-      const palavraFormatada = formatarPalavras(palavrasAleatorias());
+    for (let i = 0; i < WORDS_COUNT; i++) {
+      const palavraFormatada = formatarPalavras(obterProximaPalavra());
       $("#palavras").append(palavraFormatada);
       $("#amostraTexto").append(palavraFormatada);
     }
     addClass($(".palavra").first(), "atual");
     addClass($(".letra").first(), "atual");
+  }
+
+  function obterProximaPalavra() {
+    if (lessonWords?.length) {
+      const palavra = lessonWords[lessonWordIndex % lessonWords.length];
+      lessonWordIndex++;
+      return palavra;
+    }
+    return palavrasAleatorias();
+  }
+
+  function aplicarContextoDaLicao() {
+    if (!selectedLesson) return;
+    $("#tituloTexto").text(selectedLesson.title);
+    $("#type-arena-title").text(`Type Arena · ${selectedLesson.title}`);
+    $("#dojo-feedback").text(`Lição ativa: ${selectedLesson.objective}`);
   }
 
   // ─── Handler de digitação ──────────────────────────────────────────────────
@@ -68,12 +92,13 @@ export function textodigitacao() {
         if (tecla === expected) {
           totalLetrasCorretas++;
           comboAtual++;
+          atualizarMaxCombo(comboAtual);
           addClass(letraAtual, "correto");
           addClass(letraAtual, "char-correct");
           emitirEventoDojo("dojo:typing-success", { key: tecla, combo: comboAtual });
-          if (comboAtual > 0 && comboAtual % 12 === 0) {
+          if (comboAtual > 0 && comboAtual % COMBO_MILESTONE === 0) {
             feedbackDojo("Boa sequência! Mantenha o ritmo.", "success");
-            if (comboAtual >= 24) feedbackDojo("Combo ativo!", "success");
+            if (comboAtual >= COMBO_MILESTONE * 2) feedbackDojo("Combo ativo!", "success");
           }
         } else {
           totalLetrasIncorretas++;
@@ -90,7 +115,7 @@ export function textodigitacao() {
       } else {
         // letra extra além do fim da palavra
         const extras = palavraAtual.find(".letra.incorreto.extra");
-        if (extras.length >= 5) return;
+        if (extras.length >= MAX_EXTRA_LETTERS) return;
         totalLetrasIncorretas++;
         comboAtual = 0;
         registrarErro(" ");
@@ -176,6 +201,7 @@ export function textodigitacao() {
     totalLetrasIncorretas = 0;
     comboAtual = 0;
     digitando = false;
+    lessonWordIndex = 0;
 
     resetarEstado();
     resetTempo();
@@ -185,20 +211,22 @@ export function textodigitacao() {
     digitacaoTexto();
     calcularPrecisao(0, 0);
     atualizarCombo();
-    feedbackDojo("Digite a primeira palavra para iniciar o desafio.", "neutral");
+    feedbackDojo("Foco. Digite a primeira palavra para iniciar o desafio.", "neutral");
 
     $("#desempenhoTexto").hide();
     $("#badge-recorde").hide();
     $("#top-erros").hide();
     $(".parametros").show();
-    $(".h1Teste").show();
     $(".dojo-typing-panel").show();
+    $(".arena-progress").show();
+    $(".dojo-keyboard").show();
     $(".conteinerDigita").css("opacity", "1").show();
   }
 
   digitacaoTexto();
   atualizarCombo();
-  feedbackDojo("Digite a primeira palavra para iniciar o desafio.", "neutral");
+  aplicarContextoDaLicao();
+  feedbackDojo("Foco. Digite a primeira palavra para iniciar o desafio.", "neutral");
   atualizarCursorContinuamente();
   moverLinhasSeNecessario();
 

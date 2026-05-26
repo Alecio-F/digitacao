@@ -83,8 +83,8 @@ export function initRevealOnScroll() {
     );
   });
 
-  document.querySelectorAll(".dojo-grid, .dojo-phase-grid, .dojo-challenge-grid, .dojo-learn-grid").forEach((grid) => {
-    const cards = grid.querySelectorAll(".dojo-card, .dojo-stage, .dojo-panel");
+  document.querySelectorAll(".dojo-grid, .dojo-phase-grid, .dojo-map-trail, .dojo-challenge-grid, .dojo-learn-grid").forEach((grid) => {
+    const cards = grid.querySelectorAll(".dojo-card, .dojo-stage, .dojo-stage-card, .dojo-panel");
     if (!cards.length) return;
     gsapInstance.fromTo(cards,
       { autoAlpha: 0, y: 18 },
@@ -105,7 +105,7 @@ export function initRevealOnScroll() {
 }
 
 export function initCardInteractions() {
-  document.querySelectorAll(".dojo-card, .dojo-stage, .dojo-panel, .stage-option").forEach((card) => {
+  document.querySelectorAll(".dojo-card, .dojo-stage, .dojo-stage-card, .dojo-panel, .stage-option").forEach((card) => {
     card.classList.add("dojo-card-interactive");
     if (card.classList.contains("locked")) card.classList.add("dojo-locked");
     else card.classList.add("dojo-unlocked");
@@ -195,7 +195,7 @@ function initVirtualKeyboard() {
   const homeKeys = new Set(["a", "s", "d", "f", "j", "k", "l", "ç", "Ã§"]);
 
   const keyboard = document.createElement("div");
-  keyboard.className = "dojo-keyboard js-reveal";
+  keyboard.className = "dojo-keyboard dojo-keyboard-compact js-reveal";
   keyboard.setAttribute("aria-label", "Teclado virtual");
   keyboard.innerHTML = `
     <div class="dojo-keyboard-top">
@@ -234,12 +234,12 @@ function animateKey(key, className) {
 
 function updateNextKey() {
   const keyboard = document.querySelector(".dojo-keyboard");
-  const text = document.getElementById("digitandoTexto");
-  if (!keyboard || !text) return;
+  const palavras = document.getElementById("palavras");
+  if (!keyboard || !palavras) return;
 
   keyboard.querySelectorAll(".dojo-key-next").forEach((key) => key.classList.remove("dojo-key-next"));
 
-  const current = text.querySelector(".letra.atual, .char-current, .current");
+  const current = palavras.querySelector(".letra.atual");
   const key = normalizeExpectedKey(current?.textContent || "");
   findKeyboardKey(key)?.classList.add("dojo-key-next");
 }
@@ -309,9 +309,11 @@ function markRevealElements() {
   const selectors = [
     ".dojo-hero > *",
     ".dojo-page-hero",
+    ".dojo-map-hero",
     ".dojo-card",
     ".dojo-panel",
     ".dojo-stage",
+    ".dojo-stage-card",
     ".game-shell",
     ".learn-card img",
   ];

@@ -1,3 +1,5 @@
+import { KEYS, XP_PER_LEVEL } from "./constants.mjs";
+
 export function config() {
   renderDojoHeader();
   setupConfigDrawer();
@@ -11,13 +13,13 @@ export function config() {
 }
 
 function setupPracticeTime() {
-  const tempoPraticaSalvo = localStorage.getItem("tempoPratica") || "1";
+  const tempoPraticaSalvo = localStorage.getItem(KEYS.tempoPratica) || "1";
   $("#tempoPratica").val(tempoPraticaSalvo);
   updateVisibleTimer(tempoPraticaSalvo);
 
   $("#tempoPratica").on("change", function() {
     const value = $(this).val();
-    localStorage.setItem("tempoPratica", value);
+    localStorage.setItem(KEYS.tempoPratica, value);
     updateVisibleTimer(value);
   });
 }
@@ -181,10 +183,10 @@ function renderDojoHeader() {
 }
 
 function getPlayerProgress() {
-  const xp = Math.max(0, Number(localStorage.getItem("pandaXp") || 0));
-  const storedLevel = Number(localStorage.getItem("pandaLevel"));
-  const level = storedLevel > 0 ? storedLevel : Math.max(1, Math.floor(xp / 220) + 1);
-  const xpPercent = Math.min(100, Math.round(((xp % 220) / 220) * 100));
+  const xp = Math.max(0, Number(localStorage.getItem(KEYS.xp) || 0));
+  const storedLevel = Number(localStorage.getItem(KEYS.level));
+  const level = storedLevel > 0 ? storedLevel : Math.max(1, Math.floor(xp / XP_PER_LEVEL) + 1);
+  const xpPercent = Math.min(100, Math.round(((xp % XP_PER_LEVEL) / XP_PER_LEVEL) * 100));
 
   return {
     xp,
@@ -240,7 +242,7 @@ function closeDrawer() {
 }
 
 function applySavedTheme() {
-  var ativo = localStorage.getItem("ativo");
+  var ativo = localStorage.getItem(KEYS.tema);
   if (ativo !== null) {
     $("#btn").addClass("ativo");
     $("body").addClass("darkTheme");
@@ -260,7 +262,7 @@ function setupThemeToggle() {
     $(this).toggleClass("ativo");
 
     if ($(this).hasClass("ativo")) {
-      localStorage.setItem("ativo", "true");
+      localStorage.setItem(KEYS.tema, "true");
       $("body").addClass("darkTheme");
       $(".inputD").addClass("inputDDark");
       $(".testeDigita").addClass("testeDigitaDarktheme");
@@ -271,7 +273,7 @@ function setupThemeToggle() {
       $(".conta").addClass("contaDark");
       $(".game-page").addClass("game-page-dark");
     } else {
-      localStorage.removeItem("ativo");
+      localStorage.removeItem(KEYS.tema);
       $("body").removeClass("darkTheme");
       $(".inputD").removeClass("inputDDark");
       $(".testeDigita").removeClass("testeDigitaDarktheme");

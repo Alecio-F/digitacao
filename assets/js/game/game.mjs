@@ -1,4 +1,7 @@
 import { config } from "../config.mjs";
+import { KEYS } from "../constants.mjs";
+import { updateMissionProgress } from "../dailyMissions.mjs";
+import { unlockAchievement } from "../gamification.mjs";
 import { initDojoChallenges } from "./dojo-challenges.mjs";
 import { createAudioManager } from "./audio.mjs";
 import { createInputManager } from "./input.mjs";
@@ -57,7 +60,7 @@ function bootGame() {
     return;
   }
 
-  const bestScore = Number(localStorage.getItem("pandaKeysBestScore") || 0);
+  const bestScore = Number(localStorage.getItem(KEYS.gameBestScore) || 0);
   hud.best.textContent = String(bestScore);
 
   const resize = () => {
@@ -88,7 +91,7 @@ function bootGame() {
     onMiss(tile, result) {
       const x = tile.x + tile.width / 2;
       showFloating(`-${result.penalty} MISS`, x, canvas.height * 0.74);
-      announce(`Miss. Pontuacao ${state.score}. Vidas ${state.lives}.`);
+      announce(`Miss. Pontuação ${state.score}. Vidas ${state.lives}.`);
     },
   });
 
@@ -102,8 +105,8 @@ function bootGame() {
       showFloating(result.text, result.x, result.y);
       updateHud();
       announce(result.type === "hit"
-        ? `${result.rating}. Pontuacao ${state.score}. Combo ${state.combo}.`
-        : `Miss. Pontuacao ${state.score}.`);
+        ? `${result.rating}. Pontuação ${state.score}. Combo ${state.combo}.`
+        : `Miss. Pontuação ${state.score}.`);
     },
     onVirtualPress(key) {
       flashVirtualKey(key);
@@ -192,6 +195,8 @@ function bootGame() {
   function beginRun() {
     resetRun(state);
     startCountdown(state);
+    updateMissionProgress("arcade:panda-keys", {});
+    unlockAchievement("arcade-first");
     statusPanel.hidden = true;
     startButton.disabled = true;
     pauseButton.disabled = false;
@@ -240,20 +245,20 @@ function bootGame() {
   }
 
   function finishRun() {
-    const currentBest = Number(localStorage.getItem("pandaKeysBestScore") || 0);
+    const currentBest = Number(localStorage.getItem(KEYS.gameBestScore) || 0);
     if (state.score > currentBest) {
-      localStorage.setItem("pandaKeysBestScore", String(state.score));
+      localStorage.setItem(KEYS.gameBestScore, String(state.score));
       hud.best.textContent = String(state.score);
     }
 
     statusTitle.textContent = "Fim de jogo";
-    statusText.textContent = `Pontuacao final: ${state.score}. Maior combo: ${state.maxCombo}.`;
+    statusText.textContent = `Pontuação final: ${state.score}. Maior combo: ${state.maxCombo}.`;
     statusPanel.hidden = false;
     startButton.disabled = false;
     pauseButton.disabled = true;
     pauseButton.textContent = "Pausar";
     updateHud();
-    announce(`Fim de jogo. Pontuacao final ${state.score}. Maior combo ${state.maxCombo}.`);
+    announce(`Fim de jogo. Pontuação final ${state.score}. Maior combo ${state.maxCombo}.`);
   }
 
   function updateHud() {

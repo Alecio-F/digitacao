@@ -1,11 +1,4 @@
-const STORAGE = Object.freeze({
-  xp: "pandaXp",
-  level: "pandaLevel",
-  achievements: "pandaAchievements",
-  dailyStreak: "pandaDailyStreak",
-  lastTrainingDate: "pandaLastTrainingDate",
-  lastMistakes: "pandaLastMistakes",
-});
+import { KEYS, XP_PER_LEVEL } from "./constants.mjs";
 
 const ACHIEVEMENTS = Object.freeze([
   {
@@ -38,28 +31,54 @@ const ACHIEVEMENTS = Object.freeze([
     title: "Disciplina Arcade",
     description: "Registrou pelo menos 7 treinos.",
   },
+  {
+    id: "master-asdf",
+    title: "Mestre ASDF",
+    description: "Concluiu Teclas Base com medalha de ouro.",
+  },
+  {
+    id: "daily-routine",
+    title: "Rotina do Dojo",
+    description: "Completou uma missão diária.",
+  },
+  {
+    id: "map-explorer",
+    title: "Explorador do Mapa",
+    description: "Iniciou 3 fases diferentes do Mapa do Dojo.",
+  },
+  {
+    id: "arcade-first",
+    title: "Arcade Inicial",
+    description: "Jogou Panda Keys pela primeira vez.",
+  },
+  {
+    id: "strong-combo",
+    title: "Combo Forte",
+    description: "Alcançou um combo alto em treino.",
+  },
 ]);
 
 export function getHistory() {
-  return readJson("historico", []);
+  return readJson(KEYS.historico, []);
 }
 
 export function getDojoProfile() {
   const historico = getHistory();
-  const storedXp = Number(localStorage.getItem(STORAGE.xp));
+  const storedXp = Number(localStorage.getItem(KEYS.xp));
   const xp = Number.isFinite(storedXp) && storedXp > 0 ? storedXp : deriveXpFromHistory(historico);
   const level = calculateLevel(xp);
   const achievements = getUnlockedAchievements(historico);
   const bestPpm = historico.reduce((best, item) => Math.max(best, Number(item.ppm) || 0), 0);
   const lastResult = historico[0] || null;
   const lastPrecision = lastResult ? String(lastResult.precisao || "0%") : "0%";
-  const nextLevelXp = level * 220;
-  const previousLevelXp = (level - 1) * 220;
+  const nextLevelXp = level * XP_PER_LEVEL;
+  const previousLevelXp = (level - 1) * XP_PER_LEVEL;
   const currentLevelXp = Math.max(0, xp - previousLevelXp);
   const requiredForLevel = Math.max(1, nextLevelXp - previousLevelXp);
   const progressPercent = Math.min(100, Math.round((currentLevelXp / requiredForLevel) * 100));
 
   persistProfile({ xp, level, achievements });
+  refreshPlayerHud();
 
   return {
     xp,
@@ -71,20 +90,20 @@ export function getDojoProfile() {
     requiredForLevel,
     achievements,
     achievementDetails: achievements.map(getAchievementById).filter(Boolean),
-    dailyStreak: Number(localStorage.getItem(STORAGE.dailyStreak) || 0),
-    lastTrainingDate: localStorage.getItem(STORAGE.lastTrainingDate) || "",
+    dailyStreak: Number(localStorage.getItem(KEYS.dailyStreak) || 0),
+    lastTrainingDate: localStorage.getItem(KEYS.lastTrainingDate) || "",
     bestPpm,
     lastPrecision,
     lastResult,
     history: historico,
-    lastMistakes: readJson(STORAGE.lastMistakes, []),
-    gameBestScore: Number(localStorage.getItem("pandaKeysBestScore") || 0),
+    lastMistakes: readJson(KEYS.lastMistakes, []),
+    gameBestScore: Number(localStorage.getItem(KEYS.gameBestScore) || 0),
   };
 }
 
 export function registerTrainingResult(result, options = {}) {
   const historico = getHistory();
-  const storedXp = localStorage.getItem(STORAGE.xp);
+  const storedXp = localStorage.getItem(KEYS.xp);
   const currentXp = storedXp !== null ? Number(storedXp) || 0 : deriveXpFromHistory(historico.slice(1));
   const precision = parsePrecision(result?.precisao);
   let gainedXp = 50;
@@ -112,12 +131,13 @@ export function registerTrainingResult(result, options = {}) {
   const achievements = getUnlockedAchievements(historico, {
     precision,
     novoRecorde: Boolean(options.novoRecorde),
+    combo: Number(options.combo || 0),
   });
 
   updateDailyStreak();
 
   if (Array.isArray(options.topErros)) {
-    localStorage.setItem(STORAGE.lastMistakes, JSON.stringify(options.topErros));
+    localStorage.setItem(KEYS.lastMistakes, JSON.stringify(options.topErros));
   }
 
   persistProfile({ xp, level, achievements });
@@ -129,6 +149,64 @@ export function registerTrainingResult(result, options = {}) {
     title: getProgressionTitle(level),
     achievements,
   };
+}
+
+export function awardXp(amount, reason = "generic") {
+  const safeAmount = Math.max(0, Number(amount) || 0);
+  if (!safeAmount) return getDojoProfile();
+
+  const awards = readJson(KEYS.xpAwards, []);
+  if (reason && awards.includes(reason)) {
+    return getDojoProfile();
+  }
+
+  const currentXp = Math.max(0, Number(localStorage.getItem(KEYS.xp) || 0));
+  const xp = currentXp + safeAmount;
+  const level = calculateLevel(xp);
+  const achievements = readJson(KEYS.achievements, []);
+
+  if (reason) {
+    awards.push(reason);
+    localStorage.setItem(KEYS.xpAwards, JSON.stringify(awards.slice(-200)));
+  }
+
+  persistProfile({ xp, level, achievements });
+  refreshPlayerHud();
+  document.dispatchEvent(new CustomEvent("dojo:xp-awarded", { detail: { amount: safeAmount, reason, xp, level } }));
+  return getDojoProfile();
+}
+
+export function unlockAchievement(id) {
+  if (!getAchievementById(id)) return false;
+  const achievements = new Set(readJson(KEYS.achievements, []));
+  if (achievements.has(id)) return false;
+
+  achievements.add(id);
+  localStorage.setItem(KEYS.achievements, JSON.stringify([...achievements]));
+  refreshPlayerHud();
+  document.dispatchEvent(new CustomEvent("dojo:achievement", { detail: { id, achievement: getAchievementById(id) } }));
+  return true;
+}
+
+export function getPlayerProgress() {
+  return getDojoProfile();
+}
+
+export function refreshPlayerHud() {
+  const xp = Math.max(0, Number(localStorage.getItem(KEYS.xp) || 0));
+  const level = calculateLevel(xp);
+  const percent = Math.min(100, Math.round(((xp % XP_PER_LEVEL) / XP_PER_LEVEL) * 100));
+
+  document.querySelectorAll(".dojo-player-status").forEach((status) => {
+    const levelEl = status.querySelector("span");
+    const xpEl = status.querySelector("strong");
+    const fill = status.querySelector(".dojo-xp-fill");
+    if (levelEl) levelEl.textContent = `Nível ${level}`;
+    if (xpEl) xpEl.textContent = `${xp} XP`;
+    if (fill) fill.style.width = `${percent}%`;
+  });
+
+  return { xp, level, percent };
 }
 
 export function getProgressionTitle(level) {
@@ -148,7 +226,7 @@ function getNextProgressionTitle(level) {
 }
 
 function calculateLevel(xp) {
-  return Math.max(1, Math.floor(Number(xp || 0) / 220) + 1);
+  return Math.max(1, Math.floor(Number(xp || 0) / XP_PER_LEVEL) + 1);
 }
 
 function deriveXpFromHistory(historico) {
@@ -163,7 +241,7 @@ function deriveXpFromHistory(historico) {
 }
 
 function getUnlockedAchievements(historico, current = {}) {
-  const stored = readJson(STORAGE.achievements, []);
+  const stored = readJson(KEYS.achievements, []);
   const unlocked = new Set(stored);
   const bestPrecision = Math.max(
     0,
@@ -177,6 +255,7 @@ function getUnlockedAchievements(historico, current = {}) {
   if (bestPrecision >= 90) unlocked.add("precision-90");
   if (bestPrecision >= 95) unlocked.add("precision-95");
   if (current.novoRecorde) unlocked.add("new-record");
+  if (Number(current.combo || 0) >= 24) unlocked.add("strong-combo");
 
   return [...unlocked].filter((id) => getAchievementById(id));
 }
@@ -187,8 +266,8 @@ function getAchievementById(id) {
 
 function updateDailyStreak() {
   const today = getDateKey(new Date());
-  const lastDate = localStorage.getItem(STORAGE.lastTrainingDate);
-  let streak = Number(localStorage.getItem(STORAGE.dailyStreak) || 0);
+  const lastDate = localStorage.getItem(KEYS.lastTrainingDate);
+  let streak = Number(localStorage.getItem(KEYS.dailyStreak) || 0);
 
   if (lastDate === today) {
     return;
@@ -198,8 +277,8 @@ function updateDailyStreak() {
   yesterday.setDate(yesterday.getDate() - 1);
 
   streak = lastDate === getDateKey(yesterday) ? streak + 1 : 1;
-  localStorage.setItem(STORAGE.dailyStreak, String(streak));
-  localStorage.setItem(STORAGE.lastTrainingDate, today);
+  localStorage.setItem(KEYS.dailyStreak, String(streak));
+  localStorage.setItem(KEYS.lastTrainingDate, today);
 }
 
 function getDateKey(date) {
@@ -207,9 +286,9 @@ function getDateKey(date) {
 }
 
 function persistProfile({ xp, level, achievements }) {
-  localStorage.setItem(STORAGE.xp, String(xp));
-  localStorage.setItem(STORAGE.level, String(level));
-  localStorage.setItem(STORAGE.achievements, JSON.stringify(achievements));
+  localStorage.setItem(KEYS.xp, String(xp));
+  localStorage.setItem(KEYS.level, String(level));
+  localStorage.setItem(KEYS.achievements, JSON.stringify(achievements));
 }
 
 function parsePrecision(value) {

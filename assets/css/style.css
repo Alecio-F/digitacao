@@ -8,12 +8,24 @@
   text-decoration: none;
   font-family: sans-serif;
 }
+/* ════════════════════════════════════════════════════════════════════════
+   PANDA DOJO ARCADE — Design Tokens
+   Tokens centralizados em :root. NÃO REMOVER os tokens legados (corHeader,
+   corBanner, ...) — eles ainda são usados em vários componentes.
+   Tokens novos (dojo-*) seguem a convenção:
+     - dojo-radius-*  : raios padrão (sm/md/lg/xl/pill)
+     - dojo-space-*   : escala de espaçamento (4 → 32px)
+     - dojo-surface-* : superfícies translúcidas para cards/painéis
+     - dojo-border-*  : bordas suaves do tema
+     - dojo-shadow-*  : sombras padrão
+     - dojo-focus-ring: outline para acessibilidade de teclado
+═══════════════════════════════════════════════════════════════════════ */
 :root {
   /* Fontes do site */
   --fontTexto: "Work Sans";
   --fontTitulo: "Quicksand";
 
-  /* Paleta de cores original/light theme */
+  /* Paleta de cores — light theme (LEGADO, não alterar) */
   --corHeader: #eee;
   --corBanner: #bfd7ea;
   --corFundo: #a5b5c1;
@@ -30,9 +42,62 @@
   --corConquista: #d99a17;
   --corCard: rgba(255, 255, 255, 0.82);
   --sombraDojo: 0 16px 40px rgba(11, 57, 84, 0.18);
+  --dojo-header-height: 171px;
+
+  /* Aliases semânticos (apontam para tokens legados) */
+  --dojo-primary: var(--corAtivo);
+  --dojo-secondary: var(--corEspecial);
+  --dojo-success: var(--corAcerto);
+  --dojo-warning: var(--corConquista);
+  --dojo-danger: var(--corErro);
+  --dojo-text: var(--corTextoGeral);
+  --dojo-text-muted: var(--corTexto);
+  --dojo-text-strong: var(--corTitulo);
+
+  /* Raios */
+  --dojo-radius-xs: 6px;
+  --dojo-radius-sm: 8px;
+  --dojo-radius-md: 12px;
+  --dojo-radius-lg: 16px;
+  --dojo-radius-xl: 22px;
+  --dojo-radius-pill: 999px;
+
+  /* Escala de espaçamento */
+  --dojo-space-1: 4px;
+  --dojo-space-2: 6px;
+  --dojo-space-3: 8px;
+  --dojo-space-4: 12px;
+  --dojo-space-5: 16px;
+  --dojo-space-6: 20px;
+  --dojo-space-7: 28px;
+  --dojo-space-8: 36px;
+
+  /* Superfícies translúcidas (light) */
+  --dojo-surface: rgba(255, 255, 255, 0.62);
+  --dojo-surface-soft: rgba(255, 255, 255, 0.42);
+  --dojo-surface-strong: rgba(255, 255, 255, 0.82);
+  --dojo-surface-tint: rgba(20, 184, 212, 0.08);
+
+  /* Bordas */
+  --dojo-border-soft: rgba(8, 124, 167, 0.14);
+  --dojo-border: rgba(8, 124, 167, 0.22);
+  --dojo-border-strong: rgba(20, 184, 212, 0.4);
+  --dojo-border-neon: rgba(0, 214, 255, 0.28);
+
+  /* Sombras */
+  --dojo-shadow-soft: 0 6px 16px rgba(11, 57, 84, 0.08);
+  --dojo-shadow-card: 0 16px 40px rgba(11, 57, 84, 0.18);
+  --dojo-shadow-elevated: 0 24px 60px rgba(11, 57, 84, 0.24);
+
+  /* Acessibilidade */
+  --dojo-focus-ring: 0 0 0 3px rgba(0, 168, 204, 0.42);
+
+  /* Arena/arcade horizontal padding usado em múltiplas páginas */
+  --dojo-pad-x: clamp(16px, 2.1vw, 26px);
 }
+
 .darkTheme {
-  /* Paleta de cores para dark theme */
+  /* Paleta de cores — dark theme (LEGADO) */
   --corHeader: #131313;
   --corBanner: #2d2d2d;
   --corFundo: #131313;
@@ -48,12 +113,37 @@
   --corConquista: #ffd166;
   --corCard: rgba(31, 31, 31, 0.86);
   --sombraDojo: 0 16px 40px rgba(0, 0, 0, 0.32);
+
+  /* Superfícies ajustadas para dark */
+  --dojo-surface: rgba(255, 255, 255, 0.06);
+  --dojo-surface-soft: rgba(255, 255, 255, 0.04);
+  --dojo-surface-strong: rgba(31, 31, 31, 0.86);
+  --dojo-surface-tint: rgba(20, 184, 212, 0.08);
+
+  /* Bordas ajustadas para dark */
+  --dojo-border-soft: rgba(114, 245, 255, 0.08);
+  --dojo-border: rgba(114, 245, 255, 0.16);
+  --dojo-border-strong: rgba(114, 245, 255, 0.32);
+  --dojo-border-neon: rgba(114, 245, 255, 0.28);
+
+  /* Sombras dark */
+  --dojo-shadow-soft: 0 6px 16px rgba(0, 0, 0, 0.32);
+  --dojo-shadow-card: 0 16px 40px rgba(0, 0, 0, 0.4);
+  --dojo-shadow-elevated: 0 24px 60px rgba(0, 0, 0, 0.5);
+
+  --dojo-focus-ring: 0 0 0 3px rgba(114, 245, 255, 0.42);
 }
 
 body {
   background-color: var(--corFundo);
   position: relative;
   color: var(--corTextoGeral);
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .center {
