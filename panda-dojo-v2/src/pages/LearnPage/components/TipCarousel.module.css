@@ -1,0 +1,39 @@
+.carousel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dojo-space-4);
+}
+
+.track {
+  position: relative;
+  height: 180px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--dojo-space-4);
+}
+
+.dots {
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--dojo-border-strong);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background var(--dojo-duration-fast) var(--dojo-ease),
+              transform var(--dojo-duration-fast) var(--dojo-ease);
+}
+
+.dotActive {
+  background: var(--dojo-primary);
+  transform: scale(1.3);
+}

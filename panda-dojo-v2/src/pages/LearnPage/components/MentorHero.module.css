@@ -1,0 +1,120 @@
+.hero {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--dojo-space-8);
+  align-items: start;
+  padding: var(--dojo-space-8) 0 var(--dojo-space-7);
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dojo-primary);
+  margin-bottom: var(--dojo-space-3);
+}
+
+.heading {
+  font-family: var(--font-title);
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 700;
+  color: var(--dojo-text-strong);
+  line-height: 1.2;
+  margin-bottom: var(--dojo-space-4);
+}
+
+.sub {
+  color: var(--dojo-text-muted);
+  max-width: 480px;
+  line-height: 1.6;
+  margin-bottom: var(--dojo-space-6);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dojo-space-4);
+  margin-bottom: var(--dojo-space-6);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Mentor card */
+.mentorCard {
+  background: var(--dojo-surface);
+  border: 1px solid var(--dojo-border);
+  border-radius: var(--dojo-radius-xl);
+  padding: var(--dojo-space-6);
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--dojo-space-5);
+}
+
+.mentorHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mentorTitle {
+  font-family: var(--font-title);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--dojo-text-strong);
+}
+
+.rewardBadge {
+  background: rgba(217, 154, 23, 0.16);
+  color: var(--dojo-warning);
+  font-family: var(--font-title);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--dojo-radius-pill);
+  white-space: nowrap;
+}
+
+.mentorDesc {
+  font-size: 0.82rem;
+  color: var(--dojo-text-muted);
+  line-height: 1.5;
+}
+
+.pandaEmoji {
+  font-size: 72px;
+  text-align: center;
+  animation: pandaFloat 2.8s ease-in-out infinite alternate;
+}
+
+@keyframes pandaFloat {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-8px); }
+}
+
+.lessonProgress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--dojo-text-muted);
+}
+
+.progressHeader strong { color: var(--dojo-text-strong); }
+
+@media (max-width: 768px) {
+  .hero { grid-template-columns: 1fr; }
+  .mentorCard { width: 100%; }
+}

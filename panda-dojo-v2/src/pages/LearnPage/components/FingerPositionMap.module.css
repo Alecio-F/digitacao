@@ -1,0 +1,86 @@
+.map {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--dojo-space-5);
+}
+
+.ruleBox {
+  grid-column: 1 / -1;
+  padding: var(--dojo-space-5);
+  background: var(--dojo-surface-tint);
+  border: 1px solid var(--dojo-border-strong);
+  border-radius: var(--dojo-radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ruleBox strong {
+  font-family: var(--font-title);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--dojo-primary);
+}
+
+.ruleBox p {
+  font-size: 0.85rem;
+  color: var(--dojo-text-muted);
+  line-height: 1.6;
+}
+
+.handCard {
+  background: var(--dojo-surface-soft);
+  border: 1px solid var(--dojo-border-soft);
+  border-radius: var(--dojo-radius-md);
+  padding: var(--dojo-space-5);
+}
+
+.handTitle {
+  font-family: var(--font-title);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--dojo-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: var(--dojo-space-4);
+}
+
+.keyList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.keyRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--dojo-text-muted);
+}
+
+.keycap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  padding: 4px 8px;
+  background: var(--dojo-card-bg);
+  border: 1px solid var(--dojo-border);
+  border-radius: var(--dojo-radius-xs);
+  box-shadow: 0 2px 0 var(--dojo-border-strong);
+  font-family: var(--font-title);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--dojo-text-strong);
+  font-style: normal;
+}
+
+.space {
+  min-width: 72px;
+  font-size: 0.72rem;
+}
+
+@media (max-width: 480px) {
+  .map { grid-template-columns: 1fr; }
+}

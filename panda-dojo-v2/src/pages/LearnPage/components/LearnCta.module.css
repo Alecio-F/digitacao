@@ -1,0 +1,40 @@
+.cta {
+  background: var(--dojo-surface);
+  border: 1px solid var(--dojo-border);
+  border-radius: var(--dojo-radius-xl);
+  padding: var(--dojo-space-8) var(--dojo-space-7);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--dojo-space-5);
+}
+
+.eyebrow {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dojo-success);
+}
+
+.heading {
+  font-family: var(--font-title);
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  font-weight: 700;
+  color: var(--dojo-text-strong);
+}
+
+.sub {
+  font-size: 0.92rem;
+  color: var(--dojo-text-muted);
+  max-width: 480px;
+  line-height: 1.6;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dojo-space-4);
+  justify-content: center;
+}
