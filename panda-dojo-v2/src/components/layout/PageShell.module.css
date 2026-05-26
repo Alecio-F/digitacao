@@ -1,0 +1,13 @@
+.shell {
+  position: relative;
+  z-index: 1;
+  min-height: calc(100dvh - var(--dojo-header-height));
+  padding: var(--dojo-space-7) var(--dojo-pad-x);
+  padding-bottom: calc(var(--dojo-space-7) + 72px); /* account for mobile nav */
+}
+
+@media (min-width: 769px) {
+  .shell {
+    padding-bottom: var(--dojo-space-7);
+  }
+}
