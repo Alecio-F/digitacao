@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
+import { Link, NavLink, useNavigate } from 'react-router';
 import { IconButton, Button } from '@/components/ui';
 import { KEYS, XP_PER_LEVEL } from '@/constants';
 import { getStorage } from '@/services/storage/storageService';
 import styles from './HeaderHud.module.css';
 
 const NAV_ITEMS = [
-  { label: 'Início', href: '#' },
-  { label: 'Arena', href: '#' },
-  { label: 'Aprenda', href: '#' },
-  { label: 'Mapa', href: '#' },
-  { label: 'Arcade', href: '#' },
+  { label: 'Início', to: '/' },
+  { label: 'Arena', to: '/arena' },
+  { label: 'Aprenda', to: '/aprenda' },
+  { label: 'Mapa', to: '/mapa' },
+  { label: 'Arcade', to: '/arcade' },
 ];
 
 interface Props {
@@ -20,6 +21,7 @@ export function HeaderHud({ onSettingsOpen }: Props) {
   const [scrolled, setScrolled] = useState(false);
   const [xp, setXp] = useState(0);
   const [level, setLevel] = useState(1);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedXp = Math.max(0, Number(getStorage<string>(KEYS.xp, '0')) || 0);
@@ -40,21 +42,27 @@ export function HeaderHud({ onSettingsOpen }: Props) {
   return (
     <header className={[styles.header, scrolled ? styles.scrolled : ''].filter(Boolean).join(' ')}>
       <div className={styles.inner}>
-        <a className={styles.brand} href="#" aria-label="PandaDigitações, página inicial">
+        <Link className={styles.brand} to="/" aria-label="PandaDigitações, página inicial">
           <span className={styles.brandLogo} aria-hidden="true">🐼</span>
           <span>
             <span className={styles.brandText}>PandaDigitações</span>
             <small className={styles.brandSub}>Dojo Arcade</small>
           </span>
-        </a>
+        </Link>
 
         <nav className={styles.nav} aria-label="Navegação principal">
           <ul className={styles.navList}>
             {NAV_ITEMS.map((item) => (
               <li key={item.label}>
-                <a href={item.href} className={styles.navLink}>
+                <NavLink
+                  to={item.to}
+                  end={item.to === '/'}
+                  className={({ isActive }) =>
+                    [styles.navLink, isActive ? styles.active : ''].filter(Boolean).join(' ')
+                  }
+                >
                   {item.label}
-                </a>
+                </NavLink>
               </li>
             ))}
           </ul>
@@ -69,7 +77,7 @@ export function HeaderHud({ onSettingsOpen }: Props) {
             </div>
           </div>
 
-          <Button variant="primary" size="sm" onClick={() => {}}>
+          <Button variant="primary" size="sm" onClick={() => navigate('/arena')}>
             Treinar
           </Button>
 

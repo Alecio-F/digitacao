@@ -1,3 +1,4 @@
+import { Link } from 'react-router';
 import { PageShell } from '@/components/layout/PageShell';
 import { FingerPositionMap } from './components/FingerPositionMap';
 import { LearnCta } from './components/LearnCta';
@@ -119,7 +120,7 @@ export function LearnPage() {
           <section className={styles.sidePanel}>
             <span className={styles.eyebrow}>Próxima fase</span>
             <p className={styles.sidePanelText}>Depois desta página, vá para o Mapa e pratique letras base, acentuação, números e frases curtas.</p>
-            <a href="/mapa" className={styles.mapLink}>Abrir Mapa</a>
+            <Link to="/mapa" className={styles.mapLink}>Abrir Mapa</Link>
           </section>
         </aside>
       </div>

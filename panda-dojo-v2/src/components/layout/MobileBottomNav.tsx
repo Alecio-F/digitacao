@@ -1,33 +1,41 @@
+import { NavLink } from 'react-router';
 import styles from './MobileBottomNav.module.css';
 
 const ITEMS = [
-  { label: 'Início', icon: 'home', href: '#' },
-  { label: 'Arena', icon: 'keyboard', href: '#' },
-  { label: 'Mapa', icon: 'map', href: '#' },
-  { label: 'Arcade', icon: 'stadia_controller', href: '#' },
-  { label: 'Conta', icon: 'person', href: '#' },
+  { label: 'Início', icon: 'home', to: '/' as string | null },
+  { label: 'Arena', icon: 'keyboard', to: '/arena' as string | null },
+  { label: 'Mapa', icon: 'map', to: '/mapa' as string | null },
+  { label: 'Arcade', icon: 'stadia_controller', to: '/arcade' as string | null },
+  { label: 'Conta', icon: 'person', to: null },
 ];
 
-interface Props {
-  activePage?: string;
-}
-
-export function MobileBottomNav({ activePage }: Props) {
+export function MobileBottomNav() {
   return (
     <nav className={styles.nav} aria-label="Navegação mobile">
-      {ITEMS.map((item) => (
-        <a
-          key={item.label}
-          href={item.href}
-          className={[styles.item, activePage === item.label ? styles.active : ''].filter(Boolean).join(' ')}
-          aria-current={activePage === item.label ? 'page' : undefined}
-        >
-          <span className={`material-symbols-outlined ${styles.icon}`} aria-hidden="true">
-            {item.icon}
-          </span>
-          <strong>{item.label}</strong>
-        </a>
-      ))}
+      {ITEMS.map((item) =>
+        item.to ? (
+          <NavLink
+            key={item.label}
+            to={item.to}
+            end={item.to === '/'}
+            className={({ isActive }) =>
+              [styles.item, isActive ? styles.active : ''].filter(Boolean).join(' ')
+            }
+          >
+            <span className={`material-symbols-outlined ${styles.icon}`} aria-hidden="true">
+              {item.icon}
+            </span>
+            <strong>{item.label}</strong>
+          </NavLink>
+        ) : (
+          <a key={item.label} className={styles.item} aria-disabled="true">
+            <span className={`material-symbols-outlined ${styles.icon}`} aria-hidden="true">
+              {item.icon}
+            </span>
+            <strong>{item.label}</strong>
+          </a>
+        )
+      )}
     </nav>
   );
 }

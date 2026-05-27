@@ -7,10 +7,9 @@ import styles from './AppLayout.module.css';
 
 interface Props {
   children: ReactNode;
-  activePage?: string;
 }
 
-export function AppLayout({ children, activePage }: Props) {
+export function AppLayout({ children }: Props) {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
@@ -19,7 +18,7 @@ export function AppLayout({ children, activePage }: Props) {
       <div className={styles.content}>
         <HeaderHud onSettingsOpen={() => setDrawerOpen(true)} />
         {children}
-        <MobileBottomNav activePage={activePage} />
+        <MobileBottomNav />
       </div>
       <SettingsDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </div>
