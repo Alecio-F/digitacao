@@ -19,31 +19,36 @@
   right: 0;
   bottom: 0;
   z-index: 90;
-  width: min(420px, 100%);
-  padding: 22px;
+  width: min(400px, 100%);
+  padding: 0;
   overflow-y: auto;
   background: var(--dojo-card-bg);
   border-left: 1px solid var(--dojo-border-soft);
   box-shadow: var(--dojo-shadow-elevated);
   transform: translateX(105%);
   transition: transform var(--dojo-duration) var(--dojo-ease);
+  display: flex;
+  flex-direction: column;
 }
 
 .drawer.open {
   transform: translateX(0);
 }
 
+/* Header */
 .drawerHeader {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 28px;
+  padding: 22px 22px 18px;
+  border-bottom: 1px solid var(--dojo-border-soft);
+  flex-shrink: 0;
 }
 
 .drawerTitle {
   font-family: var(--font-title);
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: var(--dojo-text-strong);
 }
@@ -51,38 +56,56 @@
 .drawerKicker {
   display: block;
   font-family: var(--font-body);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dojo-primary);
+  margin-bottom: 4px;
+}
+
+/* Sections */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--dojo-border-soft);
+}
+
+.sectionLabel {
+  font-family: var(--font-title);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--dojo-text-muted);
   margin-bottom: 4px;
 }
 
+/* Setting row — bordered card */
 .row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--dojo-border-soft);
-}
-
-.row:last-child {
-  border-bottom: none;
+  padding: 14px 16px;
+  background: var(--dojo-surface-soft);
+  border: 1px solid var(--dojo-border-soft);
+  border-radius: var(--dojo-radius-sm);
 }
 
 .rowLabel strong {
   display: block;
   font-family: var(--font-title);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 700;
   color: var(--dojo-text-strong);
 }
 
 .rowLabel span {
   display: block;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: var(--dojo-text-muted);
   margin-top: 2px;
 }
@@ -92,17 +115,27 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 7px 14px;
   border-radius: var(--dojo-radius-pill);
   border: 1px solid var(--dojo-border);
-  background: var(--dojo-surface-soft);
+  background: var(--dojo-card-bg);
   cursor: pointer;
-  font-size: 18px;
-  transition: border-color var(--dojo-duration-fast) var(--dojo-ease);
+  font-size: 16px;
+  color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+  font-weight: 600;
+  white-space: nowrap;
+  transition: border-color var(--dojo-duration-fast) var(--dojo-ease),
+              background var(--dojo-duration-fast) var(--dojo-ease);
 }
 
 .themeToggle:hover {
-  border-color: var(--dojo-border-strong);
+  border-color: var(--dojo-primary);
+  background: color-mix(in srgb, var(--dojo-primary) 6%, var(--dojo-card-bg));
+}
+
+.themeLabel {
+  font-size: 0.82rem;
 }
 
 /* Select */
@@ -110,7 +143,7 @@
   padding: 8px 12px;
   border-radius: var(--dojo-radius-sm);
   border: 1px solid var(--dojo-border);
-  background: var(--dojo-surface-soft);
+  background: var(--dojo-card-bg);
   color: var(--dojo-text-strong);
   font-family: var(--font-title);
   font-size: 0.85rem;
@@ -129,7 +162,8 @@
   border: 1px solid var(--dojo-border);
   border-radius: var(--dojo-radius-pill);
   cursor: pointer;
-  transition: background var(--dojo-duration-fast) var(--dojo-ease);
+  transition: background var(--dojo-duration-fast) var(--dojo-ease),
+              border-color var(--dojo-duration-fast) var(--dojo-ease);
 }
 
 .switch::after {
@@ -153,4 +187,14 @@
 .switch:checked::after {
   transform: translateX(20px);
   background: #fff;
+}
+
+/* Footer */
+.drawerFooter {
+  margin-top: auto;
+  padding: 18px 22px;
+  border-top: 1px solid var(--dojo-border-soft);
+  font-size: 0.72rem;
+  color: var(--dojo-text-muted);
+  font-family: var(--font-title);
 }

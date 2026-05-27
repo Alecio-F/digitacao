@@ -42,83 +42,110 @@ export function SettingsDrawer({ open, onClose }: Props) {
         aria-modal="true"
         role="dialog"
       >
+        {/* Header */}
         <div className={styles.drawerHeader}>
           <div>
-            <span className={styles.drawerKicker}>Configurações</span>
-            <h2 className={styles.drawerTitle}>Preferências do treino</h2>
+            <span className={styles.drawerKicker}>Dojo Arcade</span>
+            <h2 className={styles.drawerTitle}>Configurações</h2>
           </div>
           <IconButton icon="close" label="Fechar configurações" onClick={onClose} />
         </div>
 
-        <div className={styles.row}>
-          <div className={styles.rowLabel}>
-            <strong>Tema claro/escuro</strong>
-            <span>Alterna a aparência do Dojo.</span>
+        {/* Section: Aparência */}
+        <div className={styles.section}>
+          <span className={styles.sectionLabel}>Aparência</span>
+          <div className={styles.row}>
+            <div className={styles.rowLabel}>
+              <strong>Tema claro/escuro</strong>
+              <span>Alterna a aparência do Dojo.</span>
+            </div>
+            <button
+              className={styles.themeToggle}
+              onClick={toggleTheme}
+              aria-label="Alternar tema"
+              aria-pressed={settings.theme === 'dark'}
+            >
+              <span className="material-symbols-outlined" aria-hidden="true">
+                {settings.theme === 'dark' ? 'light_mode' : 'dark_mode'}
+              </span>
+              <span className={styles.themeLabel}>
+                {settings.theme === 'dark' ? 'Claro' : 'Escuro'}
+              </span>
+            </button>
           </div>
-          <button className={styles.themeToggle} onClick={toggleTheme} aria-label="Alternar tema">
-            <span className="material-symbols-outlined" aria-hidden="true">
-              {settings.theme === 'dark' ? 'light_mode' : 'dark_mode'}
-            </span>
-          </button>
         </div>
 
-        <div className={styles.row}>
-          <label htmlFor="practiceTime" className={styles.rowLabel}>
-            <strong>Tempo de prática</strong>
-            <span>Duração padrão da Type Arena.</span>
-          </label>
-          <select
-            id="practiceTime"
-            className={styles.select}
-            value={settings.practiceTime}
-            onChange={(e) => setPracticeTime(parseFloat(e.target.value))}
-          >
-            {PRACTICE_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
-          </select>
+        {/* Section: Treino */}
+        <div className={styles.section}>
+          <span className={styles.sectionLabel}>Treino</span>
+          <div className={styles.row}>
+            <label htmlFor="practiceTime" className={styles.rowLabel}>
+              <strong>Tempo padrão</strong>
+              <span>Duração padrão da Type Arena.</span>
+            </label>
+            <select
+              id="practiceTime"
+              className={styles.select}
+              value={settings.practiceTime}
+              onChange={(e) => setPracticeTime(parseFloat(e.target.value))}
+            >
+              {PRACTICE_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        <div className={styles.row}>
-          <div className={styles.rowLabel}>
-            <strong>Sons do jogo</strong>
-            <span>Preparado para os minigames.</span>
+        {/* Section: Experiência */}
+        <div className={styles.section}>
+          <span className={styles.sectionLabel}>Experiência</span>
+
+          <div className={styles.row}>
+            <div className={styles.rowLabel}>
+              <strong>Sons do jogo</strong>
+              <span>Efeitos sonoros nos minigames.</span>
+            </div>
+            <input
+              type="checkbox"
+              className={styles.switch}
+              aria-label="Ativar sons"
+              checked={settings.sounds}
+              onChange={(e) => setSounds(e.target.checked)}
+            />
           </div>
-          <input
-            type="checkbox"
-            className={styles.switch}
-            aria-label="Ativar sons"
-            checked={settings.sounds}
-            onChange={(e) => setSounds(e.target.checked)}
-          />
+
+          <div className={styles.row}>
+            <div className={styles.rowLabel}>
+              <strong>Animações</strong>
+              <span>Transições leves da interface.</span>
+            </div>
+            <input
+              type="checkbox"
+              className={styles.switch}
+              aria-label="Ativar animações"
+              checked={settings.animations}
+              onChange={(e) => setAnimations(e.target.checked)}
+            />
+          </div>
+
+          <div className={styles.row}>
+            <div className={styles.rowLabel}>
+              <strong>Reduzir efeitos visuais</strong>
+              <span>Segue preferência do sistema.</span>
+            </div>
+            <input
+              type="checkbox"
+              className={styles.switch}
+              aria-label="Reduzir efeitos"
+              checked={settings.reducedEffects}
+              onChange={(e) => setReducedEffects(e.target.checked)}
+            />
+          </div>
         </div>
 
-        <div className={styles.row}>
-          <div className={styles.rowLabel}>
-            <strong>Animações</strong>
-            <span>Transições leves da interface.</span>
-          </div>
-          <input
-            type="checkbox"
-            className={styles.switch}
-            aria-label="Ativar animações"
-            checked={settings.animations}
-            onChange={(e) => setAnimations(e.target.checked)}
-          />
-        </div>
-
-        <div className={styles.row}>
-          <div className={styles.rowLabel}>
-            <strong>Reduzir efeitos visuais</strong>
-            <span>Use junto da preferência do sistema.</span>
-          </div>
-          <input
-            type="checkbox"
-            className={styles.switch}
-            aria-label="Reduzir efeitos"
-            checked={settings.reducedEffects}
-            onChange={(e) => setReducedEffects(e.target.checked)}
-          />
+        {/* Footer */}
+        <div className={styles.drawerFooter}>
+          <span>PandaDigitações · Dojo Arcade v2</span>
         </div>
       </aside>
     </>
