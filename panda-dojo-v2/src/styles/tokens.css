@@ -60,6 +60,12 @@
   /* Background page */
   --dojo-bg: #a5b5c1;
   --dojo-card-bg: rgba(255, 255, 255, 0.82);
+  --dojo-page-bg:
+    radial-gradient(circle at 15% 10%, rgba(0, 168, 204, 0.16), transparent 30%),
+    linear-gradient(160deg, rgba(191, 215, 234, 0.92), rgba(165, 181, 193, 0.86));
+
+  /* Container */
+  --dojo-container: min(1120px, calc(100% - 32px));
 }
 
 .dark {
@@ -90,4 +96,7 @@
 
   --dojo-bg: #131313;
   --dojo-card-bg: rgba(31, 31, 31, 0.86);
+  --dojo-page-bg:
+    radial-gradient(circle at 18% 8%, rgba(114, 245, 255, 0.1), transparent 30%),
+    linear-gradient(160deg, #131313, #222);
 }

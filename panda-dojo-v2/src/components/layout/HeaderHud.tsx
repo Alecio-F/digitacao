@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router';
-import { IconButton, Button } from '@/components/ui';
+import { IconButton } from '@/components/ui';
 import { KEYS, XP_PER_LEVEL } from '@/constants';
 import { getStorage } from '@/services/storage/storageService';
 import styles from './HeaderHud.module.css';
@@ -37,13 +37,14 @@ export function HeaderHud({ onSettingsOpen }: Props) {
     return () => window.removeEventListener('scroll', handler);
   }, []);
 
-  const xpPercent = Math.min(100, Math.round(((xp % XP_PER_LEVEL) / XP_PER_LEVEL) * 100));
+  const xpInLevel = xp % XP_PER_LEVEL;
+  const xpPercent = Math.min(100, Math.round((xpInLevel / XP_PER_LEVEL) * 100));
 
   return (
     <header className={[styles.header, scrolled ? styles.scrolled : ''].filter(Boolean).join(' ')}>
       <div className={styles.inner}>
         <Link className={styles.brand} to="/" aria-label="PandaDigitações, página inicial">
-          <span className={styles.brandLogo} aria-hidden="true">🐼</span>
+          <img src="/logo.png" alt="PandaDigitações" width="42" height="50" className={styles.brandImg} />
           <span>
             <span className={styles.brandText}>PandaDigitações</span>
             <small className={styles.brandSub}>Dojo Arcade</small>
@@ -69,17 +70,18 @@ export function HeaderHud({ onSettingsOpen }: Props) {
         </nav>
 
         <div className={styles.actions}>
-          <div className={styles.playerStatus} aria-label="Status do jogador">
-            <span className={styles.playerLevel}>Nível {level}</span>
-            <strong className={styles.playerXp}>{xp} XP</strong>
+          <div className={styles.playerBadge} aria-label="Status do jogador">
+            <span className={styles.badgeLevel}>Nível {level}</span>
+            <span className={styles.badgeSep}>·</span>
+            <span className={styles.badgeXp}>{xp} XP</span>
             <div className={styles.xpBar} aria-hidden="true">
               <i className={styles.xpFill} style={{ width: `${xpPercent}%` }} />
             </div>
           </div>
 
-          <Button variant="primary" size="sm" onClick={() => navigate('/arena')}>
-            Treinar
-          </Button>
+          <button className={styles.trainBtn} onClick={() => navigate('/arena')}>
+            Começar treino
+          </button>
 
           <IconButton icon="settings" label="Configurações" onClick={onSettingsOpen} />
         </div>

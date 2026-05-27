@@ -18,6 +18,7 @@ export function AppLayout({ children }: Props) {
       <div className={styles.content}>
         <HeaderHud onSettingsOpen={() => setDrawerOpen(true)} />
         {children}
+        <footer>© 2025 PandaDigitações.</footer>
         <MobileBottomNav />
       </div>
       <SettingsDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />

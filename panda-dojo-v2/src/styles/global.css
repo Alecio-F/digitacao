@@ -21,7 +21,8 @@ body {
   font-size: 1rem;
   line-height: 1.6;
   color: var(--dojo-text);
-  background-color: var(--dojo-bg);
+  background: var(--dojo-page-bg);
+  background-attachment: fixed;
   max-width: 100%;
   overflow-x: hidden;
   isolation: isolate;
@@ -54,4 +55,22 @@ svg {
   outline: none;
   box-shadow: var(--dojo-focus-ring);
   border-radius: var(--dojo-radius-sm);
+}
+
+/* Centered container — use on every page section */
+.dojo-section {
+  width: var(--dojo-container);
+  margin: 0 auto;
+  padding: 44px 0;
+}
+
+footer {
+  width: var(--dojo-container);
+  margin: 0 auto;
+  padding: 28px 0;
+  text-align: center;
+  font-family: var(--font-title);
+  font-size: 13px;
+  color: var(--dojo-text-muted);
+  border-top: 1px solid var(--dojo-border-soft);
 }
