@@ -12,6 +12,7 @@ export interface HistoryItem {
   tempo?: number;
   lessonId?: string | null;
   novoRecorde?: boolean;
+  data?: string;
 }
 
 export interface DojoProfile {

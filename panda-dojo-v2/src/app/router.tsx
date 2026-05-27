@@ -4,6 +4,7 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { HomePage } from '@/pages/HomePage';
 import { LearnPage } from '@/pages/LearnPage';
 import { DojoMapPage } from '@/pages/DojoMapPage';
+import { ArenaPage } from '@/pages/ArenaPage';
 
 export function AppRouter() {
   return (
@@ -14,6 +15,7 @@ export function AppRouter() {
             <Route path="/"        element={<HomePage />} />
             <Route path="/aprenda" element={<LearnPage />} />
             <Route path="/mapa"    element={<DojoMapPage />} />
+            <Route path="/arena"   element={<ArenaPage />} />
             <Route path="*"        element={<HomePage />} />
           </Routes>
         </AppLayout>

@@ -1,0 +1,66 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dojo-space-5);
+  padding-bottom: var(--dojo-space-10);
+}
+
+.lessonBanner {
+  display: flex;
+  align-items: center;
+  gap: var(--dojo-space-3);
+  padding: var(--dojo-space-3) var(--dojo-space-4);
+  background: color-mix(in srgb, var(--dojo-primary) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--dojo-primary) 30%, transparent);
+  border-radius: var(--dojo-radius-sm);
+  font-size: 0.82rem;
+  color: var(--dojo-text-muted);
+}
+
+.lessonBannerTitle {
+  font-weight: 700;
+  color: var(--dojo-text-strong);
+}
+
+.controls {
+  display: flex;
+  gap: var(--dojo-space-3);
+  align-items: center;
+}
+
+.iconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--dojo-radius-sm);
+  background: var(--dojo-surface-soft);
+  border: 1px solid var(--dojo-border-soft);
+  color: var(--dojo-text-muted);
+  cursor: pointer;
+  transition: background var(--dojo-duration-fast) var(--dojo-ease),
+              color var(--dojo-duration-fast) var(--dojo-ease);
+}
+
+.iconBtn:hover {
+  background: var(--dojo-surface-tint);
+  color: var(--dojo-text-strong);
+}
+
+.iconBtn .material-symbols-outlined {
+  font-size: 1.3rem;
+  font-variation-settings: 'FILL' 1;
+}
+
+.pauseOverlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--dojo-space-6);
+  background: var(--dojo-surface-soft);
+  border: 1px solid var(--dojo-border-soft);
+  border-radius: var(--dojo-radius-md);
+  font-size: 0.9rem;
+  color: var(--dojo-text-muted);
+}

@@ -1,0 +1,53 @@
+.kb {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: var(--dojo-space-4) var(--dojo-space-5);
+  background: var(--dojo-surface-soft);
+  border: 1px solid var(--dojo-border-soft);
+  border-radius: var(--dojo-radius-md);
+  overflow-x: auto;
+}
+
+.row {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+
+.key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 6px;
+  background: var(--dojo-card-bg);
+  border: 1px solid var(--dojo-border);
+  border-radius: var(--dojo-radius-xs);
+  box-shadow: 0 2px 0 var(--dojo-border-strong);
+  font-family: var(--font-title);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--dojo-text-muted);
+  transition: background var(--dojo-duration-fast) var(--dojo-ease),
+              color var(--dojo-duration-fast) var(--dojo-ease),
+              transform var(--dojo-duration-fast) var(--dojo-ease);
+  user-select: none;
+}
+
+.keyActive {
+  background: var(--dojo-primary);
+  color: #fff;
+  border-color: var(--dojo-primary);
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--dojo-primary) 50%, transparent);
+  transform: translateY(1px);
+}
+
+.keyWide {
+  min-width: 56px;
+}
+
+.keyXwide {
+  min-width: 120px;
+}
