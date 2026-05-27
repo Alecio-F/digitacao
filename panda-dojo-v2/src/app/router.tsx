@@ -5,6 +5,7 @@ import { HomePage } from '@/pages/HomePage';
 import { LearnPage } from '@/pages/LearnPage';
 import { DojoMapPage } from '@/pages/DojoMapPage';
 import { ArenaPage } from '@/pages/ArenaPage';
+import { ArcadePage } from '@/pages/ArcadePage';
 
 export function AppRouter() {
   return (
@@ -16,6 +17,7 @@ export function AppRouter() {
             <Route path="/aprenda" element={<LearnPage />} />
             <Route path="/mapa"    element={<DojoMapPage />} />
             <Route path="/arena"   element={<ArenaPage />} />
+            <Route path="/arcade"  element={<ArcadePage />} />
             <Route path="*"        element={<HomePage />} />
           </Routes>
         </AppLayout>
