@@ -1,9 +1,10 @@
 .hero {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
   gap: var(--dojo-space-8);
-  align-items: start;
-  padding: var(--dojo-space-8) 0 var(--dojo-space-7);
+  align-items: center;
+  padding-top: 36px;
+  padding-bottom: var(--dojo-space-7);
 }
 
 .eyebrow {
@@ -47,11 +48,11 @@
 
 /* Mentor card */
 .mentorCard {
-  background: var(--dojo-surface);
-  border: 1px solid var(--dojo-border);
-  border-radius: var(--dojo-radius-xl);
+  background: var(--dojo-card-bg);
+  border: 1px solid var(--dojo-border-soft);
+  border-radius: var(--dojo-radius-md);
   padding: var(--dojo-space-6);
-  width: 240px;
+  box-shadow: var(--dojo-shadow-card);
   display: flex;
   flex-direction: column;
   gap: var(--dojo-space-5);
@@ -88,15 +89,17 @@
   line-height: 1.5;
 }
 
-.pandaEmoji {
-  font-size: 72px;
-  text-align: center;
-  animation: pandaFloat 2.8s ease-in-out infinite alternate;
+.pandaImg {
+  display: block;
+  width: min(80%, 220px);
+  margin: 0 auto;
+  filter: drop-shadow(0 12px 18px rgba(11, 57, 84, 0.25));
+  animation: pandaFloat 3s ease-in-out infinite alternate;
 }
 
 @keyframes pandaFloat {
   from { transform: translateY(0); }
-  to   { transform: translateY(-8px); }
+  to   { transform: translateY(-10px); }
 }
 
 .lessonProgress {
@@ -116,5 +119,4 @@
 
 @media (max-width: 768px) {
   .hero { grid-template-columns: 1fr; }
-  .mentorCard { width: 100%; }
 }

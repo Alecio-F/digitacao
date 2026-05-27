@@ -6,7 +6,7 @@ export function LearnCta() {
   const navigate = useNavigate();
 
   return (
-    <article className={styles.cta}>
+    <article className={`dojo-section ${styles.cta}`}>
       <span className={styles.eyebrow}>Missão concluída</span>
       <h2 className={styles.heading}>Pronto para testar o que aprendeu?</h2>
       <p className={styles.sub}>

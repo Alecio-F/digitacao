@@ -6,7 +6,7 @@ export function MentorHero() {
   const navigate = useNavigate();
 
   return (
-    <section className={styles.hero} aria-labelledby="learn-title">
+    <section className={`dojo-section ${styles.hero}`} aria-labelledby="learn-title">
       <div className={styles.copy}>
         <span className={styles.eyebrow}>Tutorial do Dojo</span>
         <h1 id="learn-title" className={styles.heading}>Aprenda com o Mestre Panda.</h1>
@@ -38,7 +38,7 @@ export function MentorHero() {
           <span className={styles.rewardBadge}>+50 XP</span>
         </div>
         <p className={styles.mentorDesc}>Complete os fundamentos para liberar treinos melhores no mapa do dojo.</p>
-        <div className={styles.pandaEmoji} aria-hidden="true">🐼</div>
+        <img src="/mentor-panda.png" alt="Mestre Panda" className={styles.pandaImg} />
         <div className={styles.lessonProgress}>
           <div className={styles.progressHeader}>
             <span>Progresso dos fundamentos</span>

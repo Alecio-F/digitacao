@@ -3,7 +3,6 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--dojo-space-5);
-  margin-bottom: var(--dojo-space-8);
 }
 
 .pathCard {
@@ -47,7 +46,6 @@
   grid-template-columns: 1fr 300px;
   gap: var(--dojo-space-7);
   align-items: start;
-  margin-bottom: var(--dojo-space-8);
 }
 
 /* Modules */
