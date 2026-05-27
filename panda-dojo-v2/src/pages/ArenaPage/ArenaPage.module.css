@@ -2,9 +2,12 @@
   display: flex;
   flex-direction: column;
   gap: var(--dojo-space-5);
-  padding-bottom: var(--dojo-space-10);
+  padding: 28px 0 var(--dojo-space-8);
+  width: var(--dojo-container);
+  margin: 0 auto;
 }
 
+/* Lesson banner */
 .lessonBanner {
   display: flex;
   align-items: center;
@@ -22,9 +25,115 @@
   color: var(--dojo-text-strong);
 }
 
+/* ── Arena Card ── */
+.arenaCard {
+  border: 1px solid var(--dojo-border-soft);
+  border-radius: var(--dojo-radius-md);
+  background: var(--dojo-card-bg);
+  box-shadow: var(--dojo-shadow-card);
+  overflow: hidden;
+}
+
+/* Thin progress line at top of card */
+.progressLine {
+  height: 3px;
+  background: var(--dojo-border-soft);
+}
+
+.progressLineFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--dojo-primary), var(--dojo-secondary));
+  transition: width 1s linear;
+}
+
+/* Card header bar */
+.cardBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--dojo-border-soft);
+}
+
+.cardBarLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mentorLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-title);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--dojo-text-strong);
+}
+
+.mentorLabel .material-symbols-outlined {
+  font-size: 1.1rem;
+  color: var(--dojo-primary);
+}
+
+.phaseChip {
+  padding: 2px 10px;
+  border-radius: var(--dojo-radius-pill);
+  background: color-mix(in srgb, var(--dojo-primary) 12%, transparent);
+  border: 1px solid var(--dojo-border-strong);
+  font-family: var(--font-title);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--dojo-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.cardBarRight {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.statusHint {
+  font-size: 0.82rem;
+  color: var(--dojo-text-muted);
+}
+
+/* Inline metrics (during typing) */
+.inlineMetrics {
+  display: flex;
+  gap: 14px;
+}
+
+.inlineMetric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.inlineMetric strong {
+  font-family: var(--font-title);
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--dojo-text-strong);
+  line-height: 1;
+}
+
+.inlineMetric span {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--dojo-text-muted);
+}
+
+/* Controls */
 .controls {
   display: flex;
-  gap: var(--dojo-space-3);
+  gap: 6px;
   align-items: center;
 }
 
@@ -32,15 +141,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: var(--dojo-radius-sm);
   background: var(--dojo-surface-soft);
   border: 1px solid var(--dojo-border-soft);
   color: var(--dojo-text-muted);
   cursor: pointer;
-  transition: background var(--dojo-duration-fast) var(--dojo-ease),
-              color var(--dojo-duration-fast) var(--dojo-ease);
+  transition: background 0.18s ease, color 0.18s ease;
 }
 
 .iconBtn:hover {
@@ -49,18 +157,82 @@
 }
 
 .iconBtn .material-symbols-outlined {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-variation-settings: 'FILL' 1;
 }
 
+/* Duration selector bar (idle only) */
+.durationBar {
+  display: flex;
+  align-items: center;
+  gap: var(--dojo-space-3);
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--dojo-border-soft);
+  background: var(--dojo-surface-soft);
+}
+
+.durationLabel {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--dojo-text-muted);
+}
+
+.durationSelect {
+  padding: 4px 10px;
+  background: var(--dojo-card-bg);
+  border: 1px solid var(--dojo-border);
+  border-radius: var(--dojo-radius-xs);
+  color: var(--dojo-text-strong);
+  font-size: 0.82rem;
+  font-family: var(--font-title);
+  cursor: pointer;
+}
+
+/* Pause overlay inside card */
 .pauseOverlay {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--dojo-space-6);
-  background: var(--dojo-surface-soft);
+  min-height: 180px;
+  font-family: var(--font-title);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--dojo-text-muted);
+}
+
+/* ── DOJO KEY DECK ── */
+.keyDeck {
   border: 1px solid var(--dojo-border-soft);
   border-radius: var(--dojo-radius-md);
-  font-size: 0.9rem;
+  background: var(--dojo-card-bg);
+  box-shadow: var(--dojo-shadow-card);
+  overflow: hidden;
+}
+
+.keyDeckHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--dojo-border-soft);
+}
+
+.keyDeckLabel {
+  font-family: var(--font-title);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--dojo-text-muted);
+}
+
+.keyDeckDots {
+  display: flex;
+  gap: 6px;
+}
+
+.keyDeckDots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
 }

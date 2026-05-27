@@ -3,11 +3,10 @@ import { PageShell } from '@/components/layout/PageShell';
 import { KEYS } from '@/constants';
 import { getLessonById } from '@/features/lessons/data/lessons';
 import { useTypingSession } from '@/features/typing/hooks/useTypingSession';
-import { useTypingTimer } from '@/features/typing/hooks/useTypingTimer';
+import { PRACTICE_OPTIONS, useTypingTimer } from '@/features/typing/hooks/useTypingTimer';
 import { getBestPpm, saveSessionResult } from '@/features/typing/utils/saveResult';
 import { ResultsScreen } from './components/ResultsScreen';
 import { TextDisplay } from './components/TextDisplay';
-import { TimerHud } from './components/TimerHud';
 import { VirtualKeyboard } from './components/VirtualKeyboard';
 import styles from './ArenaPage.module.css';
 
@@ -23,6 +22,13 @@ interface SavedResult {
   isRecord: boolean;
   topErrors: [string, number][];
 }
+
+const PHASE_LABEL: Record<string, string> = {
+  idle: 'Pronto',
+  running: 'Digitando',
+  paused: 'Pausado',
+  finished: 'Concluído',
+};
 
 export function ArenaPage() {
   const lessonId = localStorage.getItem(KEYS.selectedLessonId);
@@ -48,21 +54,20 @@ export function ArenaPage() {
     onFinish: () => {},
   });
 
-  // Save result when timer finishes (once)
   useEffect(() => {
     if (timer.phase !== 'finished' || savedRef.current) return;
     savedRef.current = true;
 
     const prevBest = getBestPpm();
     const isRecord = timer.ppm > 0 && timer.ppm > prevBest;
-    const duration = timer.totalSeconds / 60;
+    const dur = timer.totalSeconds / 60;
 
     const output = saveSessionResult({
       ppm: timer.ppm,
       cpm: timer.cpm,
       precision,
       errors: state.totalIncorrect,
-      duration,
+      duration: dur,
       lessonId,
       isRecord,
       topErrors,
@@ -143,52 +148,125 @@ export function ArenaPage() {
               </div>
             )}
 
-            <TimerHud
-              formattedTime={formattedTime}
-              progressPercent={progressPercent}
-              ppm={timer.ppm}
-              cpm={timer.cpm}
-              precision={precision}
-              errors={state.totalIncorrect}
-              combo={state.combo}
-              duration={duration}
-              isIdle={timer.phase === 'idle'}
-              onDurationChange={changeDuration}
-            />
+            {/* ── Arena Card ── */}
+            <div className={styles.arenaCard}>
 
-            <div className={styles.controls}>
-              {timer.phase !== 'idle' && (
-                <button
-                  className={styles.iconBtn}
-                  onClick={togglePause}
-                  aria-label={timer.phase === 'paused' ? 'Retomar' : 'Pausar'}
-                >
-                  <span className="material-symbols-outlined">
-                    {timer.phase === 'paused' ? 'play_circle' : 'pause_circle'}
+              {/* Progress line */}
+              <div className={styles.progressLine}>
+                <div
+                  className={styles.progressLineFill}
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
+
+              {/* Card header bar */}
+              <div className={styles.cardBar}>
+                <div className={styles.cardBarLeft}>
+                  <span className={styles.mentorLabel}>
+                    <span className="material-symbols-outlined">smart_toy</span>
+                    Mestre Panda
                   </span>
-                </button>
+                  <span className={styles.phaseChip}>
+                    {PHASE_LABEL[timer.phase] ?? timer.phase}
+                  </span>
+                </div>
+
+                <div className={styles.cardBarRight}>
+                  {timer.phase !== 'idle' && (
+                    <div className={styles.inlineMetrics}>
+                      <div className={styles.inlineMetric}>
+                        <strong>{formattedTime}</strong>
+                        <span>TEMPO</span>
+                      </div>
+                      <div className={styles.inlineMetric}>
+                        <strong>{timer.ppm}</strong>
+                        <span>PPM</span>
+                      </div>
+                      <div className={styles.inlineMetric}>
+                        <strong>{precision}%</strong>
+                        <span>PREC.</span>
+                      </div>
+                      <div className={styles.inlineMetric}>
+                        <strong>{state.combo}x</strong>
+                        <span>COMBO</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {timer.phase === 'idle' && (
+                    <span className={styles.statusHint}>Digite para começar</span>
+                  )}
+
+                  <div className={styles.controls}>
+                    {timer.phase !== 'idle' && (
+                      <button
+                        className={styles.iconBtn}
+                        onClick={togglePause}
+                        aria-label={timer.phase === 'paused' ? 'Retomar' : 'Pausar'}
+                      >
+                        <span className="material-symbols-outlined">
+                          {timer.phase === 'paused' ? 'play_circle' : 'pause_circle'}
+                        </span>
+                      </button>
+                    )}
+                    <button
+                      className={styles.iconBtn}
+                      onClick={handleRestart}
+                      aria-label="Reiniciar"
+                    >
+                      <span className="material-symbols-outlined">restart_alt</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Duration selector (idle only) */}
+              {timer.phase === 'idle' && (
+                <div className={styles.durationBar}>
+                  <span className={styles.durationLabel}>Duração:</span>
+                  <select
+                    className={styles.durationSelect}
+                    value={duration}
+                    onChange={(e) => changeDuration(parseFloat(e.target.value))}
+                  >
+                    {PRACTICE_OPTIONS.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt < 1 ? `${opt * 60}s` : `${opt}min`}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               )}
-              <button className={styles.iconBtn} onClick={handleRestart} aria-label="Reiniciar">
-                <span className="material-symbols-outlined">restart_alt</span>
-              </button>
+
+              {/* Text display or pause overlay */}
+              {timer.phase === 'paused' ? (
+                <div className={styles.pauseOverlay}>
+                  ⏸ Treino pausado — clique em retomar para continuar
+                </div>
+              ) : (
+                <TextDisplay
+                  words={state.words}
+                  currentWordIndex={state.currentWordIndex}
+                  currentLetterIndex={state.currentLetterIndex}
+                  feedback={state.feedback}
+                  disabled={timer.phase === 'finished'}
+                  onKey={handleTypingKey}
+                />
+              )}
             </div>
 
-            {timer.phase === 'paused' ? (
-              <div className={styles.pauseOverlay}>
-                ⏸ Treino pausado — clique em retomar para continuar
+            {/* ── DOJO KEY DECK ── */}
+            <div className={styles.keyDeck}>
+              <div className={styles.keyDeckHeader}>
+                <span className={styles.keyDeckLabel}>Dojo Key Deck</span>
+                <div className={styles.keyDeckDots}>
+                  <span style={{ background: '#ff5f57' }} />
+                  <span style={{ background: '#febc2e' }} />
+                  <span style={{ background: '#28c840' }} />
+                </div>
               </div>
-            ) : (
-              <TextDisplay
-                words={state.words}
-                currentWordIndex={state.currentWordIndex}
-                currentLetterIndex={state.currentLetterIndex}
-                feedback={state.feedback}
-                disabled={timer.phase === 'finished'}
-                onKey={handleTypingKey}
-              />
-            )}
-
-            <VirtualKeyboard activeKey={timer.phase === 'running' ? expectedChar : ''} />
+              <VirtualKeyboard activeKey={timer.phase === 'running' ? expectedChar : ''} />
+            </div>
           </>
         )}
       </div>
