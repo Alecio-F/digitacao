@@ -1,45 +1,471 @@
+/* ── Hero ── */
+.heroSection {
+  padding-top: 36px;
+}
+
 .hero {
-  padding: var(--dojo-space-8) 0 var(--dojo-space-7);
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+  align-items: center;
+  gap: 34px;
+  min-height: 480px;
 }
 
 .kicker {
-  display: inline-block;
-  font-family: var(--font-body);
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  color: var(--dojo-secondary);
+  font-family: var(--font-title);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--dojo-primary);
-  margin-bottom: var(--dojo-space-3);
 }
 
-.heading {
+.heroTitle {
+  max-width: 620px;
   font-family: var(--font-title);
-  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  font-size: clamp(38px, 5.5vw, 68px);
   font-weight: 700;
   color: var(--dojo-text-strong);
-  line-height: 1.2;
-  margin-bottom: var(--dojo-space-4);
+  line-height: 0.96;
+  letter-spacing: -0.01em;
 }
 
-.sub {
-  font-size: 1rem;
+.heroSub {
+  max-width: 520px;
+  margin-top: 18px;
   color: var(--dojo-text-muted);
-  max-width: 480px;
-  line-height: 1.6;
-  margin-bottom: var(--dojo-space-6);
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  line-height: 1.5;
 }
 
 .heroCta {
   display: flex;
+  gap: 12px;
   flex-wrap: wrap;
-  gap: var(--dojo-space-4);
-  align-items: center;
+  margin-top: 26px;
 }
 
-.grid {
+/* ── Mentor card ── */
+.mentorCard {
+  position: relative;
+  min-height: 380px;
+  border: 1px solid var(--dojo-border-soft);
+  border-radius: var(--dojo-radius-md);
+  overflow: hidden;
+  background: var(--dojo-card-bg);
+  box-shadow: var(--dojo-shadow-card);
+}
+
+.mentorPanel {
+  position: absolute;
+  left: 18px;
+  top: 18px;
+  width: min(260px, calc(100% - 36px));
+  border: 1px solid var(--dojo-border);
+  border-radius: var(--dojo-radius-sm);
+  padding: 16px;
+  background: var(--dojo-card-bg);
+  backdrop-filter: blur(8px);
+  z-index: 1;
+}
+
+.mentorPanel strong {
+  display: block;
+  color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.mentorPanel span {
+  display: block;
+  margin-top: 8px;
+  color: var(--dojo-text-muted);
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.mentorImg {
+  position: absolute;
+  right: 2%;
+  bottom: -12px;
+  width: min(76%, 370px);
+  filter: drop-shadow(0 18px 20px rgba(11, 57, 84, 0.3));
+}
+
+.keyboardRgb {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 16px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
-  gap: var(--dojo-space-6);
-  padding-bottom: var(--dojo-space-8);
+  grid-template-columns: repeat(9, 1fr);
+  gap: 6px;
+  z-index: 1;
+}
+
+.keyboardRgb span {
+  height: 8px;
+  border-radius: 3px;
+  background: var(--dojo-primary);
+  opacity: 0.5;
+}
+
+.keyboardRgb span:nth-child(3n) { background: var(--dojo-secondary); }
+.keyboardRgb span:nth-child(4n) { background: var(--dojo-warning); }
+
+/* ── Shared buttons ── */
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 20px;
+  border-radius: var(--dojo-radius-sm);
+  background: var(--dojo-text-strong);
+  color: #eee;
+  font-family: var(--font-title);
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(11, 57, 84, 0.22);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.btnPrimary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 3px rgba(0, 168, 204, 0.18), 0 10px 20px rgba(11, 57, 84, 0.2);
+}
+
+.btnSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 20px;
+  border-radius: var(--dojo-radius-sm);
+  background: var(--dojo-card-bg);
+  color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+  font-size: 14px;
+  font-weight: 700;
+  border: 1px solid var(--dojo-border);
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease;
+}
+
+.btnSecondary:hover {
+  transform: translateY(-1px);
+  border-color: var(--dojo-primary);
+}
+
+/* ── Section title ── */
+.sectionTitle {
+  color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+  font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+/* ── Quick access grid ── */
+.quickGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.quickCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 20px;
+  border: 1px solid var(--dojo-border-soft);
+  border-radius: var(--dojo-radius-sm);
+  background: var(--dojo-card-bg);
+  box-shadow: var(--dojo-shadow-card);
+}
+
+.quickNum {
+  display: block;
+  font-family: var(--font-title);
+  font-size: clamp(28px, 3.5vw, 44px);
+  font-weight: 700;
+  color: var(--dojo-border);
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.quickTitle {
+  color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.quickDesc {
+  color: var(--dojo-text-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.quickBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 38px;
+  border-radius: var(--dojo-radius-sm);
+  background: var(--dojo-text-strong);
+  color: #eee;
+  font-family: var(--font-title);
+  font-size: 13px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(11, 57, 84, 0.18);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.quickBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 3px rgba(0, 168, 204, 0.16), 0 8px 16px rgba(11, 57, 84, 0.18);
+}
+
+/* ── Progress layout ── */
+.progressLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.progressPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 26px 24px;
+  border: 1px solid var(--dojo-border-soft);
+  border-radius: var(--dojo-radius-sm);
+  background: var(--dojo-card-bg);
+  box-shadow: var(--dojo-shadow-card);
+}
+
+.panelTitle {
+  color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.statBox {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--dojo-border-soft);
+  border-radius: var(--dojo-radius-sm);
+  background: var(--dojo-surface-soft);
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: var(--dojo-text-muted);
+  font-family: var(--font-title);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.statValue {
+  font-family: var(--font-title);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--dojo-text-strong);
+}
+
+.progressBar {
+  height: 6px;
+  background: var(--dojo-surface-soft);
+  border-radius: var(--dojo-radius-pill);
+  overflow: hidden;
+}
+
+.progressFill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--dojo-primary), var(--dojo-secondary));
+  border-radius: var(--dojo-radius-pill);
+  transition: width 0.6s ease;
+}
+
+.progressCaption {
+  font-size: 0.82rem;
+  color: var(--dojo-text-muted);
+  margin-top: -8px;
+}
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.subHeading {
+  font-family: var(--font-title);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--dojo-text-strong);
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.historyItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 14px;
+  background: var(--dojo-surface-soft);
+  border-radius: var(--dojo-radius-sm);
+  font-size: 0.88rem;
+}
+
+.historyItem strong {
+  color: var(--dojo-primary);
+  font-family: var(--font-title);
+  font-weight: 700;
+}
+
+.historyItem span { color: var(--dojo-text-muted); }
+
+/* ── Right column ── */
+.rightCol {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sidePanel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid var(--dojo-border-soft);
+  border-radius: var(--dojo-radius-sm);
+  background: var(--dojo-card-bg);
+  box-shadow: var(--dojo-shadow-card);
+}
+
+.missionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.missionItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--dojo-border-soft);
+  border-radius: var(--dojo-radius-sm);
+  background: var(--dojo-surface-soft);
+}
+
+.missionItem strong {
+  font-family: var(--font-title);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--dojo-text-strong);
+}
+
+.missionItem span {
+  font-size: 0.76rem;
+  color: var(--dojo-text-muted);
+  line-height: 1.4;
+}
+
+.missionDone { opacity: 0.55; }
+
+/* ── Training trails ── */
+.trailGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.trailCard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 16px;
+  border: 1px solid var(--dojo-border-soft);
+  border-radius: var(--dojo-radius-sm);
+  background: var(--dojo-card-bg);
+  box-shadow: var(--dojo-shadow-soft);
+}
+
+.trailLocked { opacity: 0.6; }
+
+.trailStep {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--dojo-surface-soft);
+  border: 1px solid var(--dojo-border);
+  font-family: var(--font-title);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--dojo-text-muted);
+}
+
+.trailTitle {
+  font-family: var(--font-title);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--dojo-text-strong);
+}
+
+.trailDesc {
+  font-size: 0.8rem;
+  color: var(--dojo-text-muted);
+  line-height: 1.4;
+  flex: 1;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; }
+  .mentorCard { min-height: 280px; }
+  .quickGrid { grid-template-columns: 1fr; }
+  .progressLayout { grid-template-columns: 1fr; }
+  .trailGrid { grid-template-columns: repeat(2, 1fr); }
+  .statsGrid { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .trailGrid { grid-template-columns: 1fr; }
+  .statsGrid { grid-template-columns: repeat(2, 1fr); }
+  .missionGrid { grid-template-columns: 1fr; }
 }
