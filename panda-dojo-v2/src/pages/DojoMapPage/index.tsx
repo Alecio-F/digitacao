@@ -24,15 +24,16 @@ export function DojoMapPage() {
 
   return (
     <PageShell title="Mapa do Dojo">
-      <div className={styles.page}>
-        <header className={styles.hero}>
-          <span className={styles.eyebrow}>Mapa do Dojo</span>
-          <h1 className={styles.heading}>Sua jornada de aprendizado</h1>
-          <p className={styles.sub}>
-            Complete as lições em ordem, ganhe medalhas e desbloqueie novos desafios.
-          </p>
-        </header>
 
+      <section className={`dojo-section ${styles.hero}`}>
+        <span className={styles.eyebrow}>Mapa do Dojo</span>
+        <h1 className={styles.heading}>Sua jornada de aprendizado</h1>
+        <p className={styles.sub}>
+          Complete as lições em ordem, ganhe medalhas e desbloqueie novos desafios.
+        </p>
+      </section>
+
+      <section className={`dojo-section ${styles.gridSection}`}>
         <div className={styles.grid}>
           <main className={styles.main}>
             <LessonTrail onStart={handleStart} />
@@ -54,7 +55,8 @@ export function DojoMapPage() {
             <DailyMissionList missions={missions} />
           </aside>
         </div>
-      </div>
+      </section>
+
     </PageShell>
   );
 }
