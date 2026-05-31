@@ -1,3 +1,4 @@
+/* ── Header ── */
 .header {
   position: sticky;
   top: 0;
@@ -16,7 +17,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 18px;
   width: var(--dojo-container);
   margin: 0 auto;
   height: var(--dojo-header-height);
@@ -38,8 +39,8 @@
 .brand:hover { opacity: 0.85; }
 
 .brandImg {
-  width: 38px;
-  height: 46px;
+  width: 50px;
+  height: 60px;
   object-fit: contain;
   border-radius: var(--dojo-radius-xs);
 }
@@ -47,7 +48,7 @@
 .brandText {
   display: block;
   line-height: 1;
-  font-size: 0.95rem;
+  font-size: 1rem;
 }
 
 .brandSub {
@@ -55,7 +56,7 @@
   margin-top: 3px;
   color: var(--dojo-text-muted);
   font-family: var(--font-body);
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -69,45 +70,63 @@
 .navList {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 0;
 }
 
-/* Chip-style nav links */
+.navList li:not(:last-child) {
+  padding-right: 20px;
+}
+
+/* ── Nav link — V1 style: texto puro com underline animado ── */
 .navLink {
-  display: inline-flex;
-  align-items: center;
-  padding: 7px 14px;
-  border-radius: var(--dojo-radius-sm);
-  background: var(--dojo-surface-soft);
-  border: 1px solid var(--dojo-border-soft);
+  position: relative;
+  display: inline-block;
   font-family: var(--font-title);
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 17px;
+  font-weight: 600;
   color: var(--dojo-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  white-space: nowrap;
-  transition: border-color 0.18s ease,
-              color 0.18s ease,
-              background 0.18s ease,
-              box-shadow 0.18s ease,
-              transform 0.15s ease;
+  text-shadow: 0px 2px 2px rgba(109, 109, 109, 0.25);
+  border-bottom: solid 2px transparent;
+  padding-bottom: 2px;
+  transition: color 160ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              text-shadow 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
+/* Linha gradiente (::after) — aparece no hover e ativo */
+.navLink::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--dojo-primary), var(--dojo-secondary));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Hover: sobe 2px + glow + linha aparece */
 .navLink:hover {
-  color: var(--dojo-text-strong);
-  border-color: var(--dojo-border-strong);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 168, 204, 0.1);
+  transform: translateY(-2px);
+  text-shadow: 0 0 14px rgba(0, 168, 204, 0.22);
 }
 
+.navLink:hover::after {
+  transform: scaleX(1);
+}
+
+/* Active: borda inferior sólida + linha gradiente sempre visível */
 .navLink.active {
-  color: var(--dojo-primary);
-  border-color: var(--dojo-primary);
-  background: color-mix(in srgb, var(--dojo-primary) 10%, var(--dojo-surface-soft));
-  box-shadow: 0 0 0 1px var(--dojo-primary),
-              0 4px 16px rgba(0, 168, 204, 0.22);
-  transform: none;
+  border-bottom-color: var(--dojo-text-muted);
+  color: var(--dojo-text-strong);
+}
+
+.navLink.active::after {
+  transform: scaleX(1);
 }
 
 /* ── Actions ── */
@@ -118,7 +137,7 @@
   flex-shrink: 0;
 }
 
-/* XP badge pill */
+/* XP badge */
 .playerBadge {
   display: flex;
   flex-direction: column;
@@ -169,32 +188,90 @@
   transition: width 0.6s ease;
 }
 
-/* Train button */
+/* ── Botão "Começar treino" — com shimmer V1 ── */
 .trainBtn {
+  position: relative;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 36px;
+  height: 40px;
   padding: 0 16px;
   border-radius: var(--dojo-radius-sm);
   background: var(--dojo-text-strong);
   color: #eee;
   font-family: var(--font-title);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   white-space: nowrap;
   cursor: pointer;
-  border: none;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
-  box-shadow: 0 6px 16px rgba(11, 57, 84, 0.22);
+  border: 1px solid transparent;
+  transform: translateZ(0);
+  transition: transform 0.18s ease,
+              box-shadow 0.18s ease,
+              border-color 0.18s ease;
+  box-shadow: 0 8px 18px rgba(11, 57, 84, 0.2);
+}
+
+/* Shimmer diagonal — varre da esquerda para direita no hover */
+.trainBtn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.22), transparent);
+  transform: translateX(-120%);
+  transition: transform 540ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .trainBtn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 0 3px rgba(0, 168, 204, 0.2),
-              0 10px 20px rgba(11, 57, 84, 0.2);
+  border-color: var(--dojo-primary);
+  box-shadow: 0 0 0 4px rgba(0, 168, 204, 0.14), 0 10px 20px rgba(11, 57, 84, 0.18);
+  transform: translateY(-1px);
 }
 
+.trainBtn:hover::before {
+  transform: translateX(120%);
+}
+
+.trainBtn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* ── Ícone de configurações ── */
+.iconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--dojo-border-soft);
+  border-radius: var(--dojo-radius-sm);
+  background: var(--dojo-card-bg);
+  color: var(--dojo-text-strong);
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.iconBtn:hover {
+  border-color: var(--dojo-border-strong);
+  background: var(--dojo-surface-soft);
+}
+
+.iconBtn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* Ícone settings — gira 90° quando drawer está aberto */
+.settingsIcon {
+  font-size: 1.25rem;
+  transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.settingsIconOpen {
+  transform: rotate(90deg);
+}
+
+/* ── Responsivo ── */
 @media (max-width: 900px) {
   .nav { display: none; }
   .playerBadge { display: none; }

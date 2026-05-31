@@ -18,7 +18,7 @@ export function AppLayout({ children }: Props) {
       <BackgroundCanvas />
       <BambooLeaves />
       <div className={styles.content}>
-        <HeaderHud onSettingsOpen={() => setDrawerOpen(true)} />
+        <HeaderHud onSettingsOpen={() => setDrawerOpen(true)} isSettingsOpen={drawerOpen} />
         {children}
         <footer>© 2025 PandaDigitações.</footer>
         <MobileBottomNav />

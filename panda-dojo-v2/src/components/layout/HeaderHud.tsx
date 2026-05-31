@@ -1,23 +1,23 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router';
-import { IconButton } from '@/components/ui';
 import { KEYS, XP_PER_LEVEL } from '@/constants';
 import { getStorage } from '@/services/storage/storageService';
 import styles from './HeaderHud.module.css';
 
 const NAV_ITEMS = [
-  { label: 'Início', to: '/' },
-  { label: 'Arena', to: '/arena' },
+  { label: 'Início',  to: '/' },
+  { label: 'Arena',   to: '/arena' },
   { label: 'Aprenda', to: '/aprenda' },
-  { label: 'Mapa', to: '/mapa' },
-  { label: 'Arcade', to: '/arcade' },
+  { label: 'Mapa',    to: '/mapa' },
+  { label: 'Arcade',  to: '/arcade' },
 ];
 
 interface Props {
   onSettingsOpen: () => void;
+  isSettingsOpen?: boolean;
 }
 
-export function HeaderHud({ onSettingsOpen }: Props) {
+export function HeaderHud({ onSettingsOpen, isSettingsOpen = false }: Props) {
   const [scrolled, setScrolled] = useState(false);
   const [xp, setXp] = useState(0);
   const [level, setLevel] = useState(1);
@@ -43,8 +43,9 @@ export function HeaderHud({ onSettingsOpen }: Props) {
   return (
     <header className={[styles.header, scrolled ? styles.scrolled : ''].filter(Boolean).join(' ')}>
       <div className={styles.inner}>
+
         <Link className={styles.brand} to="/" aria-label="PandaDigitações, página inicial">
-          <img src="/logo.png" alt="PandaDigitações" width="42" height="50" className={styles.brandImg} />
+          <img src="/logo.png" alt="PandaDigitações" width="50" height="60" className={styles.brandImg} />
           <span>
             <span className={styles.brandText}>PandaDigitações</span>
             <small className={styles.brandSub}>Dojo Arcade</small>
@@ -85,8 +86,23 @@ export function HeaderHud({ onSettingsOpen }: Props) {
             Começar treino
           </button>
 
-          <IconButton icon="settings" label="Configurações" onClick={onSettingsOpen} />
+          <button
+            className={styles.iconBtn}
+            aria-label="Configurações"
+            onClick={onSettingsOpen}
+          >
+            <span
+              className={[
+                'material-symbols-outlined',
+                styles.settingsIcon,
+                isSettingsOpen ? styles.settingsIconOpen : '',
+              ].filter(Boolean).join(' ')}
+            >
+              settings
+            </span>
+          </button>
         </div>
+
       </div>
     </header>
   );
