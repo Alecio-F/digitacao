@@ -1,19 +1,22 @@
 .btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--dojo-space-2);
-  padding: var(--dojo-space-3) var(--dojo-space-6);
-  border-radius: var(--dojo-radius-md);
-  font-family: var(--font-title);
-  font-weight: 700;
-  font-size: 0.9rem;
-  letter-spacing: 0.03em;
-  transition: transform var(--dojo-duration-fast) var(--dojo-ease),
-    box-shadow var(--dojo-duration-fast) var(--dojo-ease),
-    background-color var(--dojo-duration-fast) var(--dojo-ease);
-  position: relative;
   overflow: hidden;
+  padding: var(--dojo-space-3) var(--dojo-space-6);
+  border: 1px solid transparent;
+  border-radius: var(--dojo-radius-sm);
+  font-family: var(--font-title);
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  transition:
+    background-color var(--dojo-duration-fast) var(--dojo-ease),
+    border-color var(--dojo-duration-fast) var(--dojo-ease),
+    box-shadow var(--dojo-duration-fast) var(--dojo-ease),
+    transform var(--dojo-duration-fast) var(--dojo-ease);
 }
 
 .btn::before {
@@ -38,48 +41,50 @@
 }
 
 .btn:disabled {
-  opacity: 0.46;
   cursor: not-allowed;
+  opacity: 0.46;
   transform: none;
 }
 
-/* variants */
 .primary {
-  background: var(--dojo-primary);
-  color: #0b3954;
-  box-shadow: 0 4px 14px rgba(0, 168, 204, 0.28);
+  background: var(--dojo-text-strong);
+  box-shadow: 0 8px 18px rgba(11, 57, 84, 0.22);
+  color: #eee;
 }
 
 .primary:hover:not(:disabled) {
-  box-shadow: 0 6px 20px rgba(0, 168, 204, 0.42);
+  border-color: var(--dojo-primary);
+  box-shadow:
+    0 0 0 4px rgba(0, 168, 204, 0.14),
+    0 10px 20px rgba(11, 57, 84, 0.18);
 }
 
 .secondary {
+  border-color: rgba(124, 92, 255, 0.28);
   background: var(--dojo-secondary);
+  box-shadow: 0 7px 18px rgba(124, 92, 255, 0.2);
   color: #fff;
-  box-shadow: 0 4px 14px rgba(124, 92, 255, 0.22);
 }
 
 .ghost {
-  background: var(--dojo-surface-soft);
+  border-color: var(--dojo-border);
+  background: rgba(255, 255, 255, 0.48);
   color: var(--dojo-text-strong);
-  border: 1px solid var(--dojo-border);
 }
 
 .ghost:hover:not(:disabled) {
-  background: var(--dojo-surface);
   border-color: var(--dojo-border-strong);
+  background: var(--dojo-surface-tint);
 }
 
-/* sizes */
 .sm {
   padding: var(--dojo-space-2) var(--dojo-space-4);
-  font-size: 0.8rem;
   border-radius: var(--dojo-radius-sm);
+  font-size: 0.8rem;
 }
 
 .lg {
   padding: var(--dojo-space-4) var(--dojo-space-7);
+  border-radius: var(--dojo-radius-md);
   font-size: 1rem;
-  border-radius: var(--dojo-radius-lg);
 }

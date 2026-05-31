@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { KEYS } from '@/constants';
 import { getStorage, removeStorage, setStorage } from '@/services/storage/storageService';
-import type { Settings, Theme } from '../types';
+import type { CursorMode, Settings, Theme } from '../types';
 
 function applyTheme(theme: Theme) {
   document.documentElement.classList.toggle('dark', theme === 'dark');
@@ -15,6 +15,11 @@ function readPracticeTime(): number {
   return parseFloat(getStorage<string>(KEYS.tempoPratica, '1')) || 1;
 }
 
+function readCursorMode(): CursorMode {
+  const value = getStorage<string>(KEYS.cursorMode, 'arcade');
+  return value === 'classic' ? 'classic' : 'arcade';
+}
+
 export function useSettings() {
   const [settings, setSettings] = useState<Settings>(() => ({
     theme: readTheme(),
@@ -22,6 +27,7 @@ export function useSettings() {
     sounds: true,
     animations: !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     reducedEffects: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    cursorMode: readCursorMode(),
   }));
 
   useEffect(() => {
@@ -57,5 +63,18 @@ export function useSettings() {
     setSettings((prev) => ({ ...prev, reducedEffects: value }));
   }, []);
 
-  return { settings, toggleTheme, setPracticeTime, setSounds, setAnimations, setReducedEffects };
+  const setCursorMode = useCallback((value: CursorMode) => {
+    setStorage(KEYS.cursorMode, value);
+    setSettings((prev) => ({ ...prev, cursorMode: value }));
+  }, []);
+
+  return {
+    settings,
+    toggleTheme,
+    setPracticeTime,
+    setSounds,
+    setAnimations,
+    setReducedEffects,
+    setCursorMode,
+  };
 }

@@ -1,11 +1,14 @@
 .card {
   display: flex;
   flex-direction: column;
-  gap: var(--dojo-space-2);
+  gap: var(--dojo-space-3);
   padding: var(--dojo-space-5);
-  background: var(--dojo-surface-soft);
-  border: 1px solid var(--dojo-border-soft);
-  border-radius: var(--dojo-radius-lg);
+  border: 1px solid rgba(20, 184, 212, 0.18);
+  border-radius: 16px;
+  background-image: var(--dojo-panel-arcade);
+  box-shadow:
+    0 16px 40px rgba(11, 57, 84, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.34);
 }
 
 .row {
@@ -16,19 +19,19 @@
 }
 
 .title {
+  color: var(--dojo-text-strong);
   font-family: var(--font-title);
   font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--dojo-text-strong);
+  font-weight: 900;
 }
 
 .level {
-  font-size: 0.82rem;
   color: var(--dojo-text-muted);
+  font-size: 0.82rem;
 }
 
 .xpLabel {
-  font-size: 0.82rem;
   color: var(--dojo-primary);
-  font-weight: 600;
+  font-size: 0.82rem;
+  font-weight: 800;
 }

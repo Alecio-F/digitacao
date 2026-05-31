@@ -28,6 +28,11 @@ body {
   isolation: isolate;
 }
 
+#root {
+  width: 100%;
+  min-height: 100dvh;
+}
+
 a {
   text-decoration: none;
   color: inherit;
@@ -61,7 +66,7 @@ svg {
 .dojo-section {
   width: var(--dojo-container);
   margin: 0 auto;
-  padding: 44px 0;
+  padding: 38px 0;
 }
 
 footer {
@@ -73,6 +78,20 @@ footer {
   font-size: 13px;
   color: var(--dojo-text-muted);
   border-top: 1px solid var(--dojo-border-soft);
+}
+
+.dojo-section:first-child {
+  padding-top: 32px;
+}
+
+@media (max-width: 768px) {
+  .dojo-section {
+    padding: 24px 0;
+  }
+
+  .dojo-section:first-child {
+    padding-top: 18px;
+  }
 }
 
 /* ── Global animation utilities ── */
@@ -104,3 +123,14 @@ footer {
 .dojo-section > *:nth-child(2) { animation-delay: 0.06s; }
 .dojo-section > *:nth-child(3) { animation-delay: 0.12s; }
 .dojo-section > *:nth-child(4) { animation-delay: 0.18s; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}

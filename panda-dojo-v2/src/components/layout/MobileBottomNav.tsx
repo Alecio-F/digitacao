@@ -6,7 +6,7 @@ const ITEMS = [
   { label: 'Arena', icon: 'keyboard', to: '/arena' as string | null },
   { label: 'Mapa', icon: 'map', to: '/mapa' as string | null },
   { label: 'Arcade', icon: 'stadia_controller', to: '/arcade' as string | null },
-  { label: 'Conta', icon: 'person', to: null },
+  { label: 'Conta', icon: 'person', to: '/conta' as string | null },
 ];
 
 export function MobileBottomNav() {

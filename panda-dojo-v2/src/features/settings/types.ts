@@ -1,4 +1,5 @@
 export type Theme = 'light' | 'dark';
+export type CursorMode = 'arcade' | 'classic';
 
 export interface Settings {
   theme: Theme;
@@ -6,4 +7,5 @@ export interface Settings {
   sounds: boolean;
   animations: boolean;
   reducedEffects: boolean;
+  cursorMode: CursorMode;
 }

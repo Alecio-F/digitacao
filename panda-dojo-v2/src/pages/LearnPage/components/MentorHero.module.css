@@ -3,15 +3,22 @@
   grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
   gap: var(--dojo-space-8);
   align-items: center;
-  padding-top: 36px;
-  padding-bottom: var(--dojo-space-7);
+  overflow: hidden;
+  margin-top: 32px;
+  padding: clamp(24px, 4vw, 44px);
+  border: 1px solid rgba(20, 184, 212, 0.22);
+  border-radius: 22px;
+  background-image: var(--dojo-card-arcade);
+  box-shadow:
+    0 24px 60px rgba(11, 57, 84, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42);
 }
 
 .eyebrow {
   display: inline-block;
   font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  font-weight: 900;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--dojo-primary);
   margin-bottom: var(--dojo-space-3);
@@ -19,8 +26,8 @@
 
 .heading {
   font-family: var(--font-title);
-  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
-  font-weight: 700;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-weight: 900;
   color: var(--dojo-text-strong);
   line-height: 1.2;
   margin-bottom: var(--dojo-space-4);
@@ -48,9 +55,11 @@
 
 /* Mentor card */
 .mentorCard {
-  background: var(--dojo-card-bg);
-  border: 1px solid var(--dojo-border-soft);
-  border-radius: var(--dojo-radius-md);
+  background:
+    radial-gradient(circle at 68% 32%, rgba(124, 92, 255, 0.16), transparent 36%),
+    rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(20, 184, 212, 0.18);
+  border-radius: 18px;
   padding: var(--dojo-space-6);
   box-shadow: var(--dojo-shadow-card);
   display: flex;
@@ -68,7 +77,7 @@
 .mentorTitle {
   font-family: var(--font-title);
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: 900;
   color: var(--dojo-text-strong);
 }
 

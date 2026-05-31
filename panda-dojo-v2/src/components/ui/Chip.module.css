@@ -2,12 +2,14 @@
   display: inline-flex;
   align-items: center;
   gap: var(--dojo-space-2);
+  min-height: 28px;
   padding: var(--dojo-space-2) var(--dojo-space-4);
   border-radius: var(--dojo-radius-pill);
   border: 1px solid transparent;
   font-family: var(--font-title);
-  font-size: 0.8rem;
-  font-weight: 700;
+  font-size: 0.76rem;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .special { background: rgba(124, 92, 255, 0.14); border-color: rgba(124, 92, 255, 0.28); color: var(--dojo-secondary); }

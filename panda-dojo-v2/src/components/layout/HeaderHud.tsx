@@ -10,7 +10,17 @@ const NAV_ITEMS = [
   { label: 'Aprenda', to: '/aprenda' },
   { label: 'Mapa',    to: '/mapa' },
   { label: 'Arcade',  to: '/arcade' },
+  { label: 'Conta',   to: '/conta' },
 ];
+
+function readPlayerHud() {
+  const storedXp = Math.max(0, Number(getStorage<string>(KEYS.xp, '0')) || 0);
+  const storedLevel = Number(getStorage<string>(KEYS.level, '1')) || 1;
+  return {
+    xp: storedXp,
+    level: storedLevel > 0 ? storedLevel : Math.max(1, Math.floor(storedXp / XP_PER_LEVEL) + 1),
+  };
+}
 
 interface Props {
   onSettingsOpen: () => void;
@@ -19,16 +29,8 @@ interface Props {
 
 export function HeaderHud({ onSettingsOpen, isSettingsOpen = false }: Props) {
   const [scrolled, setScrolled] = useState(false);
-  const [xp, setXp] = useState(0);
-  const [level, setLevel] = useState(1);
+  const [{ xp, level }] = useState(readPlayerHud);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const storedXp = Math.max(0, Number(getStorage<string>(KEYS.xp, '0')) || 0);
-    const storedLevel = Number(getStorage<string>(KEYS.level, '1')) || 1;
-    setXp(storedXp);
-    setLevel(storedLevel > 0 ? storedLevel : Math.max(1, Math.floor(storedXp / XP_PER_LEVEL) + 1));
-  }, []);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 18);

@@ -1,17 +1,24 @@
 .mascot {
   display: inline-block;
   animation: pandaFloat 2.8s ease-in-out infinite alternate;
-  transition: filter var(--dojo-duration-fast) var(--dojo-ease);
+  filter: drop-shadow(0 12px 18px rgba(11, 57, 84, 0.22));
+  transition:
+    filter var(--dojo-duration-fast) var(--dojo-ease),
+    transform var(--dojo-duration-fast) var(--dojo-ease);
   user-select: none;
   pointer-events: none;
 }
 
 .mascot.success {
-  filter: drop-shadow(0 0 14px rgba(40, 168, 107, 0.45));
+  filter:
+    drop-shadow(0 12px 18px rgba(11, 57, 84, 0.22))
+    drop-shadow(0 0 14px rgba(40, 168, 107, 0.45));
 }
 
 .mascot.error {
-  filter: drop-shadow(0 0 10px rgba(214, 69, 69, 0.35));
+  filter:
+    drop-shadow(0 12px 18px rgba(11, 57, 84, 0.22))
+    drop-shadow(0 0 10px rgba(214, 69, 69, 0.35));
   animation: pandaShake 240ms ease;
 }
 

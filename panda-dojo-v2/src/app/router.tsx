@@ -6,6 +6,7 @@ import { LearnPage } from '@/pages/LearnPage';
 import { DojoMapPage } from '@/pages/DojoMapPage';
 import { ArenaPage } from '@/pages/ArenaPage';
 import { ArcadePage } from '@/pages/ArcadePage';
+import { AccountPage } from '@/pages/AccountPage';
 
 export function AppRouter() {
   return (
@@ -18,6 +19,7 @@ export function AppRouter() {
             <Route path="/mapa"    element={<DojoMapPage />} />
             <Route path="/arena"   element={<ArenaPage />} />
             <Route path="/arcade"  element={<ArcadePage />} />
+            <Route path="/conta"   element={<AccountPage />} />
             <Route path="*"        element={<HomePage />} />
           </Routes>
         </AppLayout>

@@ -192,7 +192,11 @@ export function BackgroundCanvas({ density }: Props) {
 
     function handleVisibility() {
       paused = document.hidden;
-      paused ? stop() : start();
+      if (paused) {
+        stop();
+      } else {
+        start();
+      }
     }
 
     function handleResize() {

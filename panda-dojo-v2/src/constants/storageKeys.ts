@@ -18,6 +18,7 @@ export const STORAGE_KEYS = {
   pandaSealBestScore: 'pandaSealBestScore',
   pandaStartedLessons: 'pandaStartedLessons',
   pandaXpAwards: 'pandaXpAwards',
+  pandaCursorMode: 'pandaCursorMode',
 } as const;
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];
@@ -42,4 +43,5 @@ export const KEYS = {
   sealBestScore: STORAGE_KEYS.pandaSealBestScore,
   startedLessons: STORAGE_KEYS.pandaStartedLessons,
   xpAwards: STORAGE_KEYS.pandaXpAwards,
+  cursorMode: STORAGE_KEYS.pandaCursorMode,
 } as const;

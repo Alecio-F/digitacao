@@ -1,25 +1,40 @@
 .card {
-  background: var(--dojo-surface-soft);
-  border: 1px solid var(--dojo-border-soft);
-  border-radius: var(--dojo-radius-md);
-  padding: var(--dojo-space-5);
   display: flex;
   flex-direction: column;
   gap: var(--dojo-space-2);
-  max-width: 320px;
   width: 100%;
-  transition: border-color var(--dojo-duration-fast) var(--dojo-ease),
-              box-shadow var(--dojo-duration-fast) var(--dojo-ease);
+  max-width: 340px;
+  padding: var(--dojo-space-5);
+  border: 1px solid rgba(20, 184, 212, 0.16);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 16% 0%, rgba(20, 184, 212, 0.12), transparent 34%),
+    rgba(255, 255, 255, 0.48);
+  box-shadow:
+    0 12px 28px rgba(11, 57, 84, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.36);
+  transition:
+    border-color var(--dojo-duration-fast) var(--dojo-ease),
+    box-shadow var(--dojo-duration-fast) var(--dojo-ease),
+    transform var(--dojo-duration-fast) var(--dojo-ease);
+}
+
+.card:not(.locked):hover {
+  border-color: rgba(0, 168, 204, 0.4);
+  box-shadow: var(--dojo-shadow-card), var(--dojo-glow);
+  transform: translateY(-3px);
 }
 
 .card.recommended {
   border-color: var(--dojo-primary);
-  box-shadow: 0 0 0 1px var(--dojo-primary), var(--dojo-shadow-glow);
+  box-shadow:
+    0 0 0 1px rgba(0, 168, 204, 0.36),
+    0 18px 42px rgba(11, 57, 84, 0.14);
 }
 
 .card.locked {
-  opacity: 0.55;
   filter: grayscale(0.3);
+  opacity: 0.58;
 }
 
 .head {
@@ -31,77 +46,91 @@
 }
 
 .number {
+  color: var(--dojo-primary);
   font-family: var(--font-title);
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--dojo-text-muted);
-  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
 }
 
 .chips {
   display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .xpChip {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--dojo-primary);
+  padding: 2px 8px;
+  border: 1px solid rgba(20, 184, 212, 0.16);
+  border-radius: var(--dojo-radius-pill);
   background: var(--dojo-surface-tint);
-  border: 1px solid var(--dojo-border-soft);
-  border-radius: var(--dojo-radius-xs);
-  padding: 2px 7px;
+  color: var(--dojo-primary);
+  font-size: 0.7rem;
+  font-weight: 900;
   white-space: nowrap;
 }
 
 .title {
-  font-family: var(--font-title);
-  font-size: 0.95rem;
-  font-weight: 700;
   color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+  font-size: 1rem;
+  font-weight: 900;
 }
 
-.objective {
-  font-size: 0.82rem;
+.objective,
+.focus {
   color: var(--dojo-text-muted);
   line-height: 1.5;
 }
 
+.objective {
+  font-size: 0.82rem;
+}
+
 .focus {
   font-size: 0.78rem;
-  color: var(--dojo-text-muted);
   font-style: italic;
 }
 
 .cta {
-  margin-top: var(--dojo-space-2);
   align-self: flex-start;
+  margin-top: var(--dojo-space-2);
   padding: 8px 16px;
   border-radius: var(--dojo-radius-sm);
-  font-size: 0.82rem;
-  font-weight: 700;
-  font-family: var(--font-title);
-  border: none;
+  background: var(--dojo-text-strong);
+  box-shadow: 0 7px 18px rgba(11, 57, 84, 0.18);
+  color: #eee;
   cursor: pointer;
-  background: var(--dojo-primary);
-  color: #fff;
-  transition: opacity var(--dojo-duration-fast) var(--dojo-ease);
+  font-family: var(--font-title);
+  font-size: 0.82rem;
+  font-weight: 900;
+  transition:
+    box-shadow var(--dojo-duration-fast) var(--dojo-ease),
+    transform var(--dojo-duration-fast) var(--dojo-ease);
 }
 
 .cta:hover:not(:disabled) {
-  opacity: 0.88;
+  box-shadow:
+    0 0 0 3px rgba(0, 168, 204, 0.16),
+    0 10px 20px rgba(11, 57, 84, 0.16);
+  transform: translateY(-1px);
 }
 
 .cta:disabled {
-  background: var(--dojo-border-strong);
-  color: var(--dojo-text-muted);
   cursor: not-allowed;
+  opacity: 0.52;
 }
 
 .ctaCompleted {
-  background: var(--dojo-surface-tint);
-  color: var(--dojo-text-muted);
   border: 1px solid var(--dojo-border-soft);
+  background: var(--dojo-surface-tint);
+  box-shadow: none;
+  color: var(--dojo-text-muted);
+}
+
+:global(.dark) .card {
+  background:
+    radial-gradient(circle at 16% 0%, rgba(114, 245, 255, 0.08), transparent 34%),
+    rgba(255, 255, 255, 0.035);
 }

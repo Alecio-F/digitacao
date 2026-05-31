@@ -95,6 +95,10 @@
   border-radius: var(--dojo-radius-sm);
 }
 
+.row > * {
+  min-width: 0;
+}
+
 .rowLabel strong {
   display: block;
   font-family: var(--font-title);
@@ -149,6 +153,62 @@
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
+}
+
+.segmented {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--dojo-border-soft);
+  border-radius: var(--dojo-radius-pill);
+  background: var(--dojo-card-bg);
+  flex-shrink: 0;
+}
+
+.segmentedButton {
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: var(--dojo-radius-pill);
+  color: var(--dojo-text-muted);
+  font-family: var(--font-title);
+  font-size: 0.76rem;
+  font-weight: 800;
+  white-space: nowrap;
+  transition:
+    background var(--dojo-duration-fast) var(--dojo-ease),
+    color var(--dojo-duration-fast) var(--dojo-ease),
+    box-shadow var(--dojo-duration-fast) var(--dojo-ease);
+}
+
+.segmentedButton:hover {
+  color: var(--dojo-text-strong);
+  background: color-mix(in srgb, var(--dojo-primary) 8%, transparent);
+}
+
+.segmentedButtonActive {
+  color: var(--dojo-text-strong);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.58)),
+    color-mix(in srgb, var(--dojo-primary) 12%, transparent);
+  box-shadow: 0 6px 14px rgba(11, 57, 84, 0.1);
+}
+
+@media (max-width: 420px) {
+  .row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .segmented,
+  .select,
+  .themeToggle {
+    width: 100%;
+  }
+
+  .segmentedButton {
+    flex: 1 1 0;
+  }
 }
 
 /* Switch */

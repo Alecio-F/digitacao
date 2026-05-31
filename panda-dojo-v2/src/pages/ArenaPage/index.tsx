@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useSettingsContext } from '@/app/settingsContext';
 import { PageShell } from '@/components/layout/PageShell';
 import { KEYS } from '@/constants';
 import { getLessonById } from '@/features/lessons/data/lessons';
@@ -34,6 +35,7 @@ const PHASE_LABEL: Record<string, string> = {
 export function ArenaPage() {
   const lessonId = localStorage.getItem(KEYS.selectedLessonId);
   const lesson = getLessonById(lessonId ?? '');
+  const { settings } = useSettingsContext();
 
   const [savedResult, setSavedResult] = useState<SavedResult | null>(null);
   const savedRef = useRef(false);
@@ -260,6 +262,7 @@ export function ArenaPage() {
                   currentLetterIndex={state.currentLetterIndex}
                   feedback={state.feedback}
                   disabled={timer.phase === 'finished'}
+                  cursorMode={settings.cursorMode}
                   onKey={handleTypingKey}
                 />
               )}
@@ -270,9 +273,9 @@ export function ArenaPage() {
               <div className={styles.keyDeckHeader}>
                 <span className={styles.keyDeckLabel}>Dojo Key Deck</span>
                 <div className={styles.keyDeckDots}>
-                  <span style={{ background: '#ff5f57' }} />
-                  <span style={{ background: '#febc2e' }} />
-                  <span style={{ background: '#28c840' }} />
+                  <span style={{ background: '#00a8cc' }} />
+                  <span style={{ background: '#7c5cff' }} />
+                  <span style={{ background: '#d99a17' }} />
                 </div>
               </div>
               <VirtualKeyboard activeKey={timer.phase === 'running' ? expectedChar : ''} />

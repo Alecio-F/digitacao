@@ -17,9 +17,12 @@
   justify-content: space-between;
   gap: 16px;
   padding: 16px 20px;
-  background: var(--dojo-surface-soft);
-  border: 1px solid var(--dojo-border-soft);
-  border-radius: var(--dojo-radius-sm);
+  background-image: var(--dojo-panel-arcade);
+  border: 1px solid rgba(20, 184, 212, 0.18);
+  border-radius: 16px;
+  box-shadow:
+    0 16px 40px rgba(11, 57, 84, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .levelInfo {
@@ -109,9 +112,12 @@
   align-items: center;
   gap: 6px;
   padding: 14px 10px;
-  background: var(--dojo-surface-soft);
-  border: 1px solid var(--dojo-border-soft);
-  border-radius: var(--dojo-radius-sm);
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(20, 184, 212, 0.1);
+  border-radius: 12px;
+  box-shadow:
+    0 10px 22px rgba(11, 57, 84, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.58);
 }
 
 .metricLabel {
@@ -184,9 +190,10 @@
   align-items: flex-start;
   gap: 14px;
   padding: 16px 18px;
-  background: color-mix(in srgb, var(--dojo-primary) 6%, var(--dojo-surface-soft));
+  background-image: var(--dojo-panel-arcade);
   border: 1px solid color-mix(in srgb, var(--dojo-primary) 20%, transparent);
-  border-radius: var(--dojo-radius-sm);
+  border-radius: 16px;
+  box-shadow: 0 16px 40px rgba(11, 57, 84, 0.1);
 }
 
 .recIconWrap {
@@ -232,11 +239,11 @@
   padding: 0 16px;
   flex-shrink: 0;
   border-radius: var(--dojo-radius-sm);
-  background: var(--dojo-primary);
-  color: #0b3954;
+  background: var(--dojo-text-strong);
+  color: #eee;
   font-family: var(--font-title);
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 800;
   white-space: nowrap;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
@@ -330,9 +337,9 @@
   padding: 12px 14px;
   min-width: 155px;
   flex-shrink: 0;
-  background: var(--dojo-surface-soft);
-  border: 1px solid var(--dojo-border-soft);
-  border-radius: var(--dojo-radius-sm);
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(20, 184, 212, 0.12);
+  border-radius: 12px;
 }
 
 .historyCardCurrent {

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import type { CursorMode } from '@/features/settings/types';
 import type { Feedback, WordData } from '@/features/typing/types';
 import styles from './TextDisplay.module.css';
 
@@ -8,6 +9,7 @@ interface TextDisplayProps {
   currentLetterIndex: number;
   feedback: Feedback;
   disabled?: boolean;
+  cursorMode: CursorMode;
   onKey: (key: string) => void;
 }
 
@@ -17,6 +19,7 @@ export function TextDisplay({
   currentLetterIndex,
   feedback,
   disabled,
+  cursorMode,
   onKey,
 }: TextDisplayProps) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -53,7 +56,12 @@ export function TextDisplay({
   return (
     <div>
       <div
-        className={styles.wrapper}
+        className={[
+          styles.wrapper,
+          cursorMode === 'classic' ? styles.cursorClassic : styles.cursorArcade,
+        ]
+          .filter(Boolean)
+          .join(' ')}
         onClick={() => inputRef.current?.focus()}
         role="textbox"
         aria-label="Área de digitação"
@@ -101,6 +109,11 @@ export function TextDisplay({
                   </span>
                 );
               })}
+              {wi === currentWordIndex && currentLetterIndex >= word.letters.length && (
+                <span className={[styles.letter, styles.letterCurrent, styles.letterEnd].join(' ')}>
+                  &nbsp;
+                </span>
+              )}
             </span>
           ))}
         </div>

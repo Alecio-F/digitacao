@@ -1,33 +1,41 @@
 .metric {
   display: flex;
   flex-direction: column;
-  gap: var(--dojo-space-2);
-  padding: var(--dojo-space-5);
-  background: var(--dojo-surface);
-  border: 1px solid var(--dojo-border-soft);
-  border-radius: var(--dojo-radius-md);
-  min-width: 80px;
-  text-align: center;
+  gap: 5px;
+  min-width: 90px;
+  padding: 12px 14px;
+  border: 1px solid rgba(20, 184, 212, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.58);
+  box-shadow:
+    0 10px 22px rgba(11, 57, 84, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.58);
 }
 
 .label {
-  font-family: var(--font-body);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--dojo-text-muted);
+  font-family: var(--font-body);
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .value {
-  font-family: var(--font-title);
-  font-size: 1.6rem;
-  font-weight: 700;
   color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+  font-size: 1.45rem;
+  font-weight: 900;
   line-height: 1;
 }
 
 .highlight .value {
   color: var(--dojo-primary);
   text-shadow: 0 0 18px rgba(0, 168, 204, 0.28);
+}
+
+:global(.dark) .metric {
+  border-color: rgba(114, 245, 255, 0.1);
+  background: rgba(255, 255, 255, 0.035);
 }

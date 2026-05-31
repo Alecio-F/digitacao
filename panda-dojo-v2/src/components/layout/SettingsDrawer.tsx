@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useSettingsContext } from '@/app/providers';
+import { useSettingsContext } from '@/app/settingsContext';
 import { IconButton } from '@/components/ui';
 import styles from './SettingsDrawer.module.css';
 
@@ -20,8 +20,15 @@ interface Props {
 }
 
 export function SettingsDrawer({ open, onClose }: Props) {
-  const { settings, toggleTheme, setPracticeTime, setSounds, setAnimations, setReducedEffects } =
-    useSettingsContext();
+  const {
+    settings,
+    toggleTheme,
+    setPracticeTime,
+    setSounds,
+    setAnimations,
+    setReducedEffects,
+    setCursorMode,
+  } = useSettingsContext();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -93,6 +100,41 @@ export function SettingsDrawer({ open, onClose }: Props) {
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
+          </div>
+
+          <div className={styles.row}>
+            <div className={styles.rowLabel}>
+              <strong>Cursor da Type Arena</strong>
+              <span>Escolha entre o brilho arcade da V2 e a haste fina da V1.</span>
+            </div>
+            <div className={styles.segmented} role="group" aria-label="Cursor da Type Arena">
+              <button
+                type="button"
+                className={[
+                  styles.segmentedButton,
+                  settings.cursorMode === 'arcade' ? styles.segmentedButtonActive : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+                aria-pressed={settings.cursorMode === 'arcade'}
+                onClick={() => setCursorMode('arcade')}
+              >
+                Arcade
+              </button>
+              <button
+                type="button"
+                className={[
+                  styles.segmentedButton,
+                  settings.cursorMode === 'classic' ? styles.segmentedButtonActive : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+                aria-pressed={settings.cursorMode === 'classic'}
+                onClick={() => setCursorMode('classic')}
+              >
+                V1 fino
+              </button>
+            </div>
           </div>
         </div>
 

@@ -2,40 +2,48 @@
   display: flex;
   flex-direction: column;
   gap: var(--dojo-space-2);
-  padding-top: 36px;
-  padding-bottom: var(--dojo-space-4);
+  overflow: hidden;
+  margin-top: 32px;
+  padding: clamp(24px, 3.5vw, 38px);
+  border: 1px solid rgba(20, 184, 212, 0.22);
+  border-radius: 22px;
+  background-image: var(--dojo-card-arcade);
+  box-shadow:
+    0 24px 60px rgba(11, 57, 84, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42);
 }
 
 .eyebrow {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
   color: var(--dojo-primary);
   font-family: var(--font-title);
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .heading {
-  font-family: var(--font-title);
-  font-size: clamp(1.4rem, 3vw, 2rem);
-  font-weight: 800;
   color: var(--dojo-text-strong);
-  line-height: 1.2;
+  font-family: var(--font-title);
+  font-size: clamp(2rem, 4vw, 3.3rem);
+  font-weight: 900;
+  line-height: 1;
 }
 
 .sub {
-  font-size: 0.9rem;
+  max-width: 620px;
   color: var(--dojo-text-muted);
-  max-width: 520px;
+  font-size: 0.96rem;
+  line-height: 1.55;
 }
 
 .gridSection {
-  padding-top: 0;
+  padding-top: 18px;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: 1fr 300px;
+  grid-template-columns: minmax(0, 1fr) 310px;
   gap: var(--dojo-space-6);
   align-items: start;
 }
@@ -44,17 +52,25 @@
   display: flex;
   flex-direction: column;
   gap: var(--dojo-space-5);
+  overflow: hidden;
+  padding: clamp(18px, 2.2vw, 26px);
+  border: 1px solid rgba(20, 184, 212, 0.18);
+  border-radius: 18px;
+  background-image: var(--dojo-panel-arcade);
+  box-shadow:
+    0 16px 40px rgba(11, 57, 84, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.34);
 }
 
 .sidebar {
+  position: sticky;
+  top: calc(var(--dojo-header-height) + var(--dojo-space-4));
   display: flex;
   flex-direction: column;
   gap: var(--dojo-space-5);
-  position: sticky;
-  top: calc(var(--dojo-header-height) + var(--dojo-space-4));
 }
 
-@media (max-width: 860px) {
+@media (max-width: 920px) {
   .grid {
     grid-template-columns: 1fr;
   }
@@ -62,5 +78,15 @@
   .sidebar {
     position: static;
     order: -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .hero {
+    margin-top: 18px;
+  }
+
+  .main {
+    padding: 16px;
   }
 }

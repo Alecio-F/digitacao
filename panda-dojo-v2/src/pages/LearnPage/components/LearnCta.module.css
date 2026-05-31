@@ -1,13 +1,16 @@
 .cta {
-  background: var(--dojo-surface);
-  border: 1px solid var(--dojo-border);
-  border-radius: var(--dojo-radius-xl);
+  background-image: var(--dojo-card-arcade);
+  border: 1px solid rgba(20, 184, 212, 0.22);
+  border-radius: 22px;
   padding: var(--dojo-space-8) var(--dojo-space-7);
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--dojo-space-5);
+  box-shadow:
+    0 24px 60px rgba(11, 57, 84, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.34);
 }
 
 .eyebrow {
@@ -21,7 +24,7 @@
 .heading {
   font-family: var(--font-title);
   font-size: clamp(1.2rem, 2.5vw, 1.8rem);
-  font-weight: 700;
+  font-weight: 900;
   color: var(--dojo-text-strong);
 }
 

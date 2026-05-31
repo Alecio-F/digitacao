@@ -5,16 +5,18 @@
   width: 40px;
   height: 40px;
   border-radius: var(--dojo-radius-sm);
-  border: 1px solid var(--dojo-border);
-  background: var(--dojo-card-bg);
+  border: 1px solid rgba(20, 184, 212, 0.18);
+  background: rgba(255, 255, 255, 0.62);
   color: var(--dojo-text-strong);
   transition: transform var(--dojo-duration-fast) var(--dojo-ease),
+    background var(--dojo-duration-fast) var(--dojo-ease),
     border-color var(--dojo-duration-fast) var(--dojo-ease);
 }
 
 .btn:hover {
   transform: translateY(-1px);
   border-color: var(--dojo-border-strong);
+  background: var(--dojo-surface-tint);
 }
 
 .btn:active {

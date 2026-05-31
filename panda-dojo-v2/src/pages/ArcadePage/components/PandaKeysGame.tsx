@@ -23,6 +23,7 @@ import styles from './PandaKeysGame.module.css';
 interface Hud {
   score: number;
   combo: number;
+  maxCombo: number;
   lives: number;
   level: number;
   best: number;
@@ -39,7 +40,14 @@ export function PandaKeysGame() {
   const loopRef = useRef<ReturnType<typeof createGameLoop> | null>(null);
   const inputRef = useRef<{ focus: () => void } | null>(null);
 
-  const [hud, setHud] = useState<Hud>({ score: 0, combo: 0, lives: 3, level: 1, best: 0 });
+  const [hud, setHud] = useState<Hud>({
+    score: 0,
+    combo: 0,
+    maxCombo: 0,
+    lives: 3,
+    level: 1,
+    best: 0,
+  });
   const [phase, setPhase] = useState<PhaseUI>('idle');
   const [countdown, setCountdown] = useState<number | null>(null);
   const [stageId, setStageId] = useState(GAME_STAGES[0].id);
@@ -48,8 +56,21 @@ export function PandaKeysGame() {
   const updateHud = useCallback(() => {
     const s = gameStateRef.current;
     setHud((prev) => {
-      if (prev.score === s.score && prev.combo === s.combo && prev.lives === s.lives && prev.level === s.level) return prev;
-      return { score: s.score, combo: s.combo, lives: s.lives, level: s.level, best: prev.best };
+      if (
+        prev.score === s.score &&
+        prev.combo === s.combo &&
+        prev.maxCombo === s.maxCombo &&
+        prev.lives === s.lives &&
+        prev.level === s.level
+      ) return prev;
+      return {
+        score: s.score,
+        combo: s.combo,
+        maxCombo: s.maxCombo,
+        lives: s.lives,
+        level: s.level,
+        best: prev.best,
+      };
     });
   }, []);
 
@@ -287,7 +308,7 @@ export function PandaKeysGame() {
               </h3>
               <p className={styles.statusText}>
                 {phase === 'over'
-                  ? `Pontuação final: ${hud.score}. Maior combo: ${gameStateRef.current.maxCombo}.`
+                  ? `Pontuação final: ${hud.score}. Maior combo: ${hud.maxCombo}.`
                   : phase === 'paused'
                   ? 'Clique em Continuar para voltar ao ritmo.'
                   : `${stage.description} As três primeiras perdas de tile não tiram vida.`}

@@ -42,7 +42,10 @@ export function useTypingTimer({ wordsCompleted, totalCharsTyped, onFinish }: Us
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const onFinishRef = useRef(onFinish);
-  onFinishRef.current = onFinish;
+
+  useEffect(() => {
+    onFinishRef.current = onFinish;
+  }, [onFinish]);
 
   const clearTick = useCallback(() => {
     if (intervalRef.current !== null) {

@@ -1,7 +1,16 @@
 .panel {
-  background: var(--dojo-surface);
-  border: 1px solid var(--dojo-border-soft);
-  border-radius: var(--dojo-radius-xl);
-  box-shadow: var(--dojo-shadow-soft);
+  overflow: hidden;
   padding: var(--dojo-space-7);
+  border: 1px solid rgba(20, 184, 212, 0.18);
+  border-radius: 18px;
+  background-image: var(--dojo-panel-arcade);
+  box-shadow:
+    0 16px 40px rgba(11, 57, 84, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.34);
+}
+
+@media (max-width: 600px) {
+  .panel {
+    padding: var(--dojo-space-5);
+  }
 }

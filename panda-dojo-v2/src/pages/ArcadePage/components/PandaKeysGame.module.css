@@ -2,10 +2,14 @@
   display: flex;
   flex-direction: column;
   gap: var(--dojo-space-4);
-  background: var(--dojo-surface-soft);
-  border: 1px solid var(--dojo-border-soft);
-  border-radius: var(--dojo-radius-lg);
+  overflow: hidden;
   padding: var(--dojo-space-5);
+  border: 1px solid rgba(20, 184, 212, 0.18);
+  border-radius: 18px;
+  background-image: var(--dojo-panel-arcade);
+  box-shadow:
+    0 18px 48px rgba(11, 57, 84, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.34);
 }
 
 .topbar {
@@ -23,88 +27,91 @@
 }
 
 .cardTitle {
-  font-family: var(--font-title);
-  font-size: 1.15rem;
-  font-weight: 800;
   color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+  font-size: 1.2rem;
+  font-weight: 900;
 }
 
 .cardDesc {
-  font-size: 0.82rem;
   color: var(--dojo-text-muted);
+  font-size: 0.84rem;
 }
 
-.actions {
-  display: flex;
-  gap: var(--dojo-space-2);
-  flex-wrap: wrap;
-}
-
+.actions,
 .stageGrid {
   display: flex;
-  gap: 6px;
   flex-wrap: wrap;
+  gap: var(--dojo-space-2);
 }
 
 .stageBtn {
-  padding: 5px 12px;
-  border-radius: var(--dojo-radius-xs);
-  font-size: 0.78rem;
-  font-weight: 700;
-  font-family: var(--font-title);
-  cursor: pointer;
-  border: 1px solid var(--dojo-border-soft);
-  background: var(--dojo-surface-tint);
+  padding: 6px 12px;
+  border: 1px solid rgba(20, 184, 212, 0.18);
+  border-radius: var(--dojo-radius-pill);
+  background: rgba(255, 255, 255, 0.48);
   color: var(--dojo-text-muted);
-  transition: background var(--dojo-duration-fast) var(--dojo-ease),
-              color var(--dojo-duration-fast) var(--dojo-ease);
+  cursor: pointer;
+  font-family: var(--font-title);
+  font-size: 0.76rem;
+  font-weight: 900;
+  transition:
+    background var(--dojo-duration-fast) var(--dojo-ease),
+    border-color var(--dojo-duration-fast) var(--dojo-ease),
+    color var(--dojo-duration-fast) var(--dojo-ease),
+    transform var(--dojo-duration-fast) var(--dojo-ease);
 }
 
 .stageBtn[aria-pressed='true'],
 .stageBtn:hover {
+  border-color: var(--dojo-primary);
   background: var(--dojo-primary);
   color: #fff;
-  border-color: var(--dojo-primary);
+  transform: translateY(-1px);
 }
 
-/* ── Canvas frame ─────────────────────────────────── */
 .frame {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 2;
-  max-height: 420px;
-  border-radius: var(--dojo-radius-md);
+  max-height: 460px;
   overflow: hidden;
-  background: #07131f;
+  border: 1px solid rgba(0, 214, 255, 0.2);
+  border-radius: 16px;
+  aspect-ratio: 16 / 9;
+  background:
+    radial-gradient(circle at 50% 92%, rgba(0, 168, 204, 0.2), transparent 38%),
+    linear-gradient(180deg, #07131f, #091723);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 18px 42px rgba(0, 0, 0, 0.18);
 }
 
 .canvas {
+  display: block;
   width: 100%;
   height: 100%;
-  display: block;
 }
 
 .keyCatcher {
   position: absolute;
-  opacity: 0;
-  pointer-events: none;
   width: 1px;
   height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }
 
-/* ── HUD overlay ──────────────────────────────────── */
 .hud {
   position: absolute;
-  top: 8px;
+  top: 10px;
   left: 50%;
-  transform: translateX(-50%);
   display: flex;
-  gap: 12px;
-  background: rgba(0,0,0,0.52);
-  border: 1px solid rgba(0,214,255,0.25);
-  border-radius: var(--dojo-radius-sm);
-  padding: 5px 12px;
+  gap: 10px;
+  padding: 6px 12px;
+  border: 1px solid rgba(0, 214, 255, 0.25);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.52);
   pointer-events: none;
+  transform: translateX(-50%);
 }
 
 .hudItem {
@@ -112,33 +119,34 @@
   flex-direction: column;
   align-items: center;
   gap: 1px;
-  min-width: 40px;
+  min-width: 42px;
 }
 
 .hudValue {
+  color: #00d6ff;
   font-family: var(--font-title);
   font-size: 1rem;
-  font-weight: 800;
-  color: #00d6ff;
   font-variant-numeric: tabular-nums;
+  font-weight: 900;
 }
 
 .hudLabel {
+  color: rgba(255, 255, 255, 0.55);
   font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-weight: 900;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.55);
 }
 
-/* ── Status panel overlay ─────────────────────────── */
 .statusPanel {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(7,19,31,0.82);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(0, 168, 204, 0.12), transparent 42%),
+    rgba(7, 19, 31, 0.84);
 }
 
 .statusCard {
@@ -146,94 +154,109 @@
   flex-direction: column;
   align-items: center;
   gap: var(--dojo-space-3);
-  text-align: center;
+  max-width: 340px;
   padding: var(--dojo-space-6);
-  max-width: 320px;
+  text-align: center;
 }
 
 .statusTitle {
-  font-family: var(--font-title);
-  font-size: 1.2rem;
-  font-weight: 800;
   color: #fff;
+  font-family: var(--font-title);
+  font-size: 1.25rem;
+  font-weight: 900;
 }
 
 .statusText {
-  font-size: 0.82rem;
-  color: rgba(255,255,255,0.65);
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.84rem;
   line-height: 1.5;
 }
 
-/* ── Countdown overlay ────────────────────────────── */
 .countdown {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #00d6ff;
   font-family: var(--font-title);
   font-size: 4rem;
   font-weight: 900;
-  color: #00d6ff;
-  text-shadow: 0 0 24px rgba(0,214,255,0.75);
   pointer-events: none;
+  text-shadow: 0 0 24px rgba(0, 214, 255, 0.75);
 }
 
-/* ── Floating score layer ─────────────────────────── */
 .floatingLayer {
   position: absolute;
   inset: 0;
   pointer-events: none;
 }
 
-/* ── Touch controls ───────────────────────────────── */
 .touchControls {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
   justify-content: center;
+  gap: 6px;
 }
 
 .touchControls button {
   min-width: 44px;
   height: 44px;
-  border-radius: var(--dojo-radius-xs);
-  background: var(--dojo-surface-tint);
-  border: 1px solid var(--dojo-border-soft);
+  border: 1px solid rgba(20, 184, 212, 0.18);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.48);
   color: var(--dojo-text-muted);
+  cursor: pointer;
   font-family: var(--font-title);
   font-size: 0.9rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background var(--dojo-duration-fast) var(--dojo-ease);
+  font-weight: 900;
+  transition:
+    background var(--dojo-duration-fast) var(--dojo-ease),
+    color var(--dojo-duration-fast) var(--dojo-ease);
 }
 
 .touchControls button.is-active,
 .touchControls button:active {
+  border-color: var(--dojo-primary);
   background: var(--dojo-primary);
   color: #fff;
-  border-color: var(--dojo-primary);
 }
 
 .touchControls button:disabled {
-  opacity: 0.35;
   cursor: not-allowed;
+  opacity: 0.35;
 }
 
-/* Float score animation (injected dynamically) */
 :global(.float-score) {
   position: absolute;
+  color: #f6c453;
   font-family: var(--font-title);
   font-size: 0.9rem;
-  font-weight: 800;
-  color: #f6c453;
+  font-weight: 900;
   pointer-events: none;
-  animation: floatUp 0.8s ease-out forwards;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   white-space: nowrap;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  animation: floatUp 0.8s ease-out forwards;
 }
 
 @keyframes floatUp {
   0%   { opacity: 1; transform: translateY(0); }
   100% { opacity: 0; transform: translateY(-40px); }
+}
+
+@media (max-width: 720px) {
+  .shell {
+    padding: var(--dojo-space-4);
+  }
+
+  .frame {
+    aspect-ratio: 4 / 3;
+  }
+
+  .hud {
+    right: 8px;
+    left: 8px;
+    justify-content: center;
+    transform: none;
+  }
 }

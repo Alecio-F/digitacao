@@ -2,39 +2,46 @@
   display: flex;
   flex-direction: column;
   gap: var(--dojo-space-2);
-  padding-top: 36px;
-  padding-bottom: var(--dojo-space-4);
+  overflow: hidden;
+  margin-top: 32px;
+  padding: clamp(24px, 3.5vw, 38px);
+  border: 1px solid rgba(20, 184, 212, 0.22);
+  border-radius: 22px;
+  background-image: var(--dojo-card-arcade);
+  box-shadow:
+    0 24px 60px rgba(11, 57, 84, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42);
 }
 
 .eyebrow {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
   color: var(--dojo-primary);
   font-family: var(--font-title);
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .heading {
-  font-family: var(--font-title);
-  font-size: clamp(1.4rem, 3vw, 2rem);
-  font-weight: 800;
   color: var(--dojo-text-strong);
-  line-height: 1.2;
+  font-family: var(--font-title);
+  font-size: clamp(2rem, 4vw, 3.3rem);
+  font-weight: 900;
+  line-height: 1;
 }
 
 .sub {
-  font-size: 0.9rem;
+  max-width: 620px;
   color: var(--dojo-text-muted);
-  max-width: 520px;
+  font-size: 0.96rem;
+  line-height: 1.55;
 }
 
-/* Main game section */
 .gameSection {
   display: flex;
   flex-direction: column;
   gap: var(--dojo-space-3);
-  padding-top: 0;
+  padding-top: 18px;
   padding-bottom: var(--dojo-space-6);
 }
 
@@ -45,26 +52,25 @@
 }
 
 .gameLabelChip {
-  padding: 3px 10px;
+  padding: 4px 11px;
+  border: 1px solid color-mix(in srgb, var(--dojo-primary) 35%, transparent);
   border-radius: var(--dojo-radius-pill);
   background: color-mix(in srgb, var(--dojo-primary) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--dojo-primary) 35%, transparent);
+  color: var(--dojo-primary);
   font-family: var(--font-title);
   font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
+  font-weight: 900;
   letter-spacing: 0.08em;
-  color: var(--dojo-primary);
+  text-transform: uppercase;
 }
 
 .gameLabelText {
-  font-family: var(--font-title);
-  font-size: 0.95rem;
-  font-weight: 700;
   color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+  font-size: 1rem;
+  font-weight: 900;
 }
 
-/* Side challenges */
 .sideSection {
   padding-top: 0;
 }
@@ -76,11 +82,15 @@
   margin-bottom: var(--dojo-space-4);
 }
 
-.subHeading {
-  font-family: var(--font-title);
-  font-size: 1.1rem;
-  font-weight: 700;
+.subHeading,
+.soonTitle {
   color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+  font-weight: 900;
+}
+
+.subHeading {
+  font-size: 1.15rem;
 }
 
 .sideGrid {
@@ -90,46 +100,53 @@
 }
 
 .soonCard {
-  background: var(--dojo-surface-soft);
-  border: 1px solid var(--dojo-border-soft);
-  border-radius: var(--dojo-radius-md);
-  padding: var(--dojo-space-5);
   display: flex;
   flex-direction: column;
   gap: var(--dojo-space-3);
-  opacity: 0.65;
+  min-height: 230px;
+  padding: var(--dojo-space-5);
+  border: 1px solid rgba(20, 184, 212, 0.18);
+  border-radius: 16px;
+  background-image: var(--dojo-panel-arcade);
+  box-shadow:
+    0 16px 40px rgba(11, 57, 84, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  opacity: 0.72;
 }
 
 .soonHead {
   display: flex;
-  gap: var(--dojo-space-3);
   align-items: center;
+  gap: var(--dojo-space-3);
 }
 
 .soonIcon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--dojo-radius-sm);
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(20, 184, 212, 0.18);
+  border-radius: 12px;
   background: var(--dojo-surface-tint);
-  border: 1px solid var(--dojo-border-soft);
+  color: var(--dojo-primary);
   font-family: var(--font-title);
   font-size: 0.8rem;
-  font-weight: 800;
-  color: var(--dojo-text-muted);
+  font-weight: 900;
 }
 
 .soonTitle {
-  font-family: var(--font-title);
-  font-size: 0.9rem;
-  font-weight: 800;
-  color: var(--dojo-text-strong);
+  font-size: 0.95rem;
 }
 
 .soonDesc {
-  font-size: 0.8rem;
   color: var(--dojo-text-muted);
+  font-size: 0.82rem;
   line-height: 1.5;
+}
+
+@media (max-width: 560px) {
+  .hero {
+    margin-top: 18px;
+  }
 }

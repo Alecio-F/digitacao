@@ -19,23 +19,25 @@ export function TipCarousel() {
   const canClick = useRef(true);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const restartTimer = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % TIPS.length);
+    }, AUTO_ADVANCE_MS);
+  }, []);
+
   const advance = useCallback((delta: 1 | -1) => {
     if (!canClick.current) return;
     canClick.current = false;
     setCurrent((prev) => (prev + delta + TIPS.length) % TIPS.length);
     setTimeout(() => { canClick.current = true; }, DEBOUNCE_MS);
     restartTimer();
-  }, []);
-
-  function restartTimer() {
-    if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => advance(1), AUTO_ADVANCE_MS);
-  }
+  }, [restartTimer]);
 
   useEffect(() => {
     restartTimer();
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, []);
+  }, [restartTimer]);
 
   return (
     <div className={styles.carousel} aria-label="Dicas do Mestre Panda">

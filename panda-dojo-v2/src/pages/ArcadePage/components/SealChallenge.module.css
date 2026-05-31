@@ -1,33 +1,37 @@
 .card {
-  background: var(--dojo-surface-soft);
-  border: 1px solid var(--dojo-border-soft);
-  border-radius: var(--dojo-radius-lg);
-  padding: var(--dojo-space-5);
   display: flex;
   flex-direction: column;
   gap: var(--dojo-space-4);
+  min-height: 230px;
+  padding: var(--dojo-space-5);
+  border: 1px solid rgba(20, 184, 212, 0.18);
+  border-radius: 16px;
+  background-image: var(--dojo-panel-arcade);
+  box-shadow:
+    0 16px 40px rgba(11, 57, 84, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
 }
 
 .head {
   display: flex;
-  gap: var(--dojo-space-4);
   align-items: flex-start;
+  gap: var(--dojo-space-4);
 }
 
 .icon {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   width: 48px;
   height: 48px;
-  border-radius: var(--dojo-radius-sm);
+  border: 1px solid rgba(20, 184, 212, 0.18);
+  border-radius: 14px;
   background: var(--dojo-surface-tint);
-  border: 1px solid var(--dojo-border-soft);
+  color: var(--dojo-primary);
   font-family: var(--font-title);
   font-size: 0.9rem;
-  font-weight: 800;
-  color: var(--dojo-primary);
-  flex-shrink: 0;
+  font-weight: 900;
 }
 
 .info {
@@ -37,24 +41,25 @@
 }
 
 .title {
-  font-family: var(--font-title);
-  font-size: 0.95rem;
-  font-weight: 800;
   color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+  font-size: 0.98rem;
+  font-weight: 900;
 }
 
 .desc {
-  font-size: 0.8rem;
   color: var(--dojo-text-muted);
+  font-size: 0.82rem;
   line-height: 1.5;
 }
 
 .currentWord {
-  font-family: var(--font-title);
-  font-size: 1.5rem;
-  font-weight: 900;
   color: var(--dojo-primary);
+  font-family: var(--font-title);
+  font-size: 1.55rem;
+  font-weight: 900;
   letter-spacing: 0.04em;
+  text-shadow: 0 0 16px rgba(0, 168, 204, 0.22);
 }
 
 .sealList {
@@ -64,65 +69,75 @@
 }
 
 .sealToken {
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  background: var(--dojo-surface-tint);
-  border: 1px solid var(--dojo-border-soft);
+  padding: 4px 10px;
+  border: 1px solid rgba(20, 184, 212, 0.16);
+  border-radius: var(--dojo-radius-pill);
+  background: rgba(255, 255, 255, 0.48);
   color: var(--dojo-text-muted);
-  transition: background var(--dojo-duration-fast) var(--dojo-ease),
-              color var(--dojo-duration-fast) var(--dojo-ease);
+  font-size: 0.78rem;
+  font-weight: 800;
+  transition:
+    background var(--dojo-duration-fast) var(--dojo-ease),
+    border-color var(--dojo-duration-fast) var(--dojo-ease),
+    color var(--dojo-duration-fast) var(--dojo-ease);
 }
 
 .sealTokenLit {
-  background: color-mix(in srgb, var(--dojo-primary) 15%, transparent);
   border-color: var(--dojo-primary);
+  background: color-mix(in srgb, var(--dojo-primary) 15%, transparent);
   color: var(--dojo-primary);
 }
 
 .input {
   padding: 10px 14px;
+  border: 1px solid rgba(20, 184, 212, 0.18);
   border-radius: var(--dojo-radius-sm);
-  border: 1px solid var(--dojo-border-soft);
-  background: var(--dojo-surface-tint);
-  color: var(--dojo-text-strong);
-  font-size: 1rem;
-  font-family: var(--font-mono, monospace);
   outline: none;
-  transition: border-color var(--dojo-duration-fast) var(--dojo-ease);
+  background: rgba(255, 255, 255, 0.52);
+  color: var(--dojo-text-strong);
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 1rem;
+  transition:
+    border-color var(--dojo-duration-fast) var(--dojo-ease),
+    box-shadow var(--dojo-duration-fast) var(--dojo-ease);
 }
 
 .input:focus {
   border-color: var(--dojo-primary);
-  box-shadow: 0 0 0 2px var(--dojo-focus-ring);
+  box-shadow: var(--dojo-focus-ring);
 }
 
 .input:disabled {
-  opacity: 0.5;
   cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .statsRow {
   display: flex;
-  gap: 8px;
   flex-wrap: wrap;
+  gap: 8px;
 }
 
 .stat {
-  font-size: 0.78rem;
-  padding: 3px 10px;
-  border-radius: 999px;
+  padding: 4px 10px;
+  border: 1px solid rgba(20, 184, 212, 0.16);
+  border-radius: var(--dojo-radius-pill);
   background: var(--dojo-surface-tint);
-  border: 1px solid var(--dojo-border-soft);
   color: var(--dojo-text-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
 }
 
 .status {
-  font-size: 0.82rem;
   min-height: 1.2em;
+  font-size: 0.82rem;
 }
 
 .statusNeutral { color: var(--dojo-text-muted); }
 .statusSuccess { color: var(--dojo-primary); }
 .statusDanger  { color: var(--dojo-danger, #f56565); }
+
+:global(.dark) .sealToken,
+:global(.dark) .input {
+  background: rgba(255, 255, 255, 0.045);
+}

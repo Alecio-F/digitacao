@@ -31,6 +31,13 @@
   --dojo-shadow-card: 0 16px 40px rgba(11, 57, 84, 0.18);
   --dojo-shadow-elevated: 0 24px 60px rgba(11, 57, 84, 0.24);
   --dojo-glow: 0 0 24px rgba(0, 168, 204, 0.18);
+  --dojo-card-arcade:
+    radial-gradient(circle at 18% -10%, rgba(20, 184, 212, 0.18), transparent 34%),
+    radial-gradient(circle at 86% 0%, rgba(124, 92, 255, 0.15), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(230, 246, 255, 0.44));
+  --dojo-panel-arcade:
+    radial-gradient(circle at 18% 0%, rgba(20, 184, 212, 0.13), transparent 32%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.76), rgba(223, 243, 251, 0.5));
 
   /* Raios */
   --dojo-radius-xs: 6px;
@@ -52,7 +59,7 @@
 
   /* Layout */
   --dojo-pad-x: clamp(16px, 2.1vw, 26px);
-  --dojo-header-height: 100px;
+  --dojo-header-height: 88px;
 
   /* Acessibilidade */
   --dojo-focus-ring: 0 0 0 3px rgba(0, 168, 204, 0.42);
@@ -65,7 +72,7 @@
     linear-gradient(160deg, rgba(191, 215, 234, 0.92), rgba(165, 181, 193, 0.86));
 
   /* Container */
-  --dojo-container: min(1120px, calc(100% - 32px));
+  --dojo-container: min(1180px, calc(100% - 32px));
 }
 
 .dark {
@@ -91,6 +98,13 @@
   --dojo-shadow-soft: 0 6px 16px rgba(0, 0, 0, 0.32);
   --dojo-shadow-card: 0 16px 40px rgba(0, 0, 0, 0.4);
   --dojo-shadow-elevated: 0 24px 60px rgba(0, 0, 0, 0.5);
+  --dojo-card-arcade:
+    radial-gradient(circle at 14% 0%, rgba(20, 184, 212, 0.16), transparent 32%),
+    radial-gradient(circle at 90% 6%, rgba(124, 92, 255, 0.16), transparent 30%),
+    linear-gradient(180deg, rgba(18, 24, 31, 0.94), rgba(7, 10, 14, 0.88));
+  --dojo-panel-arcade:
+    radial-gradient(circle at 16% 0%, rgba(114, 245, 255, 0.1), transparent 34%),
+    linear-gradient(135deg, rgba(28, 35, 42, 0.84), rgba(11, 15, 19, 0.72));
 
   --dojo-focus-ring: 0 0 0 3px rgba(114, 245, 255, 0.42);
 
