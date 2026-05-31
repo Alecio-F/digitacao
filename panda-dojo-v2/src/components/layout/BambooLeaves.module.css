@@ -1,0 +1,48 @@
+.container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.leaf {
+  position: absolute;
+  top: -50px;
+  /* Leaf shape: rotated ellipse */
+  background: hsl(130, 45%, 38%);
+  border-radius: 50% 50% 50% 50% / 60% 40% 60% 40%;
+  opacity: 0;
+  animation: leafFall linear infinite;
+  will-change: transform, opacity;
+}
+
+/* Dark mode: brighter, more vivid leaves */
+:global(.dark) .leaf {
+  background: hsl(140, 55%, 55%);
+}
+
+@keyframes leafFall {
+  0% {
+    opacity: 0;
+    transform: translateY(0px) rotate(-25deg) translateX(0px);
+  }
+  6% {
+    opacity: 0.22;
+  }
+  30% {
+    transform: translateY(30vh) rotate(15deg) translateX(18px);
+    opacity: 0.18;
+  }
+  60% {
+    transform: translateY(62vh) rotate(-10deg) translateX(-14px);
+    opacity: 0.16;
+  }
+  88% {
+    opacity: 0.12;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(108vh) rotate(20deg) translateX(10px);
+  }
+}

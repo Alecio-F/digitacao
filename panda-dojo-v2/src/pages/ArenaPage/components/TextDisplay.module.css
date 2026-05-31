@@ -35,6 +35,12 @@
 .letterCurrent {
   color: var(--dojo-text-strong);
   border-bottom: 2px solid var(--dojo-primary);
+  animation: cursorBlink 1.1s ease-in-out infinite;
+}
+
+@keyframes cursorBlink {
+  0%, 45%, 100% { border-bottom-color: var(--dojo-primary); }
+  55%, 90%      { border-bottom-color: transparent; }
 }
 
 .letterCorrect {

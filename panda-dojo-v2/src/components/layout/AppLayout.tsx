@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { BackgroundCanvas } from './BackgroundCanvas';
+import { BambooLeaves } from './BambooLeaves';
 import { HeaderHud } from './HeaderHud';
 import { MobileBottomNav } from './MobileBottomNav';
 import { SettingsDrawer } from './SettingsDrawer';
@@ -15,6 +16,7 @@ export function AppLayout({ children }: Props) {
   return (
     <div className={styles.root}>
       <BackgroundCanvas />
+      <BambooLeaves />
       <div className={styles.content}>
         <HeaderHud onSettingsOpen={() => setDrawerOpen(true)} />
         {children}
