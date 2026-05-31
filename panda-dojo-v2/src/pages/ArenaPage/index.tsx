@@ -21,6 +21,7 @@ interface SavedResult {
   title: string;
   isRecord: boolean;
   topErrors: [string, number][];
+  duration: string;
 }
 
 const PHASE_LABEL: Record<string, string> = {
@@ -81,6 +82,10 @@ export function ArenaPage() {
       );
     }
 
+    const totalSec = timer.totalSeconds;
+    const mm = String(Math.floor(totalSec / 60)).padStart(2, '0');
+    const ss = String(totalSec % 60).padStart(2, '0');
+
     setSavedResult({
       ppm: timer.ppm,
       cpm: timer.cpm,
@@ -92,6 +97,7 @@ export function ArenaPage() {
       title: output.title,
       isRecord,
       topErrors,
+      duration: `${mm}:${ss}`,
     });
   }, [timer.phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -127,6 +133,7 @@ export function ArenaPage() {
             title={savedResult.title}
             isRecord={savedResult.isRecord}
             topErrors={savedResult.topErrors}
+            duration={savedResult.duration}
             onRestart={handleRestart}
           />
         ) : (
