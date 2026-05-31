@@ -16,13 +16,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
+  gap: 16px;
   width: var(--dojo-container);
   margin: 0 auto;
   height: var(--dojo-header-height);
   flex-wrap: nowrap;
 }
 
+/* ── Brand ── */
 .brand {
   display: inline-flex;
   align-items: center;
@@ -31,11 +32,14 @@
   font-family: var(--font-title);
   font-weight: 700;
   flex-shrink: 0;
+  transition: opacity 0.18s ease;
 }
 
+.brand:hover { opacity: 0.85; }
+
 .brandImg {
-  width: 42px;
-  height: 50px;
+  width: 38px;
+  height: 46px;
   object-fit: contain;
   border-radius: var(--dojo-radius-xs);
 }
@@ -43,7 +47,7 @@
 .brandText {
   display: block;
   line-height: 1;
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
 
 .brandSub {
@@ -56,6 +60,7 @@
   text-transform: uppercase;
 }
 
+/* ── Nav ── */
 .nav {
   flex: 1;
   min-width: 0;
@@ -64,46 +69,48 @@
 .navList {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 5px;
 }
 
+/* Chip-style nav links */
 .navLink {
-  position: relative;
-  padding: 6px 12px;
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
   border-radius: var(--dojo-radius-sm);
+  background: var(--dojo-surface-soft);
+  border: 1px solid var(--dojo-border-soft);
   font-family: var(--font-title);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--dojo-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  transition: color 0.18s ease;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  transition: border-color 0.18s ease,
+              color 0.18s ease,
+              background 0.18s ease,
+              box-shadow 0.18s ease,
+              transform 0.15s ease;
 }
 
-.navLink::after {
-  content: '';
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: 0;
-  height: 2px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--dojo-primary), var(--dojo-secondary));
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.18s ease;
-}
-
-.navLink:hover,
-.navLink.active {
+.navLink:hover {
   color: var(--dojo-text-strong);
+  border-color: var(--dojo-border-strong);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 168, 204, 0.1);
 }
 
-.navLink:hover::after,
-.navLink.active::after {
-  transform: scaleX(1);
+.navLink.active {
+  color: var(--dojo-primary);
+  border-color: var(--dojo-primary);
+  background: color-mix(in srgb, var(--dojo-primary) 10%, var(--dojo-surface-soft));
+  box-shadow: 0 0 0 1px var(--dojo-primary),
+              0 4px 16px rgba(0, 168, 204, 0.22);
+  transform: none;
 }
 
+/* ── Actions ── */
 .actions {
   display: flex;
   align-items: center;
@@ -111,10 +118,12 @@
   flex-shrink: 0;
 }
 
+/* XP badge pill */
 .playerBadge {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
   padding: 5px 12px;
   border: 1px solid var(--dojo-border-soft);
   border-radius: var(--dojo-radius-pill);
@@ -122,6 +131,12 @@
   font-family: var(--font-title);
   font-size: 12px;
   font-weight: 700;
+}
+
+.badgeRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .badgeLevel {
@@ -139,7 +154,7 @@
 }
 
 .xpBar {
-  width: 56px;
+  width: 100%;
   height: 3px;
   background: var(--dojo-surface);
   border-radius: var(--dojo-radius-pill);
@@ -154,6 +169,7 @@
   transition: width 0.6s ease;
 }
 
+/* Train button */
 .trainBtn {
   display: inline-flex;
   align-items: center;
@@ -170,15 +186,16 @@
   cursor: pointer;
   border: none;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
-  box-shadow: 0 8px 18px rgba(11, 57, 84, 0.22);
+  box-shadow: 0 6px 16px rgba(11, 57, 84, 0.22);
 }
 
 .trainBtn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 0 0 3px rgba(0, 168, 204, 0.18), 0 10px 20px rgba(11, 57, 84, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 3px rgba(0, 168, 204, 0.2),
+              0 10px 20px rgba(11, 57, 84, 0.2);
 }
 
-@media (max-width: 768px) {
-  .nav,
+@media (max-width: 900px) {
+  .nav { display: none; }
   .playerBadge { display: none; }
 }

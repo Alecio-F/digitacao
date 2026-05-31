@@ -71,9 +71,11 @@ export function HeaderHud({ onSettingsOpen }: Props) {
 
         <div className={styles.actions}>
           <div className={styles.playerBadge} aria-label="Status do jogador">
-            <span className={styles.badgeLevel}>Nível {level}</span>
-            <span className={styles.badgeSep}>·</span>
-            <span className={styles.badgeXp}>{xp} XP</span>
+            <div className={styles.badgeRow}>
+              <span className={styles.badgeLevel}>Nível {level}</span>
+              <span className={styles.badgeSep}>·</span>
+              <span className={styles.badgeXp}>{xp} XP</span>
+            </div>
             <div className={styles.xpBar} aria-hidden="true">
               <i className={styles.xpFill} style={{ width: `${xpPercent}%` }} />
             </div>
