@@ -101,33 +101,40 @@
   color: var(--dojo-text-muted);
 }
 
-/* Inline metrics (during typing) */
+/* Inline metrics — always visible, mini-card style */
 .inlineMetrics {
   display: flex;
-  gap: 14px;
+  gap: 6px;
 }
 
 .inlineMetric {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1px;
-}
-
-.inlineMetric strong {
-  font-family: var(--font-title);
-  font-size: 1rem;
-  font-weight: 800;
-  color: var(--dojo-text-strong);
-  line-height: 1;
+  gap: 2px;
+  padding: 5px 10px;
+  background: var(--dojo-surface-soft);
+  border: 1px solid var(--dojo-border-soft);
+  border-radius: var(--dojo-radius-xs);
+  min-width: 52px;
 }
 
 .inlineMetric span {
-  font-size: 0.6rem;
+  font-size: 0.56rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--dojo-text-muted);
+  line-height: 1;
+}
+
+.inlineMetric strong {
+  font-family: var(--font-title);
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--dojo-text-strong);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Controls */

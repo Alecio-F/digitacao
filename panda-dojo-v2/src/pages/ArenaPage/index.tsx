@@ -164,7 +164,7 @@ export function ArenaPage() {
                 <div className={styles.cardBarLeft}>
                   <span className={styles.mentorLabel}>
                     <span className="material-symbols-outlined">smart_toy</span>
-                    Mestre Panda
+                    {lesson ? `Type Arena · ${lesson.title}` : 'Type Arena'}
                   </span>
                   <span className={styles.phaseChip}>
                     {PHASE_LABEL[timer.phase] ?? timer.phase}
@@ -172,30 +172,33 @@ export function ArenaPage() {
                 </div>
 
                 <div className={styles.cardBarRight}>
-                  {timer.phase !== 'idle' && (
-                    <div className={styles.inlineMetrics}>
-                      <div className={styles.inlineMetric}>
-                        <strong>{formattedTime}</strong>
-                        <span>TEMPO</span>
-                      </div>
-                      <div className={styles.inlineMetric}>
-                        <strong>{timer.ppm}</strong>
-                        <span>PPM</span>
-                      </div>
-                      <div className={styles.inlineMetric}>
-                        <strong>{precision}%</strong>
-                        <span>PREC.</span>
-                      </div>
-                      <div className={styles.inlineMetric}>
-                        <strong>{state.combo}x</strong>
-                        <span>COMBO</span>
-                      </div>
+                  {/* Metrics — sempre visíveis com 0 no idle */}
+                  <div className={styles.inlineMetrics}>
+                    <div className={styles.inlineMetric}>
+                      <span>TEMPO</span>
+                      <strong>{formattedTime}</strong>
                     </div>
-                  )}
-
-                  {timer.phase === 'idle' && (
-                    <span className={styles.statusHint}>Digite para começar</span>
-                  )}
+                    <div className={styles.inlineMetric}>
+                      <span>PPM</span>
+                      <strong>{timer.ppm}</strong>
+                    </div>
+                    <div className={styles.inlineMetric}>
+                      <span>CPM</span>
+                      <strong>{timer.cpm}</strong>
+                    </div>
+                    <div className={styles.inlineMetric}>
+                      <span>PRECISÃO</span>
+                      <strong>{precision}%</strong>
+                    </div>
+                    <div className={styles.inlineMetric}>
+                      <span>ERROS</span>
+                      <strong>{state.totalIncorrect}</strong>
+                    </div>
+                    <div className={styles.inlineMetric}>
+                      <span>COMBO</span>
+                      <strong>{state.combo}x</strong>
+                    </div>
+                  </div>
 
                   <div className={styles.controls}>
                     {timer.phase !== 'idle' && (
