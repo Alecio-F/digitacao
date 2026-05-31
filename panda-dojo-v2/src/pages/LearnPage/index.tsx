@@ -116,7 +116,7 @@ export function LearnPage() {
             </section>
 
             <section className={styles.sidePanel}>
-              <span className={styles.eyebrow}>Dicas do Mestre</span>
+              <span className={styles.eyebrow}>Dicas do Mestre Panda</span>
               <TipCarousel />
             </section>
 
