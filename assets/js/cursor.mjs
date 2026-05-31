@@ -25,7 +25,8 @@ export function atualizarCursorContinuamente() {
       const parentRect = digitacaoDoTexto.getBoundingClientRect();
       const cursorWidth = cursor.offsetWidth || 4;
       const cursorHeight = Math.max(24, Math.round(rect.height * 0.92));
-      const x = (target.atEnd ? rect.right : rect.left) - parentRect.left - cursorWidth / 2;
+      const edgeX = target.atEnd ? rect.right : rect.left;
+      const x = edgeX - parentRect.left + (target.atEnd ? 1 : -cursorWidth - 1);
       const y = rect.top - parentRect.top + (rect.height - cursorHeight) / 2;
 
       cursor.style.setProperty("--cursor-x", `${Math.round(x)}px`);

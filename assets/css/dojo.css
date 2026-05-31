@@ -1261,8 +1261,14 @@
   font-weight: 500;
   font-size: clamp(1.5rem, 1.95vw, 1.78rem);
   line-height: 1.5;
-  margin: 0 0.24em;
+  margin: 0 0.3em;
   vertical-align: top;
+}
+
+.typing-focus-box .letra,
+.type-arena-text #palavras .letra {
+  display: inline-block;
+  margin-inline: 0.018em;
 }
 
 .typing-focus-box .palavra.atual,
@@ -2170,6 +2176,12 @@
   .typing-focus-box .palavra,
   .type-arena-text #palavras .palavra {
     font-size: 1.35rem;
+    margin-inline: 0.24em;
+  }
+
+  .typing-focus-box .letra,
+  .type-arena-text #palavras .letra {
+    margin-inline: 0.012em;
   }
 
   .typing-preview,

@@ -52,7 +52,7 @@
 
   /* Layout */
   --dojo-pad-x: clamp(16px, 2.1vw, 26px);
-  --dojo-header-height: 64px;
+  --dojo-header-height: 100px;
 
   /* Acessibilidade */
   --dojo-focus-ring: 0 0 0 3px rgba(0, 168, 204, 0.42);
