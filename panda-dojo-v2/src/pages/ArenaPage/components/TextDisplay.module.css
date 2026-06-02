@@ -73,6 +73,11 @@
 .letterEnd {
   width: 0.36em;
   min-width: 0.36em;
+  /* O cursor de fim de palavra mantém seu box visível (0.36em) para desenhar
+     o cursor, mas a margem negativa de mesmo valor zera o avanço no fluxo —
+     assim ele não alarga a palavra atual nem empurra as palavras seguintes
+     da mesma linha. */
+  margin-inline: 0 -0.36em;
 }
 
 /* Realce de fundo do caractere atual: indicação que não depende do cursor
