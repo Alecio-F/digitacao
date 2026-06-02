@@ -1,18 +1,66 @@
 .chip {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--dojo-space-2);
-  min-height: 28px;
+  min-height: 29px;
   padding: var(--dojo-space-2) var(--dojo-space-4);
+  color: var(--chip-color);
+  background: var(--chip-bg);
+  border: 1px solid var(--chip-border);
   border-radius: var(--dojo-radius-pill);
-  border: 1px solid transparent;
   font-family: var(--font-title);
   font-size: 0.76rem;
-  font-weight: 800;
+  font-weight: 900;
   line-height: 1;
+  white-space: nowrap;
 }
 
-.special { background: rgba(124, 92, 255, 0.14); border-color: rgba(124, 92, 255, 0.28); color: var(--dojo-secondary); }
-.success { background: rgba(40, 168, 107, 0.12); border-color: rgba(40, 168, 107, 0.26); color: var(--dojo-success); }
-.danger  { background: rgba(214, 69, 69, 0.12);  border-color: rgba(214, 69, 69, 0.26);  color: var(--dojo-danger); }
-.muted   { background: var(--dojo-surface-soft); border-color: var(--dojo-border-soft);  color: var(--dojo-text-muted); }
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.default {
+  --chip-bg: var(--dojo-surface-soft);
+  --chip-border: var(--dojo-border-soft);
+  --chip-color: var(--dojo-text-muted);
+}
+
+.cyan {
+  --chip-bg: rgba(20, 184, 212, 0.12);
+  --chip-border: rgba(20, 184, 212, 0.3);
+  --chip-color: var(--dojo-cyan);
+}
+
+.purple {
+  --chip-bg: rgba(124, 92, 255, 0.13);
+  --chip-border: rgba(124, 92, 255, 0.3);
+  --chip-color: var(--dojo-purple);
+}
+
+.green {
+  --chip-bg: rgba(40, 199, 111, 0.12);
+  --chip-border: rgba(40, 199, 111, 0.3);
+  --chip-color: var(--dojo-green);
+}
+
+.yellow {
+  --chip-bg: rgba(255, 209, 102, 0.16);
+  --chip-border: rgba(255, 209, 102, 0.34);
+  --chip-color: var(--dojo-warning);
+}
+
+.danger {
+  --chip-bg: rgba(214, 69, 69, 0.12);
+  --chip-border: rgba(214, 69, 69, 0.28);
+  --chip-color: var(--dojo-danger);
+}
+
+.active {
+  color: var(--dojo-text-strong);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--chip-color) 16%, transparent),
+    0 8px 18px rgba(11, 57, 84, 0.1);
+}

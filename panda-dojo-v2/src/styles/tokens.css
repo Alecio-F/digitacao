@@ -6,13 +6,18 @@
 
   /* Semânticos (light) */
   --dojo-primary: #00a8cc;
+  --dojo-cyan: #14b8d4;
   --dojo-secondary: #7c5cff;
+  --dojo-purple: #7c5cff;
   --dojo-success: #28a86b;
+  --dojo-green: #28c76f;
   --dojo-warning: #d99a17;
+  --dojo-yellow: #ffd166;
   --dojo-danger: #d64545;
   --dojo-text: #000;
   --dojo-text-muted: #087ca7;
   --dojo-text-strong: #0b3954;
+  --dojo-title: #0b3954;
 
   /* Superfícies */
   --dojo-surface: rgba(255, 255, 255, 0.62);
@@ -30,6 +35,7 @@
   --dojo-shadow-soft: 0 6px 16px rgba(11, 57, 84, 0.08);
   --dojo-shadow-card: 0 16px 40px rgba(11, 57, 84, 0.18);
   --dojo-shadow-elevated: 0 24px 60px rgba(11, 57, 84, 0.24);
+  --dojo-shadow-hud: 0 14px 40px rgba(11, 57, 84, 0.16);
   --dojo-glow: 0 0 24px rgba(0, 168, 204, 0.18);
   --dojo-card-arcade:
     radial-gradient(circle at 18% -10%, rgba(20, 184, 212, 0.18), transparent 34%),
@@ -57,9 +63,16 @@
   --dojo-space-7: 28px;
   --dojo-space-8: 36px;
 
+  /* Movimento */
+  --dojo-duration-fast: 180ms;
+  --dojo-duration: 320ms;
+  --dojo-duration-slow: 520ms;
+  --dojo-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --dojo-ease-emphasis: cubic-bezier(0.2, 0.85, 0.2, 1);
+
   /* Layout */
   --dojo-pad-x: clamp(16px, 2.1vw, 26px);
-  --dojo-header-height: 88px;
+  --dojo-header-height: 78px;
 
   /* Acessibilidade */
   --dojo-focus-ring: 0 0 0 3px rgba(0, 168, 204, 0.42);
@@ -72,18 +85,24 @@
     linear-gradient(160deg, rgba(191, 215, 234, 0.92), rgba(165, 181, 193, 0.86));
 
   /* Container */
-  --dojo-container: min(1180px, calc(100% - 32px));
+  --dojo-container: min(1120px, calc(100% - 32px));
 }
 
-.dark {
+.dark,
+[data-theme='dark'] {
   --dojo-primary: #72f5ff;
+  --dojo-cyan: #14b8d4;
   --dojo-secondary: #a992ff;
+  --dojo-purple: #a992ff;
   --dojo-success: #46d98c;
+  --dojo-green: #28c76f;
   --dojo-warning: #ffd166;
+  --dojo-yellow: #ffd166;
   --dojo-danger: #ff6b6b;
   --dojo-text: #c1cbd0;
   --dojo-text-muted: #c1cbd0;
   --dojo-text-strong: #96b4c6;
+  --dojo-title: #96b4c6;
 
   --dojo-surface: rgba(255, 255, 255, 0.06);
   --dojo-surface-soft: rgba(255, 255, 255, 0.04);
@@ -98,6 +117,7 @@
   --dojo-shadow-soft: 0 6px 16px rgba(0, 0, 0, 0.32);
   --dojo-shadow-card: 0 16px 40px rgba(0, 0, 0, 0.4);
   --dojo-shadow-elevated: 0 24px 60px rgba(0, 0, 0, 0.5);
+  --dojo-shadow-hud: 0 14px 40px rgba(0, 0, 0, 0.26);
   --dojo-card-arcade:
     radial-gradient(circle at 14% 0%, rgba(20, 184, 212, 0.16), transparent 32%),
     radial-gradient(circle at 90% 6%, rgba(124, 92, 255, 0.16), transparent 30%),

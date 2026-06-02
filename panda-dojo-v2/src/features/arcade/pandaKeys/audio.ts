@@ -1,13 +1,19 @@
-export function createAudioManager() {
+export function createAudioManager(initialEnabled = true) {
   let context: AudioContext | null = null;
-  let enabled = true;
+  let enabled = initialEnabled;
+  let unsupported = false;
 
   function getContext(): AudioContext | null {
-    if (!enabled) return null;
+    if (!enabled || unsupported) return null;
     if (!context) {
       const AC = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-      if (!AC) { enabled = false; return null; }
-      context = new AC();
+      if (!AC) { unsupported = true; return null; }
+      try {
+        context = new AC();
+      } catch {
+        unsupported = true;
+        return null;
+      }
     }
     if (context.state === 'suspended') context.resume();
     return context;
@@ -28,6 +34,7 @@ export function createAudioManager() {
   }
 
   return {
+    setEnabled(value: boolean) { enabled = value; },
     unlock() { getContext(); },
     hit(rating: string) {
       if (rating === 'PERFECT') tone(523.25, 0.1, 'sine', 0.08);

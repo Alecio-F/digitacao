@@ -13,16 +13,18 @@
   box-shadow:
     0 12px 28px rgba(11, 57, 84, 0.09),
     inset 0 1px 0 rgba(255, 255, 255, 0.36);
+  transform: translate3d(0, 0, 0) scale(1);
   transition:
     border-color var(--dojo-duration-fast) var(--dojo-ease),
     box-shadow var(--dojo-duration-fast) var(--dojo-ease),
     transform var(--dojo-duration-fast) var(--dojo-ease);
+  will-change: transform;
 }
 
 .card:not(.locked):hover {
   border-color: rgba(0, 168, 204, 0.4);
   box-shadow: var(--dojo-shadow-card), var(--dojo-glow);
-  transform: translateY(-3px);
+  transform: translate3d(0, -5px, 0) scale(1.012);
 }
 
 .card.recommended {
@@ -114,7 +116,7 @@
   box-shadow:
     0 0 0 3px rgba(0, 168, 204, 0.16),
     0 10px 20px rgba(11, 57, 84, 0.16);
-  transform: translateY(-1px);
+  transform: translate3d(0, -2px, 0);
 }
 
 .cta:disabled {

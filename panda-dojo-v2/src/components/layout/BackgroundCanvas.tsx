@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useSettingsContext } from '@/app/settingsContext';
 import styles from './BackgroundCanvas.module.css';
 
 const SYMBOLS = ['A', 'S', 'D', 'F', 'J', 'K', 'L', 'Ç'];
@@ -24,7 +25,8 @@ interface Particle {
 
 function getDensity() {
   const area = window.innerWidth * window.innerHeight;
-  return Math.max(22, Math.min(58, Math.floor(area / 26000)));
+  const base = Math.max(14, Math.min(58, Math.floor(area / 26000)));
+  return window.innerWidth < 720 ? Math.min(base, 22) : base;
 }
 
 function createParticles(count: number): Particle[] {
@@ -66,10 +68,13 @@ interface Props {
 
 export function BackgroundCanvas({ density }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { animationsEnabled, reducedEffects } = useSettingsContext();
 
   useEffect(() => {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reducedMotion) return;
+    if (reducedMotion || !animationsEnabled || reducedEffects) {
+      return;
+    }
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -215,7 +220,7 @@ export function BackgroundCanvas({ density }: Props) {
       window.removeEventListener('resize', handleResize);
       document.removeEventListener('visibilitychange', handleVisibility);
     };
-  }, [density]);
+  }, [animationsEnabled, density, reducedEffects]);
 
   return <canvas ref={canvasRef} className={styles.canvas} aria-hidden="true" />;
 }

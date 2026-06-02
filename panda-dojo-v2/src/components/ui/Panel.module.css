@@ -1,16 +1,60 @@
 .panel {
+  min-width: 0;
   overflow: hidden;
-  padding: var(--dojo-space-7);
-  border: 1px solid rgba(20, 184, 212, 0.18);
-  border-radius: 18px;
+  color: var(--dojo-text);
+  border: 1px solid var(--dojo-border-soft);
+  border-radius: var(--dojo-radius-lg);
   background-image: var(--dojo-panel-arcade);
   box-shadow:
-    0 16px 40px rgba(11, 57, 84, 0.12),
+    var(--dojo-shadow-card),
     inset 0 1px 0 rgba(255, 255, 255, 0.34);
 }
 
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--dojo-space-5);
+  padding: var(--dojo-space-6) var(--dojo-space-7) 0;
+}
+
+.title {
+  color: var(--dojo-title);
+  font-family: var(--font-title);
+  font-size: clamp(1.1rem, 2vw, 1.38rem);
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.subtitle {
+  margin-top: var(--dojo-space-2);
+  color: var(--dojo-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.actions {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: var(--dojo-space-3);
+}
+
+.body {
+  padding: var(--dojo-space-7);
+}
+
+.header + .body {
+  padding-top: var(--dojo-space-5);
+}
+
 @media (max-width: 600px) {
-  .panel {
+  .header {
+    flex-direction: column;
+    padding: var(--dojo-space-5) var(--dojo-space-5) 0;
+  }
+
+  .body {
     padding: var(--dojo-space-5);
   }
 }

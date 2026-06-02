@@ -1,10 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { KEYS } from '@/constants';
-import { getStorage } from '@/services/storage/storageService';
 import type { SessionPhase } from '../types';
 
-const PRACTICE_OPTIONS = [0.25, 0.5, 1, 2, 3, 5, 10, 15];
-export { PRACTICE_OPTIONS };
+const DEFAULT_TOTAL_SECONDS = 30;
 
 export function formatTime(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -25,16 +22,22 @@ interface UseTypingTimerOptions {
   wordsCompleted: number;
   totalCharsTyped: number;
   onFinish: () => void;
+  /** Duração configurada do treino, em segundos. Vem do tempo padrão das settings. */
+  durationSeconds?: number;
 }
 
-export function useTypingTimer({ wordsCompleted, totalCharsTyped, onFinish }: UseTypingTimerOptions) {
-  const storedDuration = getStorage<string>(KEYS.tempoPratica, '1');
-  const [duration, setDuration] = useState(() => parseFloat(storedDuration) || 1);
+export function useTypingTimer({
+  wordsCompleted,
+  totalCharsTyped,
+  onFinish,
+  durationSeconds = DEFAULT_TOTAL_SECONDS,
+}: UseTypingTimerOptions) {
+  const initialSeconds = durationSeconds > 0 ? Math.round(durationSeconds) : DEFAULT_TOTAL_SECONDS;
 
   const [timer, setTimer] = useState<TimerState>(() => ({
     phase: 'idle',
-    timeRemaining: Math.round((parseFloat(storedDuration) || 1) * 60),
-    totalSeconds: Math.round((parseFloat(storedDuration) || 1) * 60),
+    timeRemaining: initialSeconds,
+    totalSeconds: initialSeconds,
     pauseUsed: false,
     ppm: 0,
     cpm: 0,
@@ -42,10 +45,22 @@ export function useTypingTimer({ wordsCompleted, totalCharsTyped, onFinish }: Us
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const onFinishRef = useRef(onFinish);
+  const statsRef = useRef({ wordsCompleted, totalCharsTyped });
+  const durationRef = useRef(initialSeconds);
 
   useEffect(() => {
     onFinishRef.current = onFinish;
   }, [onFinish]);
+
+  // Mantém a duração configurada disponível para start()/reset() (somente ref,
+  // sem re-render). A tela ociosa usa um valor derivado (ver abaixo).
+  useEffect(() => {
+    durationRef.current = initialSeconds;
+  }, [initialSeconds]);
+
+  useEffect(() => {
+    statsRef.current = { wordsCompleted, totalCharsTyped };
+  }, [wordsCompleted, totalCharsTyped]);
 
   const clearTick = useCallback(() => {
     if (intervalRef.current !== null) {
@@ -56,16 +71,19 @@ export function useTypingTimer({ wordsCompleted, totalCharsTyped, onFinish }: Us
 
   const tick = useCallback(() => {
     setTimer((prev) => {
+      const { wordsCompleted: currentWords, totalCharsTyped: currentChars } = statsRef.current;
       if (prev.timeRemaining <= 1) {
-        return { ...prev, timeRemaining: 0, phase: 'finished' };
+        const ppm = prev.totalSeconds > 0 ? Math.round((currentWords / prev.totalSeconds) * 60) : 0;
+        const cpm = prev.totalSeconds > 0 ? Math.round((currentChars / prev.totalSeconds) * 60) : 0;
+        return { ...prev, timeRemaining: 0, phase: 'finished', ppm, cpm };
       }
       const remaining = prev.timeRemaining - 1;
       const elapsed = prev.totalSeconds - remaining;
-      const ppm = elapsed > 0 ? Math.round((wordsCompleted / elapsed) * 60) : 0;
-      const cpm = elapsed > 0 ? Math.round((totalCharsTyped / elapsed) * 60) : 0;
+      const ppm = elapsed > 0 ? Math.round((currentWords / elapsed) * 60) : 0;
+      const cpm = elapsed > 0 ? Math.round((currentChars / elapsed) * 60) : 0;
       return { ...prev, timeRemaining: remaining, ppm, cpm };
     });
-  }, [wordsCompleted, totalCharsTyped]);
+  }, []);
 
   // Watch for phase transition to 'finished'
   useEffect(() => {
@@ -78,10 +96,14 @@ export function useTypingTimer({ wordsCompleted, totalCharsTyped, onFinish }: Us
   const start = useCallback(() => {
     setTimer((prev) => {
       if (prev.phase !== 'idle') return prev;
-      const totalSeconds = Math.round(duration * 60);
-      return { ...prev, phase: 'running', timeRemaining: totalSeconds, totalSeconds };
+      return {
+        ...prev,
+        phase: 'running',
+        timeRemaining: durationRef.current,
+        totalSeconds: durationRef.current,
+      };
     });
-  }, [duration]);
+  }, []);
 
   const togglePause = useCallback(() => {
     setTimer((prev) => {
@@ -100,23 +122,13 @@ export function useTypingTimer({ wordsCompleted, totalCharsTyped, onFinish }: Us
     clearTick();
     setTimer({
       phase: 'idle',
-      timeRemaining: Math.round(duration * 60),
-      totalSeconds: Math.round(duration * 60),
+      timeRemaining: durationRef.current,
+      totalSeconds: durationRef.current,
       pauseUsed: false,
       ppm: 0,
       cpm: 0,
     });
-  }, [duration, clearTick]);
-
-  const changeDuration = useCallback((newDuration: number) => {
-    setDuration(newDuration);
-    localStorage.setItem(KEYS.tempoPratica, String(newDuration));
-    setTimer((prev) => {
-      if (prev.phase !== 'idle') return prev;
-      const totalSeconds = Math.round(newDuration * 60);
-      return { ...prev, timeRemaining: totalSeconds, totalSeconds };
-    });
-  }, []);
+  }, [clearTick]);
 
   // Run the interval when phase is 'running'
   useEffect(() => {
@@ -127,20 +139,19 @@ export function useTypingTimer({ wordsCompleted, totalCharsTyped, onFinish }: Us
     return undefined;
   }, [timer.phase, tick, clearTick]);
 
-  // Keep ppm/cpm updated on every render when running
+  // Enquanto ocioso, exibe a duração configurada atual (derivada, sem setState),
+  // para que mudar o tempo padrão no SettingsDrawer reflita na hora.
+  const displayRemaining = timer.phase === 'idle' ? initialSeconds : timer.timeRemaining;
+  const displayTotal = timer.phase === 'idle' ? initialSeconds : timer.totalSeconds;
   const progressPercent =
-    timer.totalSeconds > 0
-      ? Math.round((timer.timeRemaining / timer.totalSeconds) * 100)
-      : 100;
+    displayTotal > 0 ? Math.round((displayRemaining / displayTotal) * 100) : 100;
 
   return {
     timer,
-    duration,
     start,
     togglePause,
     reset,
-    changeDuration,
     progressPercent,
-    formattedTime: formatTime(timer.timeRemaining),
+    formattedTime: formatTime(displayRemaining),
   };
 }

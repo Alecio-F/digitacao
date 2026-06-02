@@ -1,28 +1,32 @@
-import type { TrainingMode } from '@/constants/trainingModes';
+export type LessonDifficulty = 'Fácil' | 'Médio' | 'Difícil';
 
-export type Medal = 'gold' | 'silver' | 'bronze' | 'none';
-export type LessonState = 'completed' | 'unlocked' | 'locked';
+export type LessonStatus =
+  | 'locked'
+  | 'unlocked'
+  | 'current'
+  | 'completed'
+  | 'recommended';
+
+export type LessonMedal = 'none' | 'bronze' | 'silver' | 'gold';
 
 export interface Lesson {
   id: string;
-  number: string;
+  phase: number;
   title: string;
-  objective: string;
-  focus: string;
-  difficulty: 'Fácil' | 'Médio' | 'Difícil';
-  xp: number;
-  requirement: string[];
-  completionAccuracy: number;
-  trainingMode: TrainingMode;
+  description: string;
+  difficulty: LessonDifficulty;
+  xpReward: number;
+  requiredLessonIds: string[];
+  focus: string[];
 }
 
 export interface LessonProgress {
-  status: 'completed' | 'started';
+  status: 'started' | 'completed';
   bestAccuracy: number;
-  bestWpm: number;
-  medal: Medal;
+  bestPpm: number;
+  medal: LessonMedal;
   completedAt?: string;
-  lastAttemptAt: string;
+  attempts: number;
 }
 
 export type LessonProgressMap = Record<string, LessonProgress>;

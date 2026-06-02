@@ -3,14 +3,36 @@ import type { GameState, LaneFlash, Particle } from './types';
 
 const HIT_LINE_RATIO = 0.74;
 export const HIT_WINDOW = 68;
+const MAX_RENDER_SCALE = 2;
 
 function cssVar(name: string, fallback: string): string {
   const value = getComputedStyle(document.body).getPropertyValue(name).trim();
   return value || fallback;
 }
 
+/**
+ * Escala de renderização do canvas (devicePixelRatio limitado a 2 por
+ * performance). O backing store é multiplicado por esta escala e o contexto
+ * recebe setTransform(scale, ...), de modo que toda a lógica do jogo trabalha
+ * em pixels lógicos (CSS) — evitando blur em telas HiDPI.
+ */
+export function getRenderScale(): number {
+  if (typeof window === 'undefined') return 1;
+  return Math.min(Math.max(window.devicePixelRatio || 1, 1), MAX_RENDER_SCALE);
+}
+
+/** Largura lógica (CSS px) da pista, independente do devicePixelRatio. */
+export function viewWidth(canvas: HTMLCanvasElement): number {
+  return canvas.width / getRenderScale();
+}
+
+/** Altura lógica (CSS px) da pista, independente do devicePixelRatio. */
+export function viewHeight(canvas: HTMLCanvasElement): number {
+  return canvas.height / getRenderScale();
+}
+
 export function getHitLineY(canvas: HTMLCanvasElement): number {
-  return canvas.height * HIT_LINE_RATIO;
+  return viewHeight(canvas) * HIT_LINE_RATIO;
 }
 
 export function addLaneFlash(state: GameState, laneIndex: number | null | undefined, color: string): void {
@@ -81,49 +103,51 @@ export function render(
 ): void {
   const stage = getSelectedStage(state);
   const laneCount = getVisualLaneCount(state);
-  const laneWidth = canvas.width / laneCount;
+  const w = viewWidth(canvas);
+  const h = viewHeight(canvas);
+  const laneWidth = w / laneCount;
   const hitLineY = getHitLineY(canvas);
   const bannerColor = cssVar('--dojo-primary', '#00a8cc');
   const titleColor = cssVar('--dojo-text-strong', '#082334');
   const fontTitle = cssVar('--font-title', 'sans-serif');
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, w, h);
 
   // Background
-  const bg = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+  const bg = ctx.createLinearGradient(0, 0, w, h);
   bg.addColorStop(0, '#07131f');
   bg.addColorStop(0.48, '#0f2634');
   bg.addColorStop(1, '#0a151d');
   ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillRect(0, 0, w, h);
 
   ctx.fillStyle = 'rgba(255,255,255,0.025)';
-  for (let y = 0; y < canvas.height; y += 28) ctx.fillRect(0, y, canvas.width, 1);
+  for (let y = 0; y < h; y += 28) ctx.fillRect(0, y, w, 1);
 
   // Grid + lane flashes
   for (let i = 0; i < laneCount; i++) {
     const x = i * laneWidth;
     ctx.fillStyle = i % 2 === 0 ? 'rgba(0,214,255,0.045)' : 'rgba(64,255,180,0.035)';
-    ctx.fillRect(x, 0, laneWidth, canvas.height);
+    ctx.fillRect(x, 0, laneWidth, h);
 
     const flash = state.laneFlashes[i];
     if (flash) {
       const opacity = Math.max(0, flash.remaining / flash.duration) * 0.28;
       ctx.fillStyle = hexToRgba(flash.color, opacity);
-      ctx.fillRect(x, 0, laneWidth, canvas.height);
+      ctx.fillRect(x, 0, laneWidth, h);
     }
 
     ctx.strokeStyle = 'rgba(0,214,255,0.13)';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(x, 0);
-    ctx.lineTo(x, canvas.height);
+    ctx.lineTo(x, h);
     ctx.stroke();
   }
 
   // Hit zone
   ctx.fillStyle = 'rgba(0,224,255,0.08)';
-  ctx.fillRect(0, hitLineY - HIT_WINDOW, canvas.width, HIT_WINDOW * 2);
+  ctx.fillRect(0, hitLineY - HIT_WINDOW, w, HIT_WINDOW * 2);
 
   ctx.shadowColor = 'rgba(0,224,255,0.75)';
   ctx.shadowBlur = 16;
@@ -131,7 +155,7 @@ export function render(
   ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.moveTo(0, hitLineY);
-  ctx.lineTo(canvas.width, hitLineY);
+  ctx.lineTo(w, hitLineY);
   ctx.stroke();
   ctx.shadowColor = 'transparent';
   ctx.shadowBlur = 0;
@@ -177,8 +201,8 @@ export function render(
 
   // Lane labels (lanes layout only)
   if (stage.layout === 'lanes') {
-    const lw = canvas.width / stage.keys.length;
-    const y = canvas.height - 34;
+    const lw = w / stage.keys.length;
+    const y = h - 34;
     ctx.font = `700 22px ${fontTitle}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';

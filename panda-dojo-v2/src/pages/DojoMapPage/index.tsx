@@ -1,62 +1,69 @@
 import { useNavigate } from 'react-router';
 import { PageShell } from '@/components/layout/PageShell';
-import { Chip, Panel } from '@/components/ui';
-import { useDailyMissions } from '@/features/missions/hooks/useDailyMissions';
+import { Button } from '@/components/ui';
 import { useLessonProgress } from '@/features/lessons/hooks/useLessonProgress';
-import { useRecommendations } from '@/features/recommendations/hooks/useRecommendations';
-import { DailyMissionList } from '@/pages/HomePage/components/DailyMissionList';
+import type { Lesson } from '@/features/lessons/types';
+import { DojoMapHero } from './components/DojoMapHero';
 import { LessonTrail } from './components/LessonTrail';
-import { PlayerCard } from './components/PlayerCard';
+import { PlayerMapCard } from './components/PlayerMapCard';
+import { RecommendedLessonPanel } from './components/RecommendedLessonPanel';
 import styles from './DojoMapPage.module.css';
 
 export function DojoMapPage() {
   const navigate = useNavigate();
-  const missions = useDailyMissions();
-  const recommendations = useRecommendations();
-  const { startLesson } = useLessonProgress();
+  const {
+    lessons,
+    progress,
+    recommendedLesson,
+    getStatus,
+    startLesson,
+  } = useLessonProgress();
 
-  const firstRec = recommendations[0];
-
-  function handleStart(lessonId: string) {
-    const ok = startLesson(lessonId);
-    if (ok) navigate('/arena');
+  function handleStart(lesson: Lesson) {
+    startLesson(lesson);
   }
 
   return (
-    <PageShell title="Mapa do Dojo">
+    <PageShell title="Mapa do Dojo" className={styles.dojoMapPage}>
+      <div className={styles.container}>
+        <DojoMapHero
+          recommendedLesson={recommendedLesson ?? lessons[0]}
+          onStart={handleStart}
+          onArena={() => navigate('/arena')}
+        />
 
-      <section className={`dojo-section ${styles.hero}`}>
-        <span className={styles.eyebrow}>Mapa do Dojo</span>
-        <h1 className={styles.heading}>Sua jornada de aprendizado</h1>
-        <p className={styles.sub}>
-          Complete as lições em ordem, ganhe medalhas e desbloqueie novos desafios.
-        </p>
-      </section>
+        <section className={styles.mapOverviewGrid} aria-label="Resumo do mapa">
+          <PlayerMapCard progress={progress} />
+          <RecommendedLessonPanel
+            lesson={recommendedLesson}
+            onStart={handleStart}
+            onArena={() => navigate('/arena')}
+          />
+        </section>
 
-      <section className={`dojo-section ${styles.gridSection}`}>
-        <div className={styles.grid}>
-          <main className={styles.main}>
-            <LessonTrail onStart={handleStart} />
-          </main>
+        <LessonTrail
+          lessons={lessons}
+          progress={progress}
+          getStatus={getStatus}
+          onStart={handleStart}
+        />
 
-          <aside className={styles.sidebar}>
-            <PlayerCard />
-
-            {firstRec && (
-              <Panel>
-                <Chip variant="special" style={{ marginBottom: 8 }}>Próximo treino</Chip>
-                <h2 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: 4 }}>{firstRec.title}</h2>
-                <p style={{ fontSize: '0.82rem', color: 'var(--dojo-text-muted)', lineHeight: 1.5 }}>
-                  {firstRec.message}
-                </p>
-              </Panel>
-            )}
-
-            <DailyMissionList missions={missions} />
-          </aside>
-        </div>
-      </section>
-
+        <section className={styles.mapFinalCta} aria-labelledby="map-final-title">
+          <div>
+            <span className={styles.eyebrow}>Próximo passo</span>
+            <h2 id="map-final-title">Quer revisar antes de começar?</h2>
+            <p>Revise fundamentos no Aprenda ou vá direto para a Arena com a fase selecionada.</p>
+          </div>
+          <div className={styles.finalActions}>
+            <Button variant="ghost" onClick={() => navigate('/aprenda')}>
+              Revisar fundamentos
+            </Button>
+            <Button variant="primary" onClick={() => navigate('/arena')}>
+              Ir para Arena
+            </Button>
+          </div>
+        </section>
+      </div>
     </PageShell>
   );
 }

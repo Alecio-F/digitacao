@@ -1,12 +1,46 @@
 .shell {
   position: relative;
   z-index: 1;
+  min-width: 0;
   min-height: calc(100dvh - var(--dojo-header-height));
   padding-bottom: calc(var(--dojo-space-7) + 86px);
 }
 
-@media (min-width: 769px) {
+.header {
+  width: var(--dojo-container);
+  margin: 0 auto;
+  padding: 34px 0 6px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  margin-bottom: var(--dojo-space-2);
+  color: var(--dojo-primary);
+  font-family: var(--font-title);
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.title {
+  color: var(--dojo-title);
+  font-family: var(--font-title);
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 900;
+  line-height: 1.05;
+}
+
+.subtitle {
+  max-width: 760px;
+  margin-top: var(--dojo-space-3);
+  color: var(--dojo-text-muted);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+@media (min-width: 901px) {
   .shell {
-    padding-bottom: var(--dojo-space-7);
+    padding-bottom: var(--dojo-space-8);
   }
 }

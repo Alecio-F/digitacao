@@ -10,3 +10,16 @@
   flex-direction: column;
   min-height: 100dvh;
 }
+
+.appMain {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  padding-top: 0;
+}
+
+@media (max-width: 900px) {
+  .content {
+    padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  }
+}

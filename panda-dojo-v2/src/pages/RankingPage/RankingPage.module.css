@@ -1,0 +1,454 @@
+.page {
+  min-width: 0;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Shared bits ── */
+.eyebrow {
+  display: inline-flex;
+  color: var(--dojo-primary);
+  font-family: var(--font-title);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.sectionHeader,
+.panelHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: var(--dojo-space-4);
+}
+
+.sectionTitle {
+  color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+  font-size: clamp(1.3rem, 2.6vw, 1.6rem);
+  font-weight: 900;
+}
+
+.emptyText {
+  margin-bottom: var(--dojo-space-3);
+  color: var(--dojo-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+/* CTA links styled as buttons */
+.ctaPrimary,
+.ctaSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  height: 42px;
+  padding: 0 20px;
+  border-radius: var(--dojo-radius-pill);
+  font-family: var(--font-title);
+  font-size: 0.86rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition:
+    transform var(--dojo-duration-fast) var(--dojo-ease),
+    box-shadow var(--dojo-duration-fast) var(--dojo-ease),
+    background var(--dojo-duration-fast) var(--dojo-ease);
+}
+
+.ctaPrimary {
+  border: 1px solid transparent;
+  background: linear-gradient(135deg, var(--dojo-primary), var(--dojo-secondary));
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(0, 168, 204, 0.28);
+}
+
+.ctaSecondary {
+  border: 1px solid rgba(20, 184, 212, 0.32);
+  background: rgba(255, 255, 255, 0.5);
+  color: var(--dojo-text-strong);
+}
+
+.ctaPrimary:hover,
+.ctaSecondary:hover {
+  transform: translateY(-1px);
+}
+
+.ctaPrimary:focus-visible,
+.ctaSecondary:focus-visible {
+  outline: 3px solid rgba(20, 184, 212, 0.4);
+  outline-offset: 2px;
+}
+
+/* ── Hero ── */
+.heroCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(18px, 3vw, 36px);
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid rgba(20, 184, 212, 0.24);
+  border-radius: 22px;
+  background-image:
+    radial-gradient(circle at 92% 0%, rgba(124, 92, 255, 0.2), transparent 34%),
+    radial-gradient(circle at 6% 10%, rgba(20, 184, 212, 0.18), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(232, 247, 255, 0.52));
+  box-shadow:
+    0 26px 60px rgba(11, 57, 84, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.46);
+}
+
+.heroInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.heroTitle {
+  color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+  font-size: clamp(1.6rem, 3.4vw, 2.3rem);
+  font-weight: 900;
+  line-height: 1.08;
+}
+
+.heroSubtitle {
+  max-width: 60ch;
+  color: var(--dojo-text-muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.heroHighlight {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 168px;
+  padding: 18px 24px;
+  border: 1px solid rgba(124, 92, 255, 0.22);
+  border-radius: 18px;
+  background: rgba(124, 92, 255, 0.08);
+  text-align: center;
+}
+
+.heroHighlightLabel {
+  color: var(--dojo-secondary);
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.heroHighlightValue {
+  color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+  font-size: clamp(2.4rem, 5vw, 3.2rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.heroHighlightHint {
+  color: var(--dojo-text-muted);
+  font-size: 0.72rem;
+}
+
+/* ── Layout ── */
+.twoColumn {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--dojo-space-4);
+  align-items: start;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--dojo-space-3);
+}
+
+/* ── Panels ── */
+.panel,
+.noticePanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dojo-space-3);
+}
+
+.panelTitle {
+  color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+/* ── Leaderboard table ── */
+.tableScroll {
+  width: 100%;
+  min-width: 0;
+}
+
+.leaderboard {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+
+.leaderboard caption {
+  text-align: left;
+}
+
+.leaderboard thead th {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(20, 184, 212, 0.2);
+  color: var(--dojo-text-muted);
+  font-family: var(--font-title);
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.leaderboard tbody td {
+  padding: 10px;
+  border-bottom: 1px solid rgba(20, 184, 212, 0.1);
+  color: var(--dojo-text-strong);
+  white-space: nowrap;
+}
+
+.leaderboard tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.colNum {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.strongNum {
+  font-family: var(--font-title);
+  font-weight: 800;
+}
+
+.colRank {
+  width: 44px;
+}
+
+.rankBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(20, 184, 212, 0.14);
+  color: var(--dojo-primary);
+  font-family: var(--font-title);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.rankTop {
+  background: linear-gradient(135deg, var(--dojo-primary), var(--dojo-secondary));
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 168, 204, 0.28);
+}
+
+/* ── Timeline ── */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+}
+
+.timelineRow {
+  display: grid;
+  grid-template-columns: minmax(90px, auto) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.timelineMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.timelineDate {
+  color: var(--dojo-text-muted);
+  font-size: 0.72rem;
+}
+
+.timelinePrecision {
+  color: var(--dojo-success);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.timelineBarTrack {
+  height: 10px;
+  overflow: hidden;
+  border-radius: var(--dojo-radius-pill);
+  background: rgba(8, 124, 167, 0.12);
+}
+
+.timelineBarFill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--dojo-primary), var(--dojo-secondary));
+  box-shadow: 0 0 10px rgba(20, 184, 212, 0.28);
+}
+
+.timelinePpm {
+  color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* ── Arcade records ── */
+.recordsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+}
+
+.recordRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(20, 184, 212, 0.14);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.recordInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.recordIcon {
+  font-size: 1.3rem;
+}
+
+.recordName {
+  color: var(--dojo-text-strong);
+  font-weight: 700;
+}
+
+.recordValue {
+  color: var(--dojo-primary);
+  font-family: var(--font-title);
+  font-size: 1.2rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 900;
+}
+
+/* ── Global notice ── */
+.noticeText {
+  color: var(--dojo-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.futureList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px;
+  list-style: none;
+}
+
+.futureList li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--dojo-text-strong);
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.futureDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--dojo-primary), var(--dojo-secondary));
+  box-shadow: 0 0 8px rgba(0, 168, 204, 0.4);
+}
+
+/* ── Dark theme ── */
+:global(.dark) .heroCard {
+  border-color: rgba(114, 245, 255, 0.18);
+  background-image:
+    radial-gradient(circle at 92% 0%, rgba(124, 92, 255, 0.2), transparent 34%),
+    radial-gradient(circle at 6% 10%, rgba(20, 184, 212, 0.16), transparent 38%),
+    linear-gradient(180deg, rgba(18, 24, 31, 0.92), rgba(7, 10, 14, 0.86));
+  box-shadow:
+    0 26px 64px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(114, 245, 255, 0.08);
+}
+
+:global(.dark) .ctaSecondary,
+:global(.dark) .recordRow {
+  border-color: rgba(114, 245, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .heroCard {
+    grid-template-columns: 1fr;
+  }
+
+  .heroHighlight {
+    align-self: flex-start;
+  }
+
+  .twoColumn {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .colHideMd {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .colHideSm {
+    display: none;
+  }
+}

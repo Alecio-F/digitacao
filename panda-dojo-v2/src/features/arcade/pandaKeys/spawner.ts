@@ -1,3 +1,4 @@
+import { viewHeight, viewWidth } from './renderer';
 import { getSelectedStage, getVisualLaneCount, keyLabel } from './state';
 import type { GameState, Tile } from './types';
 
@@ -24,11 +25,11 @@ function createLetterTile(options: {
   const { state, canvas, key, width, height, yOffset = 0 } = options;
   const stage = getSelectedStage(state);
   const laneCount = getVisualLaneCount(state);
-  const laneWidth = canvas.width / laneCount;
+  const laneWidth = viewWidth(canvas) / laneCount;
   const visualLaneIndex = options.laneIndex ?? nextFreeLane(state);
   const centeredX = visualLaneIndex * laneWidth + (laneWidth - width) / 2;
   const jitter = stage.layout === 'free' ? (Math.random() - 0.5) * laneWidth * 0.32 : 0;
-  const x = Math.max(8, Math.min(canvas.width - width - 8, centeredX + jitter));
+  const x = Math.max(8, Math.min(viewWidth(canvas) - width - 8, centeredX + jitter));
 
   return {
     id: state.nextTileId++,
@@ -49,15 +50,15 @@ function createFixedLaneTile(state: GameState, canvas: HTMLCanvasElement): Tile 
   const stage = getSelectedStage(state);
   const key = randomItem(stage.keys);
   const laneIndex = stage.keys.indexOf(key);
-  const laneWidth = canvas.width / stage.keys.length;
+  const laneWidth = viewWidth(canvas) / stage.keys.length;
   const width = Math.min(104, laneWidth * 0.72);
-  const height = Math.max(58, Math.min(76, canvas.height * 0.105));
+  const height = Math.max(58, Math.min(76, viewHeight(canvas) * 0.105));
   return createLetterTile({ state, canvas, key, laneIndex, width, height });
 }
 
 function createFreeTile(state: GameState, canvas: HTMLCanvasElement): Tile {
   const laneCount = getVisualLaneCount(state);
-  const laneWidth = canvas.width / laneCount;
+  const laneWidth = viewWidth(canvas) / laneCount;
   const width = Math.max(44, Math.min(66, laneWidth * 0.82));
   const height = width;
   const stage = getSelectedStage(state);
@@ -68,7 +69,7 @@ function createWordTiles(state: GameState, canvas: HTMLCanvasElement): Tile[] {
   const stage = getSelectedStage(state);
   const word = randomItem(stage.words ?? []);
   const laneCount = getVisualLaneCount(state);
-  const laneWidth = canvas.width / laneCount;
+  const laneWidth = viewWidth(canvas) / laneCount;
   const width = Math.max(42, Math.min(58, laneWidth * 0.74));
   const height = width;
   const maxStartLane = Math.max(0, laneCount - word.length);

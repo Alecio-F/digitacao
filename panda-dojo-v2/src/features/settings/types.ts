@@ -3,9 +3,9 @@ export type CursorMode = 'arcade' | 'classic';
 
 export interface Settings {
   theme: Theme;
-  practiceTime: number;
-  sounds: boolean;
-  animations: boolean;
+  defaultPracticeTime: number;
+  soundsEnabled: boolean;
+  animationsEnabled: boolean;
   reducedEffects: boolean;
   cursorMode: CursorMode;
 }

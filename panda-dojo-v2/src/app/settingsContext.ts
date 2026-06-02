@@ -1,12 +1,20 @@
 import { createContext, useContext } from 'react';
-import type { CursorMode, Settings } from '@/features/settings/types';
+import type { CursorMode, Settings, Theme } from '@/features/settings/types';
 
 export interface SettingsContextValue {
   settings: Settings;
+  theme: Theme;
+  defaultPracticeTime: number;
+  soundsEnabled: boolean;
+  animationsEnabled: boolean;
+  reducedEffects: boolean;
+  cursorMode: CursorMode;
+  setTheme: (v: Theme) => void;
   toggleTheme: () => void;
-  setPracticeTime: (minutes: number) => void;
-  setSounds: (v: boolean) => void;
-  setAnimations: (v: boolean) => void;
+  resetTheme: () => void;
+  setDefaultPracticeTime: (v: number) => void;
+  setSoundsEnabled: (v: boolean) => void;
+  setAnimationsEnabled: (v: boolean) => void;
   setReducedEffects: (v: boolean) => void;
   setCursorMode: (v: CursorMode) => void;
 }

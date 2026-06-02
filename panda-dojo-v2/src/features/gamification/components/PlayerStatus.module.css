@@ -1,0 +1,61 @@
+.status {
+  display: grid;
+  gap: 6px;
+  min-width: 126px;
+  padding: 8px 10px;
+  border: 1px solid rgba(124, 92, 255, 0.2);
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.38)),
+    rgba(124, 92, 255, 0.06);
+  box-shadow:
+    inset 0 -2px 0 rgba(11, 57, 84, 0.08),
+    0 8px 18px rgba(11, 57, 84, 0.08);
+  font-family: var(--font-body);
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  line-height: 1;
+}
+
+.level {
+  color: var(--dojo-secondary);
+  font-size: 0.68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.percent {
+  color: var(--dojo-text-muted);
+  font-size: 0.66rem;
+  font-weight: 800;
+}
+
+.xp {
+  display: block;
+  color: var(--dojo-text-strong);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.bar {
+  height: 4px;
+  border: 0;
+  background: rgba(8, 124, 167, 0.12);
+}
+
+:global(.dark) .status {
+  border-color: rgba(169, 146, 255, 0.22);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035)),
+    rgba(124, 92, 255, 0.08);
+  box-shadow:
+    inset 0 -2px 0 rgba(0, 0, 0, 0.32),
+    0 8px 18px rgba(0, 0, 0, 0.24);
+}

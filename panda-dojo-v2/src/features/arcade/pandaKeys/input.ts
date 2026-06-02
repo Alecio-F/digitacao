@@ -1,6 +1,6 @@
 import { getSelectedStage, getVisualLaneCount } from './state';
 import { applyHit, applyMiss, evaluateTiming } from './score';
-import { HIT_WINDOW, addLaneFlash, addParticles, getHitLineY } from './renderer';
+import { HIT_WINDOW, addLaneFlash, addParticles, getHitLineY, viewWidth } from './renderer';
 import type { AudioManager } from './audio';
 import type { GameState, InputResult } from './types';
 
@@ -85,7 +85,8 @@ export function createInputManager(options: {
 
   function laneCenterX(laneIndex: number): number {
     const laneCount = getVisualLaneCount(state);
-    return laneIndex * (canvas.width / laneCount) + (canvas.width / laneCount) / 2;
+    const laneWidth = viewWidth(canvas) / laneCount;
+    return laneIndex * laneWidth + laneWidth / 2;
   }
 
   keyCatcher.addEventListener('keydown', (e) => {

@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useSettingsContext } from '@/app/settingsContext';
 import { Button } from '@/components/ui';
 import { KEYS } from '@/constants';
 import { createAudioManager } from '@/features/arcade/pandaKeys/audio';
 import { createInputManager } from '@/features/arcade/pandaKeys/input';
 import { createGameLoop } from '@/features/arcade/pandaKeys/loop';
+import { getRenderScale, viewHeight, viewWidth } from '@/features/arcade/pandaKeys/renderer';
 import {
   GAME_STAGES,
   KEYBOARD_ROWS,
@@ -32,6 +34,7 @@ interface Hud {
 type PhaseUI = 'idle' | 'playing' | 'paused' | 'over' | 'countdown';
 
 export function PandaKeysGame() {
+  const { settings } = useSettingsContext();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const keyCatcherRef = useRef<HTMLInputElement>(null);
   const touchControlsRef = useRef<HTMLDivElement>(null);
@@ -39,6 +42,7 @@ export function PandaKeysGame() {
   const gameStateRef = useRef<GameState>(createGameState());
   const loopRef = useRef<ReturnType<typeof createGameLoop> | null>(null);
   const inputRef = useRef<{ focus: () => void } | null>(null);
+  const audioRef = useRef<ReturnType<typeof createAudioManager> | null>(null);
 
   const [hud, setHud] = useState<Hud>({
     score: 0,
@@ -81,10 +85,13 @@ export function PandaKeysGame() {
     const el = document.createElement('span');
     el.className = 'float-score';
     el.textContent = text;
-    el.style.left = `${(x / canvas.width) * 100}%`;
-    el.style.top = `${(y / canvas.height) * 100}%`;
+    el.style.left = `${(x / viewWidth(canvas)) * 100}%`;
+    el.style.top = `${(y / viewHeight(canvas)) * 100}%`;
     layer.appendChild(el);
     el.addEventListener('animationend', () => el.remove(), { once: true });
+    // Fallback de remoção: com prefers-reduced-motion a animação pode não
+    // disparar 'animationend', evitando acúmulo de nós no DOM.
+    window.setTimeout(() => el.remove(), 1000);
   }
 
   function renderTouchControls() {
@@ -92,7 +99,7 @@ export function PandaKeysGame() {
     if (!touchControls) return;
     const state = gameStateRef.current;
     const stage = getSelectedStage(state);
-    touchControls.innerHTML = '';
+    touchControls.replaceChildren();
 
     if (stage.layout === 'lanes') {
       for (const key of stage.keys) {
@@ -137,15 +144,20 @@ export function PandaKeysGame() {
     const bestScore = Number(getStorage<string>(KEYS.gameBestScore, '0')) || 0;
     setHud((prev) => ({ ...prev, best: bestScore }));
 
-    const audio = createAudioManager();
+    const audio = createAudioManager(settings.soundsEnabled);
+    audioRef.current = audio;
     const state = gameStateRef.current;
 
     function resize() {
       const c = canvasRef.current;
-      if (!c) return;
+      if (!c || !ctx) return;
       const rect = c.getBoundingClientRect();
-      c.width = Math.floor(rect.width);
-      c.height = Math.floor(rect.height);
+      const scale = getRenderScale();
+      // Backing store em pixels de dispositivo; o contexto é escalado para que
+      // a lógica do jogo continue em pixels lógicos (CSS) — canvas nítido em HiDPI.
+      c.width = Math.round(rect.width * scale);
+      c.height = Math.round(rect.height * scale);
+      ctx.setTransform(scale, 0, 0, scale, 0, 0);
       loopRef.current?.renderOnce();
     }
 
@@ -196,6 +208,11 @@ export function PandaKeysGame() {
       window.removeEventListener('resize', resize);
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Mantém o áudio em sincronia com a preferência de sons do SettingsDrawer.
+  useEffect(() => {
+    audioRef.current?.setEnabled(settings.soundsEnabled);
+  }, [settings.soundsEnabled]);
 
   function beginRun() {
     const state = gameStateRef.current;

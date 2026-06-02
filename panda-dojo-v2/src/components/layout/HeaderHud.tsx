@@ -1,26 +1,17 @@
 import { useEffect, useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router';
-import { KEYS, XP_PER_LEVEL } from '@/constants';
-import { getStorage } from '@/services/storage/storageService';
+import { Link, NavLink } from 'react-router';
+import { IconButton } from '@/components/ui';
+import { PlayerStatus } from '@/features/gamification/components/PlayerStatus';
 import styles from './HeaderHud.module.css';
 
 const NAV_ITEMS = [
-  { label: 'Início',  to: '/' },
-  { label: 'Arena',   to: '/arena' },
+  { label: 'Início', to: '/' },
+  { label: 'Arena', to: '/arena' },
   { label: 'Aprenda', to: '/aprenda' },
-  { label: 'Mapa',    to: '/mapa' },
-  { label: 'Arcade',  to: '/arcade' },
-  { label: 'Conta',   to: '/conta' },
+  { label: 'Mapa', to: '/mapa' },
+  { label: 'Arcade', to: '/arcade' },
+  { label: 'Ranking', to: '/ranking' },
 ];
-
-function readPlayerHud() {
-  const storedXp = Math.max(0, Number(getStorage<string>(KEYS.xp, '0')) || 0);
-  const storedLevel = Number(getStorage<string>(KEYS.level, '1')) || 1;
-  return {
-    xp: storedXp,
-    level: storedLevel > 0 ? storedLevel : Math.max(1, Math.floor(storedXp / XP_PER_LEVEL) + 1),
-  };
-}
 
 interface Props {
   onSettingsOpen: () => void;
@@ -29,40 +20,48 @@ interface Props {
 
 export function HeaderHud({ onSettingsOpen, isSettingsOpen = false }: Props) {
   const [scrolled, setScrolled] = useState(false);
-  const [{ xp, level }] = useState(readPlayerHud);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 18);
-    handler();
-    window.addEventListener('scroll', handler, { passive: true });
-    return () => window.removeEventListener('scroll', handler);
+    const handleScroll = () => setScrolled(window.scrollY > 12);
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const xpInLevel = xp % XP_PER_LEVEL;
-  const xpPercent = Math.min(100, Math.round((xpInLevel / XP_PER_LEVEL) * 100));
-
   return (
-    <header className={[styles.header, scrolled ? styles.scrolled : ''].filter(Boolean).join(' ')}>
-      <div className={styles.inner}>
-
+    <header
+      className={[
+        styles.header,
+        scrolled ? styles.scrolled : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
+      <div className={styles.hud}>
         <Link className={styles.brand} to="/" aria-label="PandaDigitações, página inicial">
-          <img src="/logo.png" alt="PandaDigitações" width="50" height="60" className={styles.brandImg} />
-          <span>
-            <span className={styles.brandText}>PandaDigitações</span>
-            <small className={styles.brandSub}>Dojo Arcade</small>
+          <span className={styles.brandMark}>
+            <img src="/logo.png" alt="" width="50" height="60" />
+          </span>
+          <span className={styles.brandText}>
+            <strong className={styles.brandName}>PandaDigitações</strong>
+            <small className={styles.brandSubtitle}>DOJO ARCADE</small>
           </span>
         </Link>
 
-        <nav className={styles.nav} aria-label="Navegação principal">
+        <nav className={styles.nav} aria-label="Menu principal">
           <ul className={styles.navList}>
             {NAV_ITEMS.map((item) => (
-              <li key={item.label}>
+              <li key={item.to}>
                 <NavLink
                   to={item.to}
                   end={item.to === '/'}
                   className={({ isActive }) =>
-                    [styles.navLink, isActive ? styles.active : ''].filter(Boolean).join(' ')
+                    [
+                      styles.navKey,
+                      isActive ? styles.navKeyActive : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')
                   }
                 >
                   {item.label}
@@ -73,38 +72,29 @@ export function HeaderHud({ onSettingsOpen, isSettingsOpen = false }: Props) {
         </nav>
 
         <div className={styles.actions}>
-          <div className={styles.playerBadge} aria-label="Status do jogador">
-            <div className={styles.badgeRow}>
-              <span className={styles.badgeLevel}>Nível {level}</span>
-              <span className={styles.badgeSep}>·</span>
-              <span className={styles.badgeXp}>{xp} XP</span>
-            </div>
-            <div className={styles.xpBar} aria-hidden="true">
-              <i className={styles.xpFill} style={{ width: `${xpPercent}%` }} />
-            </div>
-          </div>
+          <PlayerStatus />
 
-          <button className={styles.trainBtn} onClick={() => navigate('/arena')}>
+          <Link className={styles.trainButton} to="/arena">
             Começar treino
-          </button>
+          </Link>
 
-          <button
-            className={styles.iconBtn}
-            aria-label="Configurações"
-            onClick={onSettingsOpen}
+          <NavLink
+            className={({ isActive }) =>
+              [styles.loginLink, isActive ? styles.loginLinkActive : ''].filter(Boolean).join(' ')
+            }
+            to="/conta"
           >
-            <span
-              className={[
-                'material-symbols-outlined',
-                styles.settingsIcon,
-                isSettingsOpen ? styles.settingsIconOpen : '',
-              ].filter(Boolean).join(' ')}
-            >
-              settings
-            </span>
-          </button>
-        </div>
+            Entrar
+          </NavLink>
 
+          <IconButton
+            icon="settings"
+            label="Abrir configurações"
+            active={isSettingsOpen}
+            className={styles.settingsButton}
+            onClick={onSettingsOpen}
+          />
+        </div>
       </div>
     </header>
   );

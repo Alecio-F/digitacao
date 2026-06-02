@@ -19,6 +19,9 @@ export const STORAGE_KEYS = {
   pandaStartedLessons: 'pandaStartedLessons',
   pandaXpAwards: 'pandaXpAwards',
   pandaCursorMode: 'pandaCursorMode',
+  pandaSoundsEnabled: 'pandaSoundsEnabled',
+  pandaAnimationsEnabled: 'pandaAnimationsEnabled',
+  pandaReducedEffects: 'pandaReducedEffects',
 } as const;
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];
@@ -44,4 +47,7 @@ export const KEYS = {
   startedLessons: STORAGE_KEYS.pandaStartedLessons,
   xpAwards: STORAGE_KEYS.pandaXpAwards,
   cursorMode: STORAGE_KEYS.pandaCursorMode,
+  soundsEnabled: STORAGE_KEYS.pandaSoundsEnabled,
+  animationsEnabled: STORAGE_KEYS.pandaAnimationsEnabled,
+  reducedEffects: STORAGE_KEYS.pandaReducedEffects,
 } as const;
