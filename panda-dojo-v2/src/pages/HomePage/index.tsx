@@ -3,6 +3,7 @@ import { usePlayerProgress } from '@/features/gamification/hooks/usePlayerProgre
 import { useDailyMissions } from '@/features/missions/hooks/useDailyMissions';
 import { useRecommendations } from '@/features/recommendations/hooks/useRecommendations';
 import { AchievementsPreview } from './components/AchievementsPreview';
+import { DailyChallengeBanner } from './components/DailyChallengeBanner';
 import { DailyMissionsPanel } from './components/DailyMissionsPanel';
 import { HomeHero } from './components/HomeHero';
 import { LocalRankingPanel } from './components/LocalRankingPanel';
@@ -20,6 +21,7 @@ export function HomePage() {
     <PageShell title="Início" className={styles.homePage}>
       <div className={styles.container}>
         <HomeHero profile={profile} />
+        <DailyChallengeBanner />
         <QuickAccessGrid />
 
         <section className={styles.homeGrid} aria-label="Painéis da Home">

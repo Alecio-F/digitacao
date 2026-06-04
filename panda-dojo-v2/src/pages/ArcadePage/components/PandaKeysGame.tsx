@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSettingsContext } from '@/app/settingsContext';
 import { Button } from '@/components/ui';
-import { KEYS } from '@/constants';
 import { createAudioManager } from '@/features/arcade/pandaKeys/audio';
 import { createInputManager } from '@/features/arcade/pandaKeys/input';
 import { createGameLoop } from '@/features/arcade/pandaKeys/loop';
@@ -19,7 +18,10 @@ import {
   startCountdown,
 } from '@/features/arcade/pandaKeys/state';
 import type { GameState } from '@/features/arcade/pandaKeys/types';
-import { getStorage, setStorage } from '@/services/storage/storageService';
+import {
+  getPandaKeysBestScore,
+  savePandaKeysBestScore,
+} from '@/repositories/arcadeScoreRepository';
 import styles from './PandaKeysGame.module.css';
 
 interface Hud {
@@ -141,7 +143,7 @@ export function PandaKeysGame() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const bestScore = Number(getStorage<string>(KEYS.gameBestScore, '0')) || 0;
+    const bestScore = getPandaKeysBestScore();
     setHud((prev) => ({ ...prev, best: bestScore }));
 
     const audio = createAudioManager(settings.soundsEnabled);
@@ -170,9 +172,9 @@ export function PandaKeysGame() {
       onCountdown: (val) => setCountdown(val),
       onGameOver() {
         loop.stop();
-        const currentBest = Number(getStorage<string>(KEYS.gameBestScore, '0')) || 0;
+        const currentBest = getPandaKeysBestScore();
         if (state.score > currentBest) {
-          setStorage(KEYS.gameBestScore, String(state.score));
+          savePandaKeysBestScore(state.score);
           setHud((prev) => ({ ...prev, best: state.score }));
         }
         setPhase('over');

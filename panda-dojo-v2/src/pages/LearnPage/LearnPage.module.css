@@ -105,7 +105,7 @@
 
 .primaryLink {
   color: #eefbff;
-  background: var(--dojo-text-strong);
+  background: var(--dojo-ink);
   box-shadow: 0 7px 0 rgba(8, 124, 167, 0.22), 0 14px 26px rgba(11, 57, 84, 0.18);
 }
 

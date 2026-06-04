@@ -90,7 +90,7 @@
 .primary {
   color: #eefbff;
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--dojo-text-strong) 92%, #fff 8%), var(--dojo-text-strong));
+    linear-gradient(180deg, color-mix(in srgb, var(--dojo-ink) 92%, #fff 8%), var(--dojo-ink));
   border-color: color-mix(in srgb, var(--dojo-primary) 20%, transparent);
   box-shadow:
     0 7px 0 rgba(8, 124, 167, 0.22),

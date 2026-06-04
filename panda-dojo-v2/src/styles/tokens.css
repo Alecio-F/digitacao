@@ -18,6 +18,9 @@
   --dojo-text-muted: #087ca7;
   --dojo-text-strong: #0b3954;
   --dojo-title: #0b3954;
+  /* Fundo de botões "tinta" (CTA sólido). Separado de text-strong para que o
+     dark possa ter um botão escuro legível sem afetar a cor de texto. */
+  --dojo-ink: #0b3954;
 
   /* Superfícies */
   --dojo-surface: rgba(255, 255, 255, 0.62);
@@ -99,10 +102,12 @@
   --dojo-warning: #ffd166;
   --dojo-yellow: #ffd166;
   --dojo-danger: #ff6b6b;
-  --dojo-text: #d9e8ee;
-  --dojo-text-muted: #aebfc9;
-  --dojo-text-strong: #ebf7fd;
-  --dojo-title: #ebf7fd;
+  --dojo-text: #c1cbd0;
+  --dojo-text-muted: #c1cbd0;
+  --dojo-text-strong: #96b4c6;
+  --dojo-title: #96b4c6;
+  /* Botão tinta no dark: superfície escura teal com texto claro legível. */
+  --dojo-ink: #0e4a5e;
 
   --dojo-surface: rgba(255, 255, 255, 0.06);
   --dojo-surface-soft: rgba(255, 255, 255, 0.04);

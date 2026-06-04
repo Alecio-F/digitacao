@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { SessionPhase } from '../types';
+import { calculateCpm, calculatePpm } from '../logic/rankingEligibility';
+import type { FinishReason, SessionPhase } from '../types';
 
 const DEFAULT_TOTAL_SECONDS = 30;
 
@@ -16,11 +17,12 @@ interface TimerState {
   pauseUsed: boolean;
   ppm: number;
   cpm: number;
+  finishReason: FinishReason | null;
 }
 
 interface UseTypingTimerOptions {
   wordsCompleted: number;
-  totalCharsTyped: number;
+  correctChars: number;
   onFinish: () => void;
   /** Duração configurada do treino, em segundos. Vem do tempo padrão das settings. */
   durationSeconds?: number;
@@ -28,7 +30,7 @@ interface UseTypingTimerOptions {
 
 export function useTypingTimer({
   wordsCompleted,
-  totalCharsTyped,
+  correctChars,
   onFinish,
   durationSeconds = DEFAULT_TOTAL_SECONDS,
 }: UseTypingTimerOptions) {
@@ -41,11 +43,12 @@ export function useTypingTimer({
     pauseUsed: false,
     ppm: 0,
     cpm: 0,
+    finishReason: null,
   }));
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const onFinishRef = useRef(onFinish);
-  const statsRef = useRef({ wordsCompleted, totalCharsTyped });
+  const statsRef = useRef({ wordsCompleted, correctChars });
   const durationRef = useRef(initialSeconds);
   const runningStartedAtRef = useRef<number | null>(null);
   const elapsedBeforePauseRef = useRef(0);
@@ -61,8 +64,8 @@ export function useTypingTimer({
   }, [initialSeconds]);
 
   useEffect(() => {
-    statsRef.current = { wordsCompleted, totalCharsTyped };
-  }, [wordsCompleted, totalCharsTyped]);
+    statsRef.current = { wordsCompleted, correctChars };
+  }, [wordsCompleted, correctChars]);
 
   const clearTick = useCallback(() => {
     if (intervalRef.current !== null) {
@@ -71,27 +74,32 @@ export function useTypingTimer({
     }
   }, []);
 
+  const getElapsedSeconds = useCallback((totalSeconds: number) => {
+    const runningElapsed =
+      runningStartedAtRef.current === null
+        ? elapsedBeforePauseRef.current
+        : elapsedBeforePauseRef.current +
+          Math.floor((Date.now() - runningStartedAtRef.current) / 1000);
+
+    return Math.min(totalSeconds, Math.max(0, runningElapsed));
+  }, []);
+
   const tick = useCallback(() => {
     setTimer((prev) => {
-      const { wordsCompleted: currentWords, totalCharsTyped: currentChars } = statsRef.current;
-      const runningElapsed =
-        runningStartedAtRef.current === null
-          ? elapsedBeforePauseRef.current
-          : elapsedBeforePauseRef.current +
-            Math.floor((Date.now() - runningStartedAtRef.current) / 1000);
-      const elapsed = Math.min(prev.totalSeconds, Math.max(0, runningElapsed));
+      const { correctChars: currentCorrectChars } = statsRef.current;
+      const elapsed = getElapsedSeconds(prev.totalSeconds);
       const remaining = Math.max(0, prev.totalSeconds - elapsed);
 
       if (remaining <= 0) {
-        const ppm = prev.totalSeconds > 0 ? Math.round((currentWords / prev.totalSeconds) * 60) : 0;
-        const cpm = prev.totalSeconds > 0 ? Math.round((currentChars / prev.totalSeconds) * 60) : 0;
-        return { ...prev, timeRemaining: 0, phase: 'finished', ppm, cpm };
+        const ppm = calculatePpm(currentCorrectChars, prev.totalSeconds);
+        const cpm = calculateCpm(currentCorrectChars, prev.totalSeconds);
+        return { ...prev, timeRemaining: 0, phase: 'finished', ppm, cpm, finishReason: 'time-ended' };
       }
-      const ppm = elapsed > 0 ? Math.round((currentWords / elapsed) * 60) : 0;
-      const cpm = elapsed > 0 ? Math.round((currentChars / elapsed) * 60) : 0;
+      const ppm = elapsed > 0 ? calculatePpm(currentCorrectChars, elapsed) : 0;
+      const cpm = elapsed > 0 ? calculateCpm(currentCorrectChars, elapsed) : 0;
       return { ...prev, timeRemaining: remaining, ppm, cpm };
     });
-  }, []);
+  }, [getElapsedSeconds]);
 
   // Watch for phase transition to 'finished'
   useEffect(() => {
@@ -111,6 +119,7 @@ export function useTypingTimer({
         phase: 'running',
         timeRemaining: durationRef.current,
         totalSeconds: durationRef.current,
+        finishReason: null,
       };
     });
   }, []);
@@ -146,8 +155,34 @@ export function useTypingTimer({
       pauseUsed: false,
       ppm: 0,
       cpm: 0,
+      finishReason: null,
     });
   }, [clearTick]);
+
+  const finish = useCallback((reason: FinishReason = 'text-completed') => {
+    clearTick();
+    setTimer((prev) => {
+      if (prev.phase === 'finished') return prev;
+
+      const { correctChars: currentCorrectChars } = statsRef.current;
+      const elapsed = Math.max(1, getElapsedSeconds(prev.totalSeconds));
+      const ppm = calculatePpm(currentCorrectChars, elapsed);
+      const cpm = calculateCpm(currentCorrectChars, elapsed);
+
+      runningStartedAtRef.current = null;
+      elapsedBeforePauseRef.current = elapsed;
+
+      return {
+        ...prev,
+        phase: 'finished',
+        timeRemaining: 0,
+        totalSeconds: elapsed,
+        ppm,
+        cpm,
+        finishReason: reason,
+      };
+    });
+  }, [clearTick, getElapsedSeconds]);
 
   // Run the interval when phase is 'running'
   useEffect(() => {
@@ -172,6 +207,7 @@ export function useTypingTimer({
     start,
     togglePause,
     reset,
+    finish,
     progressPercent,
     formattedTime: formatTime(displayRemaining),
   };

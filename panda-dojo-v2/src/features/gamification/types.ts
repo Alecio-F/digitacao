@@ -1,3 +1,5 @@
+import type { RankingInvalidReason, SuspiciousFlags } from '@/features/typing/types';
+
 export interface Achievement {
   id: string;
   title: string;
@@ -11,11 +13,24 @@ export interface HistoryItem {
   erros?: number;
   tempo?: number;
   lessonId?: string | null;
-  mode?: 'random' | 'lesson' | 'practice-text';
+  mode?: 'random' | 'lesson' | 'practice-text' | 'daily-challenge';
   practiceTextId?: string | null;
   practiceTextTitle?: string | null;
   novoRecorde?: boolean;
   data?: string;
+  combo?: number;
+  maxCombo?: number;
+  correctChars?: number;
+  wrongChars?: number;
+  totalTyped?: number;
+  rawKeyCount?: number;
+  repeatedKeyCount?: number;
+  longestWrongStreak?: number;
+  suspiciousInputBursts?: number;
+  validForRanking?: boolean;
+  rankingScore?: number;
+  rankingInvalidReasons?: RankingInvalidReason[];
+  suspiciousFlags?: SuspiciousFlags;
 }
 
 export interface DojoProfile {

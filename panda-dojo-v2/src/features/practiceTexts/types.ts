@@ -8,4 +8,5 @@ export interface PracticeText {
   difficulty: PracticeTextDifficulty;
   estimatedMinutes: number;
   text: string;
+  source?: string;
 }

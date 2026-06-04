@@ -14,8 +14,8 @@ export function RankingHero({ ranking }: Props) {
           <span className={styles.eyebrow}>Ranking do Dojo</span>
           <h1 className={styles.heroTitle}>Compare sua evolução.</h1>
           <p className={styles.heroSubtitle}>
-            Veja seus melhores resultados locais e acompanhe sua progressão até o ranking global
-            chegar.
+            Veja seus melhores resultados locais elegíveis e acompanhe sua progressão até o ranking
+            global chegar.
           </p>
 
           <div className={styles.heroActions}>
@@ -32,7 +32,7 @@ export function RankingHero({ ranking }: Props) {
           <span className={styles.heroHighlightLabel}>Melhor PPM</span>
           <strong className={styles.heroHighlightValue}>{ranking.bestPpm || '--'}</strong>
           <span className={styles.heroHighlightHint}>
-            {ranking.totalTrainings} {ranking.totalTrainings === 1 ? 'treino' : 'treinos'} registrados
+            {ranking.eligibleTrainings} de {ranking.totalTrainings} treinos no placar
           </span>
         </div>
       </div>

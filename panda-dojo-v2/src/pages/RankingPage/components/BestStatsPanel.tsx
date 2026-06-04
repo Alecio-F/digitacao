@@ -23,7 +23,7 @@ export function BestStatsPanel({ ranking }: Props) {
           tone="success"
         />
         <MetricCard label="Melhor combo" value={ranking.bestCombo || '--'} tone="warning" />
-        <MetricCard label="Total de treinos" value={ranking.totalTrainings} />
+        <MetricCard label="Treinos elegíveis" value={ranking.eligibleTrainings} />
         <MetricCard
           label="Média de precisão"
           value={ranking.averageAccuracy ? `${ranking.averageAccuracy}%` : '--'}

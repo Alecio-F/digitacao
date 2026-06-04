@@ -25,8 +25,8 @@ export function DesignSystemPreview() {
           <span className={styles.eyebrow}>Panda Dojo Arcade</span>
           <h1 className={styles.title}>Design System Preview</h1>
           <p className={styles.subtitle}>
-            Base visual reutilizavel da V2: botoes, cards, badges, chips, metricas,
-            progresso, toast e drawer generico.
+            Base visual reutilizável da V2: botões, cards, badges, chips, métricas,
+            progresso, toast e drawer genérico.
           </p>
         </div>
         <Button variant="primary" onClick={() => setToastOpen(true)}>
@@ -47,9 +47,9 @@ export function DesignSystemPreview() {
           </div>
         </Panel>
 
-        <Panel title="IconButton" subtitle="Botões de icone com aria-label obrigatorio.">
+        <Panel title="IconButton" subtitle="Botões de ícone com aria-label obrigatório.">
           <div className={styles.row}>
-            <IconButton icon="settings" label="Configuracoes" />
+            <IconButton icon="settings" label="Configurações" />
             <IconButton icon="pause_circle" label="Pausar" variant="ghost" />
             <IconButton icon="refresh" label="Reiniciar" variant="primary" />
             <IconButton icon="close" label="Fechar" size="sm" />
@@ -59,8 +59,8 @@ export function DesignSystemPreview() {
         <Panel title="Badges e Chips" subtitle="Status, tags, dificuldade e filtros.">
           <div className={styles.stack}>
             <div className={styles.row}>
-              <Badge>Padrao</Badge>
-              <Badge variant="success">Concluido</Badge>
+              <Badge>Padrão</Badge>
+              <Badge variant="success">Concluído</Badge>
               <Badge variant="warning">Prata</Badge>
               <Badge variant="danger">Erro</Badge>
               <Badge variant="info">Info</Badge>
@@ -71,7 +71,7 @@ export function DesignSystemPreview() {
               <Chip variant="cyan">Foco</Chip>
               <Chip variant="purple">+80 XP</Chip>
               <Chip variant="green">Perfeito</Chip>
-              <Chip variant="yellow">Medio</Chip>
+              <Chip variant="yellow">Médio</Chip>
               <Chip variant="danger">Sem pausa</Chip>
             </div>
           </div>
@@ -80,7 +80,7 @@ export function DesignSystemPreview() {
         <Panel title="ProgressBar" subtitle="Com ARIA e valores limitados.">
           <div className={styles.stack}>
             <ProgressBar label="XP" value={72} showValue animated />
-            <ProgressBar label="Missao" value={30} tone="success" showValue />
+            <ProgressBar label="Missão" value={30} tone="success" showValue />
             <ProgressBar label="Especial" value={100} tone="special" size="lg" showValue animated />
           </div>
         </Panel>
@@ -88,7 +88,7 @@ export function DesignSystemPreview() {
         <Panel className={styles.wide} title="MetricCard" subtitle="HUD de resultados e progresso.">
           <div className={styles.metrics}>
             <MetricCard label="PPM" value={68} tone="special" helper="Melhor hoje" />
-            <MetricCard label="Precisao" value="94%" tone="success" />
+            <MetricCard label="Precisão" value="94%" tone="success" />
             <MetricCard label="Erros" value={3} tone="danger" />
             <MetricCard label="Combo" value="12x" compact />
           </div>
@@ -98,11 +98,11 @@ export function DesignSystemPreview() {
           <div className={styles.cards}>
             <Card>
               <strong className={styles.cardTitle}>Teclas Base</strong>
-              <p className={styles.cardText}>Card padrao para conteudo simples.</p>
+              <p className={styles.cardText}>Card padrão para conteúdo simples.</p>
             </Card>
             <Card variant="interactive" as="article">
-              <strong className={styles.cardTitle}>Desafio Diario</strong>
-              <p className={styles.cardText}>Hover suave com glow e elevacao.</p>
+              <strong className={styles.cardTitle}>Desafio Diário</strong>
+              <p className={styles.cardText}>Hover suave com glow e elevação.</p>
             </Card>
             <Card variant="locked">
               <strong className={styles.cardTitle}>Fase bloqueada</strong>
@@ -111,7 +111,7 @@ export function DesignSystemPreview() {
           </div>
         </Panel>
 
-        <Panel className={styles.wide} title="Drawer generico" subtitle="ESC, backdrop e scroll lock.">
+        <Panel className={styles.wide} title="Drawer genérico" subtitle="ESC, backdrop e scroll lock.">
           <Button variant="secondary" onClick={() => setDrawerOpen(true)}>
             Abrir drawer
           </Button>
@@ -120,8 +120,8 @@ export function DesignSystemPreview() {
 
       <Toast
         open={toastOpen}
-        title="Missao concluida"
-        message="Voce recebeu +50 XP local."
+        title="Missão concluída"
+        message="Você recebeu +50 XP local."
         tone="success"
         autoCloseMs={3200}
         onClose={() => setToastOpen(false)}
@@ -129,8 +129,8 @@ export function DesignSystemPreview() {
 
       <Drawer
         open={drawerOpen}
-        title="Drawer generico"
-        description="Componente base para paineis laterais da V2."
+        title="Drawer genérico"
+        description="Componente base para painéis laterais da V2."
         onClose={() => setDrawerOpen(false)}
       >
         <div className={styles.stack}>

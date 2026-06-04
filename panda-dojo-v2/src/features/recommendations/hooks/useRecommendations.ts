@@ -1,7 +1,11 @@
 import { useMemo } from 'react';
-import { KEYS } from '@/constants';
-import { getStorage, setStorage } from '@/services/storage/storageService';
 import type { HistoryItem } from '@/features/gamification/types';
+import { getHistory } from '@/repositories/typingResultRepository';
+import { getLastMistakes } from '@/repositories/profileProgressRepository';
+import {
+  getRecommendations,
+  saveRecommendations,
+} from '@/repositories/recommendationRepository';
 import type { TrainingRecommendation } from '../types';
 
 function parsePrecision(value: string | number | undefined): number {
@@ -25,8 +29,8 @@ function mistakeRecommendation(mistakes: [string, number][]): TrainingRecommenda
 }
 
 function generate(): TrainingRecommendation[] {
-  const history = getStorage<HistoryItem[]>(KEYS.historico, []);
-  const mistakes = getStorage<[string, number][]>(KEYS.lastMistakes, []);
+  const history = getHistory() as HistoryItem[];
+  const mistakes = getLastMistakes();
   const safe = Array.isArray(history) ? history : [];
   const safeMistakes = Array.isArray(mistakes) ? mistakes : [];
 
@@ -50,13 +54,13 @@ function generate(): TrainingRecommendation[] {
 
   if (!recs.length) recs.push({ id: 'next-lesson', title: 'Próxima fase do Dojo', message: 'Mantenha a consistência e avance para a próxima fase desbloqueada.', targetPage: '/mapa', targetLessonId: null, priority: 'normal', reason: 'steady-progress' });
 
-  setStorage(KEYS.recommendations, recs);
+  saveRecommendations(recs);
   return recs;
 }
 
 export function useRecommendations(): TrainingRecommendation[] {
   return useMemo(() => {
-    const cached = getStorage<TrainingRecommendation[]>(KEYS.recommendations, []);
+    const cached = getRecommendations();
     return Array.isArray(cached) && cached.length ? cached : generate();
   }, []);
 }

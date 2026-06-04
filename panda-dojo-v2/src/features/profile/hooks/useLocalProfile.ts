@@ -1,5 +1,4 @@
 import { useCallback, useMemo, useState } from 'react';
-import { KEYS } from '@/constants';
 import { usePlayerProgress } from '@/features/gamification/hooks/usePlayerProgress';
 import { parsePrecision } from '@/features/gamification/logic/xpCalculator';
 import { LESSONS } from '@/features/lessons/data/lessons';
@@ -8,32 +7,13 @@ import {
   getNextRecommendedLesson,
 } from '@/features/lessons/services/lessonProgressService';
 import type { LessonProgressMap } from '@/features/lessons/types';
-import { getStorage, removeStorage } from '@/services/storage/storageService';
+import { getSealBestScore } from '@/repositories/arcadeScoreRepository';
+import {
+  clearLocalProgress as clearProgressInStore,
+  exportLocalProgress,
+} from '@/repositories/profileProgressRepository';
 
 const RECENT_HISTORY_LIMIT = 10;
-
-/**
- * Chaves locais do PandaDigitações que representam PROGRESSO do jogador.
- * Preferências (tema, sons, cursor, tempo de treino) não entram aqui — limpar
- * progresso não deve apagar configurações do usuário.
- */
-const PROGRESS_KEYS = [
-  KEYS.xp,
-  KEYS.level,
-  KEYS.achievements,
-  KEYS.dailyStreak,
-  KEYS.lastTrainingDate,
-  KEYS.lastMistakes,
-  KEYS.historico,
-  KEYS.lessonProgress,
-  KEYS.gameBestScore,
-  KEYS.sealBestScore,
-  KEYS.dailyMissions,
-  KEYS.missionDate,
-  KEYS.recommendations,
-  KEYS.startedLessons,
-  KEYS.xpAwards,
-] as const;
 
 export interface MedalCounts {
   bronze: number;
@@ -42,9 +22,8 @@ export interface MedalCounts {
 }
 
 /**
- * Perfil local do jogador. Compõe usePlayerProgress (XP, nível, conquistas,
- * histórico) com o progresso das fases e algumas métricas derivadas, sem
- * duplicar a leitura já feita pelo hook de gamificação.
+ * Perfil local do jogador. Compõe usePlayerProgress com progresso de fases,
+ * recordes e métricas derivadas sem acessar storage diretamente.
  */
 export function useLocalProfile() {
   const profile = usePlayerProgress();
@@ -69,8 +48,6 @@ export function useLocalProfile() {
       { bronze: 0, silver: 0, gold: 0 },
     );
 
-    const sealBestScore = Number(getStorage<string>(KEYS.sealBestScore, '0')) || 0;
-
     return {
       bestAccuracy: Math.round(bestAccuracy),
       totalTrainings: history.length,
@@ -79,23 +56,18 @@ export function useLocalProfile() {
       totalLessonsCount: LESSONS.length,
       medals,
       nextLesson: getNextRecommendedLesson(lessonProgress),
-      sealBestScore,
+      sealBestScore: getSealBestScore(),
     };
   }, [profile.history, lessonProgress]);
 
-  /** Remove apenas as chaves de progresso do PandaDigitações. */
+  /** Remove apenas as chaves de progresso; preferências do usuário permanecem. */
   const clearLocalProgress = useCallback(() => {
-    for (const key of PROGRESS_KEYS) removeStorage(key);
+    clearProgressInStore();
   }, []);
 
-  /** Snapshot dos dados locais de progresso para exportação (download JSON). */
+  /** Snapshot dos dados locais de progresso para exportação em JSON. */
   const exportData = useCallback(() => {
-    const snapshot: Record<string, unknown> = {};
-    for (const key of PROGRESS_KEYS) {
-      const value = getStorage<unknown>(key, null);
-      if (value !== null) snapshot[key] = value;
-    }
-    return snapshot;
+    return exportLocalProgress();
   }, []);
 
   return {

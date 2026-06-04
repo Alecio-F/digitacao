@@ -248,6 +248,66 @@
   color: var(--dojo-primary);
 }
 
+/* Painel discreto de modo (antes do foco): oferece Palavras Aleatórias. */
+.modeHint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 9px 14px;
+  border: 1px dashed rgba(124, 92, 255, 0.32);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--dojo-secondary) 6%, transparent);
+}
+
+.modeHintText {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.modeHintText strong {
+  color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+  font-size: 0.84rem;
+  font-weight: 900;
+}
+
+.modeHintText span {
+  color: var(--dojo-text-muted);
+  font-size: 0.76rem;
+}
+
+.modeHintBtn {
+  flex-shrink: 0;
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid rgba(124, 92, 255, 0.4);
+  border-radius: var(--dojo-radius-pill);
+  background: color-mix(in srgb, var(--dojo-secondary) 14%, transparent);
+  color: var(--dojo-secondary);
+  font-family: var(--font-title);
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    background var(--dojo-duration-fast) var(--dojo-ease),
+    transform var(--dojo-duration-fast) var(--dojo-ease);
+}
+
+.modeHintBtn:hover {
+  background: color-mix(in srgb, var(--dojo-secondary) 22%, transparent);
+  transform: translateY(-1px);
+}
+
+.modeHintBtn:focus-visible {
+  outline: 3px solid rgba(124, 92, 255, 0.4);
+  outline-offset: 2px;
+}
+
 .pauseOverlay {
   display: flex;
   align-items: center;

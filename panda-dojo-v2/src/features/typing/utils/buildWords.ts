@@ -1,6 +1,6 @@
 import { WORDS_COUNT } from '@/constants';
 import { getWordsForLesson } from '../data/lessonTexts';
-import { nextRandomWord, resetWordPool } from '../data/words';
+import { generateRandomWords } from '../logic/wordGenerator';
 import type { WordData } from '../types';
 
 function toWordData(text: string): WordData {
@@ -18,21 +18,24 @@ function normalizePracticeText(text: string | null | undefined): string[] {
     .filter(Boolean);
 }
 
-export function buildWordList(lessonId: string | null, practiceText?: string | null): WordData[] {
-  resetWordPool();
-
+export function buildWordList(
+  lessonId: string | null,
+  practiceText?: string | null,
+  randomCount?: number,
+): WordData[] {
   const practiceWords = normalizePracticeText(practiceText);
   if (practiceWords.length > 0) {
     return practiceWords.map(toWordData);
   }
 
   const lessonWords = lessonId ? getWordsForLesson(lessonId) : null;
-  let lessonIndex = 0;
+  if (lessonWords?.length) {
+    return Array.from({ length: WORDS_COUNT }, (_unused, index) =>
+      toWordData(lessonWords[index % lessonWords.length]),
+    );
+  }
 
-  return Array.from({ length: WORDS_COUNT }, () => {
-    const text = lessonWords?.length
-      ? lessonWords[lessonIndex++ % lessonWords.length]
-      : nextRandomWord();
-    return toWordData(text);
-  });
+  // Modo Palavras Aleatórias: banco grande + evita repetição entre rodadas.
+  const count = randomCount && randomCount > 0 ? randomCount : WORDS_COUNT;
+  return generateRandomWords({ count }).map(toWordData);
 }

@@ -4,17 +4,22 @@ import { buildWordList } from '../utils/buildWords';
 import type { Feedback, TypingState, WordData } from '../types';
 
 type Action =
-  | { type: 'KEY'; key: string }
-  | { type: 'RESET'; lessonId: string | null; practiceText?: string | null };
+  | { type: 'KEY'; key: string; timestamp: number }
+  | { type: 'REPEATED_KEY'; key: string }
+  | { type: 'RESET'; lessonId: string | null; practiceText?: string | null; randomCount?: number };
 
 const INITIAL_FEEDBACK: Feedback = {
   text: 'Foco. Digite a primeira palavra para iniciar o desafio.',
   tone: 'neutral',
 };
 
-function makeState(lessonId: string | null, practiceText?: string | null): TypingState {
+function makeState(
+  lessonId: string | null,
+  practiceText?: string | null,
+  randomCount?: number,
+): TypingState {
   return {
-    words: buildWordList(lessonId, practiceText),
+    words: buildWordList(lessonId, practiceText, randomCount),
     currentWordIndex: 0,
     currentLetterIndex: 0,
     totalCorrect: 0,
@@ -25,6 +30,12 @@ function makeState(lessonId: string | null, practiceText?: string | null): Typin
     feedback: INITIAL_FEEDBACK,
     wordsCompleted: 0,
     totalCharsTyped: 0,
+    rawKeyCount: 0,
+    repeatedKeyCount: 0,
+    currentWrongStreak: 0,
+    longestWrongStreak: 0,
+    suspiciousInputBursts: 0,
+    recentInputs: [],
   };
 }
 
@@ -67,7 +78,14 @@ function normalizeStateValues(
 
 function reducer(state: TypingState, action: Action): TypingState {
   if (action.type === 'RESET') {
-    return makeState(action.lessonId, action.practiceText);
+    return makeState(action.lessonId, action.practiceText, action.randomCount);
+  }
+
+  if (action.type === 'REPEATED_KEY') {
+    return {
+      ...state,
+      repeatedKeyCount: Math.max(0, state.repeatedKeyCount + 1),
+    };
   }
 
   const { key } = action;
@@ -83,6 +101,12 @@ function reducer(state: TypingState, action: Action): TypingState {
   let errorsByChar = state.errorsByChar;
   let feedback: Feedback = state.feedback;
   let { wordsCompleted, totalCharsTyped } = state;
+  let rawKeyCount = state.rawKeyCount;
+  let currentWrongStreak = state.currentWrongStreak;
+  let longestWrongStreak = state.longestWrongStreak;
+  let suspiciousInputBursts = state.suspiciousInputBursts;
+  let recentInputs = Array.isArray(state.recentInputs) ? [...state.recentInputs] : [];
+  let inputWasCorrect: boolean | null = null;
 
   ({ currentWordIndex, currentLetterIndex } = normalizeStateValues(
     words,
@@ -95,12 +119,14 @@ function reducer(state: TypingState, action: Action): TypingState {
 
   // ── Letter key ────────────────────────────────────────────────────────────
   if (isLetter) {
+    rawKeyCount++;
     totalCharsTyped++;
 
     if (currentLetterIndex < word.letters.length) {
       const letter = word.letters[currentLetterIndex];
       if (!letter) return state;
       if (key === letter.char) {
+        inputWasCorrect = true;
         letter.status = 'correct';
         totalCorrect++;
         combo++;
@@ -115,6 +141,7 @@ function reducer(state: TypingState, action: Action): TypingState {
 
         document.dispatchEvent(new CustomEvent('dojo:typing-success', { detail: { key, combo } }));
       } else {
+        inputWasCorrect = false;
         letter.status = 'incorrect';
         totalIncorrect++;
         combo = 0;
@@ -128,6 +155,7 @@ function reducer(state: TypingState, action: Action): TypingState {
       const extras = word.letters.filter((l) => l.isExtra);
       if (extras.length >= MAX_EXTRA_LETTERS) return state;
       word.letters.push({ char: key, status: 'incorrect', isExtra: true });
+      inputWasCorrect = false;
       totalIncorrect++;
       combo = 0;
       errorsByChar = registerError(errorsByChar, ' ');
@@ -138,6 +166,7 @@ function reducer(state: TypingState, action: Action): TypingState {
 
   // ── Space ─────────────────────────────────────────────────────────────────
   if (isSpace) {
+    rawKeyCount++;
     totalCharsTyped++;
 
     if (currentLetterIndex < word.letters.length) {
@@ -145,6 +174,7 @@ function reducer(state: TypingState, action: Action): TypingState {
       const letter = word.letters[currentLetterIndex];
       if (!letter) return state;
       if (letter.status === 'pending') letter.status = 'incorrect';
+      inputWasCorrect = false;
       totalIncorrect++;
       combo = 0;
       errorsByChar = registerError(errorsByChar, letter.char);
@@ -154,6 +184,7 @@ function reducer(state: TypingState, action: Action): TypingState {
     } else {
       // Move to next word
       if (currentWordIndex + 1 < words.length) {
+        inputWasCorrect = true;
         currentWordIndex++;
         currentLetterIndex = 0;
         wordsCompleted++;
@@ -211,6 +242,28 @@ function reducer(state: TypingState, action: Action): TypingState {
     }
   }
 
+  if (inputWasCorrect !== null) {
+    if (inputWasCorrect) {
+      currentWrongStreak = 0;
+    } else {
+      currentWrongStreak++;
+      longestWrongStreak = Math.max(longestWrongStreak, currentWrongStreak);
+    }
+
+    const timestamp = Number.isFinite(action.timestamp) ? action.timestamp : Date.now();
+    recentInputs = [...recentInputs, { timestamp, correct: inputWasCorrect }]
+      .filter((item) => timestamp - item.timestamp <= 700)
+      .slice(-20);
+
+    if (recentInputs.length >= 12) {
+      const wrongCount = recentInputs.filter((item) => !item.correct).length;
+      if (wrongCount / recentInputs.length >= 0.65) {
+        suspiciousInputBursts++;
+        recentInputs = [];
+      }
+    }
+  }
+
   ({ currentWordIndex, currentLetterIndex } = normalizeStateValues(
     words,
     currentWordIndex,
@@ -230,23 +283,39 @@ function reducer(state: TypingState, action: Action): TypingState {
     feedback,
     wordsCompleted: Math.max(0, wordsCompleted),
     totalCharsTyped: Math.max(0, totalCharsTyped),
+    rawKeyCount: Math.max(0, rawKeyCount),
+    repeatedKeyCount: Math.max(0, state.repeatedKeyCount),
+    currentWrongStreak: Math.max(0, currentWrongStreak),
+    longestWrongStreak: Math.max(0, longestWrongStreak),
+    suspiciousInputBursts: Math.max(0, suspiciousInputBursts),
+    recentInputs,
   };
 }
 
-export function useTypingSession(lessonId: string | null, practiceText?: string | null) {
-  const [state, dispatch] = useReducer(reducer, null, () => makeState(lessonId, practiceText));
+export function useTypingSession(
+  lessonId: string | null,
+  practiceText?: string | null,
+  randomCount?: number,
+) {
+  const [state, dispatch] = useReducer(reducer, null, () =>
+    makeState(lessonId, practiceText, randomCount),
+  );
 
   useEffect(() => {
-    dispatch({ type: 'RESET', lessonId, practiceText });
-  }, [lessonId, practiceText]);
+    dispatch({ type: 'RESET', lessonId, practiceText, randomCount });
+  }, [lessonId, practiceText, randomCount]);
 
   const handleKey = useCallback((key: string) => {
-    dispatch({ type: 'KEY', key });
+    dispatch({ type: 'KEY', key, timestamp: Date.now() });
+  }, []);
+
+  const registerRepeatedKey = useCallback((key: string) => {
+    dispatch({ type: 'REPEATED_KEY', key });
   }, []);
 
   const reset = useCallback(() => {
-    dispatch({ type: 'RESET', lessonId, practiceText });
-  }, [lessonId, practiceText]);
+    dispatch({ type: 'RESET', lessonId, practiceText, randomCount });
+  }, [lessonId, practiceText, randomCount]);
 
   const precision =
     state.totalCorrect + state.totalIncorrect > 0
@@ -257,5 +326,5 @@ export function useTypingSession(lessonId: string | null, practiceText?: string 
     .sort(([, a], [, b]) => b - a)
     .slice(0, 5);
 
-  return { state, handleKey, reset, precision, topErrors };
+  return { state, handleKey, registerRepeatedKey, reset, precision, topErrors };
 }

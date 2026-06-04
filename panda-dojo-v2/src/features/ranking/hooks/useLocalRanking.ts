@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
-import { KEYS } from '@/constants';
 import { usePlayerProgress } from '@/features/gamification/hooks/usePlayerProgress';
 import { parsePrecision } from '@/features/gamification/logic/xpCalculator';
 import type { HistoryItem } from '@/features/gamification/types';
-import { getStorage } from '@/services/storage/storageService';
+import { normalizeTrainingResult } from '@/features/typing/logic/normalizeTrainingResult';
+import * as arcadeScoreRepository from '@/repositories/arcadeScoreRepository';
+import * as typingResultRepository from '@/repositories/typingResultRepository';
 
 const TOP_LIMIT = 10;
 const RECENT_LIMIT = 5;
@@ -17,7 +18,7 @@ export interface RankingResult extends HistoryItem {
 }
 
 function getCombo(item: RankingResult): number {
-  return Number(item.combo) || 0;
+  return Number(item.maxCombo ?? item.combo) || 0;
 }
 
 function safeAverage(values: number[]): number {
@@ -35,33 +36,45 @@ export function useLocalRanking() {
   const profile = usePlayerProgress();
 
   return useMemo(() => {
-    const history = (profile.history as RankingResult[]) ?? [];
+    // Fonte de dados via repository (histórico bruto); a normalização e as
+    // regras de ranking permanecem aqui, inalteradas.
+    const rawHistory = typingResultRepository.getHistory() as RankingResult[];
+    const history = rawHistory.map((item) => normalizeTrainingResult(item) as RankingResult);
+    const validResults = history.filter((item) => item.validForRanking);
 
-    const ppmValues = history.map((item) => Number(item.ppm) || 0);
-    const cpmValues = history.map((item) => Number(item.cpm) || 0);
-    const accuracyValues = history.map((item) => parsePrecision(item.precisao));
-    const comboValues = history.map(getCombo);
+    const ppmValues = validResults.map((item) => Number(item.ppm) || 0);
+    const cpmValues = validResults.map((item) => Number(item.cpm) || 0);
+    const accuracyValues = validResults.map((item) => parsePrecision(item.precisao));
+    const comboValues = validResults.map(getCombo);
 
-    const topResults = [...history]
-      .sort((a, b) => (Number(b.ppm) || 0) - (Number(a.ppm) || 0))
+    const topResults = [...validResults]
+      .sort((a, b) => {
+        const scoreDiff = (Number(b.rankingScore) || 0) - (Number(a.rankingScore) || 0);
+        if (scoreDiff !== 0) return scoreDiff;
+        return (Number(b.ppm) || 0) - (Number(a.ppm) || 0);
+      })
       .slice(0, TOP_LIMIT);
+    const bestPpm = ppmValues.length ? Math.max(...ppmValues) : 0;
 
     return {
-      bestPpm: profile.bestPpm,
+      bestPpm,
       bestCpm: cpmValues.length ? Math.max(...cpmValues) : 0,
       bestAccuracy: accuracyValues.length ? Math.round(Math.max(...accuracyValues)) : 0,
       bestCombo: comboValues.length ? Math.max(...comboValues) : 0,
       totalTrainings: history.length,
+      eligibleTrainings: validResults.length,
       averageAccuracy: safeAverage(accuracyValues),
       averagePpm: safeAverage(ppmValues),
-      recentResults: history.slice(0, RECENT_LIMIT),
+      recentResults: validResults.slice(0, RECENT_LIMIT),
       topResults,
+      allResults: history,
+      validResults,
       pandaKeysBestScore: profile.gameBestScore,
-      sealBestScore: Number(getStorage<string>(KEYS.sealBestScore, '0')) || 0,
+      sealBestScore: arcadeScoreRepository.getSealBestScore(),
       level: profile.level,
       xp: profile.xp,
     };
-  }, [profile.history, profile.bestPpm, profile.gameBestScore, profile.level, profile.xp]);
+  }, [profile.gameBestScore, profile.level, profile.xp]);
 }
 
 export type LocalRanking = ReturnType<typeof useLocalRanking>;

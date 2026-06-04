@@ -60,8 +60,9 @@ progresso. Principais chaves:
 - `pandaKeysBestScore`, `pandaSealBestScore` (recordes do Arcade)
 - `pandaDailyMissions`, `pandaTrainingRecommendations`
 
-A leitura passa por `src/services/storage/storageService.ts`, com fallback
-seguro: localStorage vazio, ausente ou com JSON inválido **não quebra** a tela.
+A leitura passa por `src/services/persistence/localStorageAdapter.ts` e pelos
+repositories em `src/repositories/`, com fallback seguro: localStorage vazio,
+ausente ou com JSON inválido **não quebra** a tela.
 
 ## Limitações atuais
 

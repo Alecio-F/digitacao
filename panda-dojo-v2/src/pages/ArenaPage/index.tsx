@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useSettingsContext } from '@/app/settingsContext';
 import { PageShell } from '@/components/layout/PageShell';
@@ -6,9 +6,29 @@ import { KEYS } from '@/constants';
 import { getLessonById } from '@/features/lessons/data/lessons';
 import { selectLesson } from '@/features/lessons/services/lessonProgressService';
 import type { LessonMedal } from '@/features/lessons/types';
-import { getPracticeTextById } from '@/features/practiceTexts/data/practiceTexts';
+import { getNextPracticeText, getPracticeTextById } from '@/features/practiceTexts/data/practiceTexts';
+import { DailyChallengeModal } from '@/features/dailyChallenge/components/DailyChallengeModal';
+import { getDailyChallenge } from '@/features/dailyChallenge/utils/getDailyChallenge';
+import { generateDailyShareText, getDailyMedal } from '@/features/dailyChallenge/utils/shareDailyResult';
+import {
+  dismissToday,
+  getTodayResult,
+  saveTodayResult,
+  selectDailyChallenge,
+  wasDismissedToday,
+} from '@/repositories/dailyChallengeRepository';
 import { useTypingSession } from '@/features/typing/hooks/useTypingSession';
 import { useTypingTimer } from '@/features/typing/hooks/useTypingTimer';
+import {
+  getRandomWordCountByDuration,
+  normalizeTrainingMode,
+} from '@/features/typing/logic/wordGenerator';
+import {
+  readSelectionString,
+  selectPracticeText,
+  selectRandomWords,
+} from '@/repositories/trainingSelectionRepository';
+import type { RankingEligibility, WordData } from '@/features/typing/types';
 import { getBestPpm, saveSessionResult } from '@/features/typing/utils/saveResult';
 import { ResultsScreen } from './components/ResultsScreen';
 import { TextDisplay } from './components/TextDisplay';
@@ -33,6 +53,10 @@ interface SavedResult {
   nextLessonId: string | null;
   nextLessonTitle: string | null;
   isPracticeText: boolean;
+  isDailyChallenge: boolean;
+  isRandomWords: boolean;
+  dailyShareText: string | null;
+  rankingEligibility: RankingEligibility;
 }
 
 const PHASE_LABEL: Record<string, string> = {
@@ -42,27 +66,63 @@ const PHASE_LABEL: Record<string, string> = {
   finished: 'Concluído',
 };
 
+// Leitura da seleção de treino centralizada no repositório (tolerante a
+// valores crus legados e a JSON novo).
 function readStoredString(key: string): string {
-  const raw = localStorage.getItem(key);
-  if (raw === null) return '';
+  return readSelectionString(key);
+}
 
-  try {
-    const parsed = JSON.parse(raw) as unknown;
-    return typeof parsed === 'string' ? parsed : raw;
-  } catch {
-    return raw;
-  }
+function countCompletedWords(words: WordData[]): number {
+  return words.filter((word) => {
+    const letters = Array.isArray(word.letters)
+      ? word.letters.filter((letter) => !letter.isExtra)
+      : [];
+
+    return letters.length > 0 && letters.every((letter) => letter.status !== 'pending');
+  }).length;
+}
+
+function isTextCompleted(
+  words: WordData[],
+  currentWordIndex: number,
+  currentLetterIndex: number,
+): boolean {
+  if (!Array.isArray(words) || words.length === 0) return false;
+
+  const lastWordIndex = words.length - 1;
+  const lastWord = words[lastWordIndex];
+  const letters = Array.isArray(lastWord?.letters)
+    ? lastWord.letters.filter((letter) => !letter.isExtra)
+    : [];
+
+  if (letters.length === 0) return false;
+  if (currentWordIndex < lastWordIndex) return false;
+  if (currentLetterIndex < letters.length) return false;
+
+  return letters.every((letter) => letter.status !== 'pending');
 }
 
 export function ArenaPage() {
   const navigate = useNavigate();
-  const [selectedTrainingMode] = useState<string>(() => readStoredString(KEYS.selectedTrainingMode));
-  const [selectedPracticeText] = useState<string>(() => readStoredString(KEYS.selectedPracticeText));
-  const [selectedPracticeTextId] = useState<string>(() => readStoredString(KEYS.selectedPracticeTextId));
+  const dailyChallenge = useMemo(() => getDailyChallenge(), []);
+  const dailyChallengeResult = getTodayResult(dailyChallenge.dayKey);
+  const [selectedTrainingMode, setSelectedTrainingMode] = useState<string>(() =>
+    normalizeTrainingMode(readStoredString(KEYS.selectedTrainingMode)),
+  );
+  const [selectedPracticeText, setSelectedPracticeText] = useState<string>(() =>
+    readStoredString(KEYS.selectedPracticeText),
+  );
+  const [selectedPracticeTextId, setSelectedPracticeTextId] = useState<string>(() =>
+    readStoredString(KEYS.selectedPracticeTextId),
+  );
   const isPracticeTextMode =
     selectedTrainingMode === 'practice-text' && selectedPracticeText.trim().length > 0;
+  const isDailyChallengeMode =
+    selectedTrainingMode === 'daily-challenge' && selectedPracticeText.trim().length > 0;
+  // Ambos carregam um texto fixo na Arena (reutilizam a mesma infraestrutura).
+  const isTextMode = isPracticeTextMode || isDailyChallengeMode;
   const [lessonId, setLessonId] = useState<string | null>(() => {
-    if (isPracticeTextMode) return null;
+    if (isTextMode) return null;
     return readStoredString(KEYS.selectedLessonId) || null;
   });
 
@@ -72,37 +132,64 @@ export function ArenaPage() {
     practiceTextMeta?.title ?? readStoredString(KEYS.selectedPracticeTextTitle) ?? 'Texto livre';
   const { settings } = useSettingsContext();
 
+  // Palavras Aleatórias: sem texto fixo e sem fase. É também o fallback padrão
+  // ao abrir /arena sem modo selecionado.
+  const isRandomWordsMode = !isTextMode && lessonId === null;
+  const durationSeconds = Math.round(settings.defaultPracticeTime * 60);
+  const randomWordCount = getRandomWordCountByDuration(durationSeconds);
+
   const [savedResult, setSavedResult] = useState<SavedResult | null>(null);
   const [isArenaFocused, setIsArenaFocused] = useState(false);
+  const [showDailyPrompt, setShowDailyPrompt] = useState(() => (
+    selectedTrainingMode !== 'daily-challenge' &&
+    dailyChallengeResult === null &&
+    !wasDismissedToday(dailyChallenge.dayKey)
+  ));
   const savedRef = useRef(false);
+  const textCompletionRef = useRef(false);
 
-  const { state, handleKey, reset: resetSession, precision, topErrors } = useTypingSession(
-    isPracticeTextMode ? null : lessonId,
-    isPracticeTextMode ? selectedPracticeText : null,
+  const {
+    state,
+    handleKey,
+    registerRepeatedKey,
+    reset: resetSession,
+    precision,
+    topErrors,
+  } = useTypingSession(
+    isTextMode ? null : lessonId,
+    isTextMode ? selectedPracticeText : null,
+    isRandomWordsMode ? randomWordCount : undefined,
   );
+  const completedWordsForStats = Math.max(state.wordsCompleted, countCompletedWords(state.words));
 
   const {
     timer,
     start: startTimer,
     togglePause,
     reset: resetTimer,
+    finish: finishTimer,
     progressPercent,
     formattedTime,
   } = useTypingTimer({
-    wordsCompleted: state.wordsCompleted,
-    totalCharsTyped: state.totalCharsTyped,
-    durationSeconds: Math.round(settings.defaultPracticeTime * 60),
+    wordsCompleted: completedWordsForStats,
+    correctChars: state.totalCorrect,
+    durationSeconds,
     onFinish: () => {},
   });
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setIsArenaFocused(false);
+      if (event.key !== 'Escape') return;
+      setIsArenaFocused(false);
+      if (showDailyPrompt) {
+        dismissToday(dailyChallenge.dayKey);
+        setShowDailyPrompt(false);
+      }
     };
 
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, []);
+  }, [dailyChallenge.dayKey, showDailyPrompt]);
 
   useEffect(() => {
     if (timer.phase !== 'finished' || savedRef.current) return;
@@ -119,17 +206,30 @@ export function ArenaPage() {
       precision,
       errors: state.totalIncorrect,
       duration: dur,
-      lessonId: isPracticeTextMode ? null : lessonId,
-      mode: isPracticeTextMode ? 'practice-text' : lessonId ? 'lesson' : 'random',
+      lessonId: isTextMode ? null : lessonId,
+      mode: isDailyChallengeMode
+        ? 'daily-challenge'
+        : isPracticeTextMode
+        ? 'practice-text'
+        : lessonId
+        ? 'lesson'
+        : 'random',
       practiceTextId: isPracticeTextMode ? selectedPracticeTextId : null,
       practiceTextTitle: isPracticeTextMode ? practiceTextTitle : null,
       isRecord,
       topErrors,
       maxCombo: state.maxCombo,
       pauseUsed: timer.pauseUsed,
+      correctChars: state.totalCorrect,
+      wrongChars: state.totalIncorrect,
+      totalTyped: state.totalCorrect + state.totalIncorrect,
+      rawKeyCount: state.rawKeyCount,
+      repeatedKeyCount: state.repeatedKeyCount,
+      longestWrongStreak: state.longestWrongStreak,
+      suspiciousInputBursts: state.suspiciousInputBursts,
     });
 
-    if (isRecord) {
+    if (output.isRecord) {
       document.dispatchEvent(
         new CustomEvent('dojo:record', { detail: { ppm: timer.ppm, cpm: timer.cpm } }),
       );
@@ -138,6 +238,45 @@ export function ArenaPage() {
     const totalSec = timer.totalSeconds;
     const mm = String(Math.floor(totalSec / 60)).padStart(2, '0');
     const ss = String(totalSec % 60).padStart(2, '0');
+
+    let dailyShareText: string | null = null;
+    if (isDailyChallengeMode) {
+      const daily = getDailyChallenge();
+      const dailyMedal = getDailyMedal(precision, timer.ppm);
+      dailyShareText = generateDailyShareText({
+        date: daily.dayKey,
+        challengeId: daily.challengeId,
+        challengeNumber: daily.challengeNumber,
+        ppm: timer.ppm,
+        cpm: timer.cpm,
+        accuracy: precision,
+        errors: state.totalIncorrect,
+        maxCombo: state.maxCombo,
+        durationSeconds: totalSec,
+        medal: dailyMedal,
+        validForRanking: output.rankingEligibility.validForRanking,
+        rankingInvalidReasons: output.rankingEligibility.reasonCodes,
+        suspiciousFlags: output.rankingEligibility.suspiciousFlags,
+      });
+      saveTodayResult({
+        date: daily.dayKey,
+        challengeId: daily.challengeId,
+        challengeNumber: daily.challengeNumber,
+        ppm: timer.ppm,
+        cpm: timer.cpm,
+        accuracy: precision,
+        errors: state.totalIncorrect,
+        maxCombo: state.maxCombo,
+        durationSeconds: totalSec,
+        completedAt: new Date().toISOString(),
+        shareText: dailyShareText,
+        medal: dailyMedal,
+        validForRanking: output.rankingEligibility.validForRanking,
+        rankingScore: output.rankingEligibility.score,
+        rankingInvalidReasons: output.rankingEligibility.reasonCodes,
+        suspiciousFlags: output.rankingEligibility.suspiciousFlags,
+      });
+    }
 
     setSavedResult({
       ppm: timer.ppm,
@@ -148,7 +287,7 @@ export function ArenaPage() {
       gainedXp: output.gainedXp,
       level: output.level,
       title: output.title,
-      isRecord,
+      isRecord: output.isRecord,
       topErrors,
       duration: `${mm}:${ss}`,
       lessonCompleted: output.lessonCompleted,
@@ -157,11 +296,33 @@ export function ArenaPage() {
       nextLessonId: output.nextLessonId,
       nextLessonTitle: output.nextLessonTitle,
       isPracticeText: isPracticeTextMode,
+      isDailyChallenge: isDailyChallengeMode,
+      isRandomWords: isRandomWordsMode,
+      dailyShareText,
+      rankingEligibility: output.rankingEligibility,
     });
   }, [timer.phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    if (!isTextMode || savedResult || textCompletionRef.current) return;
+    if (timer.phase !== 'running') return;
+    if (!isTextCompleted(state.words, state.currentWordIndex, state.currentLetterIndex)) return;
+
+    textCompletionRef.current = true;
+    finishTimer('text-completed');
+  }, [
+    finishTimer,
+    isTextMode,
+    savedResult,
+    state.currentLetterIndex,
+    state.currentWordIndex,
+    state.words,
+    timer.phase,
+  ]);
+
   function handleTypingKey(key: string) {
     if (savedResult) return;
+    if (textCompletionRef.current) return;
     if (timer.phase === 'paused' || timer.phase === 'finished') return;
     if (timer.phase === 'idle') startTimer();
     setIsArenaFocused(true);
@@ -170,6 +331,7 @@ export function ArenaPage() {
 
   function handleRestart() {
     savedRef.current = false;
+    textCompletionRef.current = false;
     setSavedResult(null);
     setIsArenaFocused(false);
     resetSession();
@@ -178,6 +340,7 @@ export function ArenaPage() {
 
   function handleNext() {
     savedRef.current = false;
+    textCompletionRef.current = false;
     setSavedResult(null);
     setIsArenaFocused(false);
 
@@ -187,8 +350,13 @@ export function ArenaPage() {
         selectLesson(nextLesson);
         setLessonId(nextLesson.id);
       }
+    } else if (savedResult?.isDailyChallenge) {
+      navigate('/');
     } else if (savedResult?.isPracticeText) {
-      navigate('/mapa');
+      const nextText = getNextPracticeText(selectedPracticeTextId);
+      selectPracticeText({ id: nextText.id, title: nextText.title, text: nextText.text });
+      setSelectedPracticeTextId(nextText.id);
+      setSelectedPracticeText(nextText.text);
     } else {
       resetSession();
     }
@@ -196,12 +364,53 @@ export function ArenaPage() {
     resetTimer();
   }
 
+  function handleUseRandomWords() {
+    selectRandomWords();
+
+    setSelectedTrainingMode('random-words');
+    setLessonId(null);
+    setSelectedPracticeText('');
+    setSelectedPracticeTextId('');
+
+    savedRef.current = false;
+    textCompletionRef.current = false;
+    setSavedResult(null);
+    setIsArenaFocused(false);
+    resetTimer();
+  }
+
+  function handleStartDailyChallenge() {
+    selectDailyChallenge(dailyChallenge);
+    setSelectedTrainingMode('daily-challenge');
+    setSelectedPracticeText(dailyChallenge.text.text);
+    setSelectedPracticeTextId('');
+    setLessonId(null);
+    setShowDailyPrompt(false);
+
+    savedRef.current = false;
+    textCompletionRef.current = false;
+    setSavedResult(null);
+    setIsArenaFocused(false);
+    resetTimer();
+  }
+
+  function handleDismissDailyChallenge() {
+    setShowDailyPrompt(false);
+  }
+
+  const showRandomWordsHint =
+    !savedResult && !isArenaFocused && timer.phase === 'idle' && !isRandomWordsMode;
+
   const expectedChar =
     state.words[state.currentWordIndex]?.letters[state.currentLetterIndex]?.char ?? '';
-  const cleanArenaTitle = isPracticeTextMode
+  const cleanArenaTitle = isDailyChallengeMode
+    ? `Type Arena · Desafio Diário`
+    : isTextMode
     ? `Type Arena · ${practiceTextTitle}`
     : lesson
     ? `Type Arena · ${lesson.title}`
+    : isRandomWordsMode
+    ? 'Type Arena · Palavras Aleatórias'
     : 'Type Arena';
   const modeLabel = isPracticeTextMode
     ? practiceTextTitle
@@ -225,8 +434,9 @@ export function ArenaPage() {
     .join(' ');
 
   return (
-    <PageShell title={cleanArenaTitle} className={styles.focusShell}>
-      <div className={pageClassName}>
+    <>
+      <PageShell title={cleanArenaTitle} className={styles.focusShell}>
+        <div className={pageClassName}>
         {savedResult ? (
           <ResultsScreen
             ppm={savedResult.ppm}
@@ -245,12 +455,20 @@ export function ArenaPage() {
             lessonMedal={savedResult.lessonMedal}
             nextLessonTitle={savedResult.nextLessonTitle}
             nextActionLabel={
-              savedResult.isPracticeText
-                ? 'Escolher outro texto'
+              savedResult.isDailyChallenge
+                ? 'Ir para o Início'
+                : savedResult.isRandomWords
+                ? 'Nova sequência'
+                : savedResult.isPracticeText
+                ? 'Próximo texto'
                 : savedResult.nextLessonTitle
                 ? 'Próxima fase'
                 : 'Próximo texto'
             }
+            restartActionLabel={savedResult.isPracticeText ? 'Fazer novamente' : undefined}
+            isDailyChallenge={savedResult.isDailyChallenge}
+            dailyShareText={savedResult.dailyShareText}
+            rankingEligibility={savedResult.rankingEligibility}
             onRestart={handleRestart}
             onNext={handleNext}
           />
@@ -260,7 +478,13 @@ export function ArenaPage() {
               <div className={styles.cardBarLeft}>
                 <span className={styles.mentorLabel}>{cleanArenaTitle}</span>
                 <span className={styles.phaseChip}>
-                  {isPracticeTextMode ? 'Texto livre' : modeLabel}
+                  {isDailyChallengeMode
+                    ? 'Desafio Diário'
+                    : isPracticeTextMode
+                    ? 'Texto livre'
+                    : isRandomWordsMode
+                    ? 'Palavras Aleatórias'
+                    : modeLabel}
                 </span>
               </div>
 
@@ -333,6 +557,22 @@ export function ArenaPage() {
               <span>{feedbackText}</span>
             </div>
 
+            {showRandomWordsHint && (
+              <div className={styles.modeHint}>
+                <div className={styles.modeHintText}>
+                  <strong>Palavras Aleatórias</strong>
+                  <span>Treine palavras soltas para ganhar velocidade e ritmo.</span>
+                </div>
+                <button
+                  type="button"
+                  className={styles.modeHintBtn}
+                  onClick={handleUseRandomWords}
+                >
+                  Usar palavras aleatórias
+                </button>
+              </div>
+            )}
+
             {timer.phase === 'paused' ? (
               <div className={styles.pauseOverlay}>
                 Treino pausado. Clique em retomar para continuar.
@@ -349,6 +589,7 @@ export function ArenaPage() {
                 showStartOverlay={timer.phase === 'idle' && !isArenaFocused}
                 onFocusMode={() => setIsArenaFocused(true)}
                 onKey={handleTypingKey}
+                onRepeatedKey={registerRepeatedKey}
               />
             )}
 
@@ -380,7 +621,15 @@ export function ArenaPage() {
             )}
           </div>
         )}
-      </div>
-    </PageShell>
+        </div>
+      </PageShell>
+      {showDailyPrompt && (
+        <DailyChallengeModal
+          challenge={dailyChallenge}
+          onStart={handleStartDailyChallenge}
+          onDismiss={handleDismissDailyChallenge}
+        />
+      )}
+    </>
   );
 }

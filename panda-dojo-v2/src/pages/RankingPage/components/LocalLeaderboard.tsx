@@ -9,6 +9,9 @@ interface Props {
 }
 
 function modeLabel(item: RankingResult): string {
+  if (item.mode === 'daily-challenge') return 'Desafio Diário';
+  if (item.mode === 'practice-text') return item.practiceTextTitle ?? 'Texto guiado';
+  if (item.mode === 'random') return 'Palavras Aleatórias';
   if (!item.lessonId) return 'Treino livre';
   return getLessonById(item.lessonId)?.title ?? 'Treino';
 }
@@ -26,7 +29,7 @@ export function LocalLeaderboard({ ranking }: Props) {
       {topResults.length === 0 ? (
         <>
           <p className={styles.emptyText}>
-            Complete um treino na Arena para aparecer no ranking local.
+            Complete um treino elegível na Arena para aparecer no ranking local.
           </p>
           <Link className={styles.ctaSecondary} to="/arena">
             Ir para Arena
@@ -36,12 +39,13 @@ export function LocalLeaderboard({ ranking }: Props) {
         <div className={styles.tableScroll}>
           <table className={styles.leaderboard}>
             <caption className={styles.srOnly}>
-              Dez melhores treinos locais ordenados por PPM
+              Dez melhores treinos locais elegíveis ordenados por score competitivo
             </caption>
             <thead>
               <tr>
                 <th scope="col" className={styles.colRank}>#</th>
                 <th scope="col">Modo</th>
+                <th scope="col" className={styles.colNum}>Score</th>
                 <th scope="col" className={styles.colNum}>PPM</th>
                 <th scope="col" className={`${styles.colNum} ${styles.colHideSm}`}>CPM</th>
                 <th scope="col" className={styles.colNum}>Precisão</th>
@@ -61,6 +65,9 @@ export function LocalLeaderboard({ ranking }: Props) {
                     </span>
                   </td>
                   <td>{modeLabel(item)}</td>
+                  <td className={`${styles.colNum} ${styles.strongNum}`}>
+                    {item.rankingScore ?? '--'}
+                  </td>
                   <td className={`${styles.colNum} ${styles.strongNum}`}>{item.ppm ?? '--'}</td>
                   <td className={`${styles.colNum} ${styles.colHideSm}`}>{item.cpm ?? '--'}</td>
                   <td className={styles.colNum}>{item.precisao ?? '--'}</td>

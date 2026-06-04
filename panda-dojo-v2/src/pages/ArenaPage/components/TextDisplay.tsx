@@ -14,6 +14,18 @@ interface TextDisplayProps {
   showStartOverlay: boolean;
   onFocusMode: () => void;
   onKey: (key: string) => void;
+  onRepeatedKey: (key: string) => void;
+}
+
+const CURSOR_ANCHOR_RATIO = 0.45;
+const CURSOR_UPPER_RATIO = 0.28;
+const CURSOR_LOWER_RATIO = 0.54;
+
+function prefersInstantScroll(): boolean {
+  return (
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+    window.matchMedia('(max-width: 760px)').matches
+  );
 }
 
 export function TextDisplay({
@@ -27,9 +39,11 @@ export function TextDisplay({
   showStartOverlay,
   onFocusMode,
   onKey,
+  onRepeatedKey,
 }: TextDisplayProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const currentWordRef = useRef<HTMLSpanElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const currentAnchorRef = useRef<HTMLSpanElement>(null);
   const safeWords = Array.isArray(words)
     ? words.filter((word) => word && Array.isArray(word.letters))
     : [];
@@ -39,17 +53,55 @@ export function TextDisplay({
     if (!disabled && !showStartOverlay) inputRef.current?.focus();
   }, [disabled, showStartOverlay]);
 
-  // Scroll current word into view
+  // Keep the current character in a comfortable reading zone and reveal upcoming lines.
   useEffect(() => {
-    currentWordRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-  }, [currentWordIndex]);
+    const viewport = viewportRef.current;
+    const current = currentAnchorRef.current;
+    if (!viewport || !current) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      const viewportRect = viewport.getBoundingClientRect();
+      const currentRect = current.getBoundingClientRect();
+      if (viewportRect.height <= 0 || currentRect.height <= 0) return;
+
+      const anchorY = viewportRect.top + viewportRect.height * CURSOR_ANCHOR_RATIO;
+      const upperLimit = viewportRect.top + viewportRect.height * CURSOR_UPPER_RATIO;
+      const lowerLimit = viewportRect.top + viewportRect.height * CURSOR_LOWER_RATIO;
+      const isPastLowerLimit = currentRect.top > lowerLimit;
+      const isBeforeUpperLimit = currentRect.top < upperLimit && viewport.scrollTop > 0;
+
+      if (!isPastLowerLimit && !isBeforeUpperLimit) return;
+
+      const nextScrollTop = Math.max(
+        0,
+        viewport.scrollTop + currentRect.top - anchorY,
+      );
+
+      viewport.scrollTo({
+        top: nextScrollTop,
+        behavior: prefersInstantScroll() ? 'auto' : 'smooth',
+      });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [currentWordIndex, currentLetterIndex, safeWords.length]);
 
   function handleKeyDown(e: React.KeyboardEvent) {
     if (disabled) return;
+    const isTypingKey =
+      e.key === ' ' ||
+      (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey);
+
+    if (e.repeat && isTypingKey) {
+      e.preventDefault();
+      onFocusMode();
+      onRepeatedKey(e.key);
+      return;
+    }
+
     if (
       e.key === 'Backspace' ||
-      e.key === ' ' ||
-      (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey)
+      isTypingKey
     ) {
       e.preventDefault();
       onFocusMode();
@@ -131,53 +183,57 @@ export function TextDisplay({
             <small>O treino começa na primeira tecla.</small>
           </button>
         )}
-        <div className={styles.words}>
-          {safeWords.length === 0 && (
-            <span className={styles.loadingText}>Carregando texto da Arena...</span>
-          )}
-          {safeWords.map((word, wi) => (
-            <span
-              key={wi}
-              ref={wi === currentWordIndex ? currentWordRef : undefined}
-              className={[
-                styles.word,
-                wi === currentWordIndex ? styles.wordCurrent : '',
-              ]
-                .filter(Boolean)
-                .join(' ')}
-            >
-              {word.letters.map((letter, li) => {
-                const status = letter?.status ?? 'pending';
-                const value = letter?.char ?? '';
-                const isExtra = Boolean(letter?.isExtra);
-                const isCurrent =
-                  wi === currentWordIndex &&
-                  li === currentLetterIndex &&
-                  !isExtra;
-                const cls = [
-                  styles.letter,
-                  isCurrent ? styles.letterCurrent : '',
-                  status === 'correct' ? styles.letterCorrect : '',
-                  status === 'incorrect' && !isExtra
-                    ? styles.letterIncorrect
-                    : '',
-                  isExtra ? styles.letterExtra : '',
+        <div ref={viewportRef} className={styles.viewport}>
+          <div className={styles.words}>
+            {safeWords.length === 0 && (
+              <span className={styles.loadingText}>Carregando texto da Arena...</span>
+            )}
+            {safeWords.map((word, wi) => (
+              <span
+                key={wi}
+                className={[
+                  styles.word,
+                  wi === currentWordIndex ? styles.wordCurrent : '',
                 ]
                   .filter(Boolean)
-                  .join(' ');
-                return (
-                  <span key={li} className={cls}>
-                    {value}
+                  .join(' ')}
+              >
+                {word.letters.map((letter, li) => {
+                  const status = letter?.status ?? 'pending';
+                  const value = letter?.char ?? '';
+                  const isExtra = Boolean(letter?.isExtra);
+                  const isCurrent =
+                    wi === currentWordIndex &&
+                    li === currentLetterIndex &&
+                    !isExtra;
+                  const cls = [
+                    styles.letter,
+                    isCurrent ? styles.letterCurrent : '',
+                    status === 'correct' ? styles.letterCorrect : '',
+                    status === 'incorrect' && !isExtra
+                      ? styles.letterIncorrect
+                      : '',
+                    isExtra ? styles.letterExtra : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ');
+                  return (
+                    <span key={li} ref={isCurrent ? currentAnchorRef : undefined} className={cls}>
+                      {value}
+                    </span>
+                  );
+                })}
+                {wi === currentWordIndex && currentLetterIndex >= (word.letters?.length ?? 0) && (
+                  <span
+                    ref={currentAnchorRef}
+                    className={[styles.letter, styles.letterCurrent, styles.letterEnd].join(' ')}
+                  >
+                    &nbsp;
                   </span>
-                );
-              })}
-              {wi === currentWordIndex && currentLetterIndex >= (word.letters?.length ?? 0) && (
-                <span className={[styles.letter, styles.letterCurrent, styles.letterEnd].join(' ')}>
-                  &nbsp;
-                </span>
-              )}
-            </span>
-          ))}
+                )}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
       <p className={[styles.feedback, feedbackClass].join(' ')}>{feedback.text}</p>

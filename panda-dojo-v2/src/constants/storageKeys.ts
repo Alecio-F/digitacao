@@ -18,6 +18,11 @@ export const STORAGE_KEYS = {
   pandaSelectedPracticeTextId: 'pandaSelectedPracticeTextId',
   pandaSelectedPracticeTextTitle: 'pandaSelectedPracticeTextTitle',
   pandaSelectedPracticeText: 'pandaSelectedPracticeText',
+  pandaSelectedDailyChallengeId: 'pandaSelectedDailyChallengeId',
+  pandaDailyChallengeResult: 'pandaDailyChallengeResult',
+  pandaDailyChallengeDate: 'pandaDailyChallengeDate',
+  pandaDailyChallengeDismissedDate: 'pandaDailyChallengeDismissedDate',
+  pandaRecentRandomWords: 'pandaRecentRandomWords',
   pandaSealBestScore: 'pandaSealBestScore',
   pandaStartedLessons: 'pandaStartedLessons',
   pandaXpAwards: 'pandaXpAwards',
@@ -26,6 +31,7 @@ export const STORAGE_KEYS = {
   pandaSoundsEnabled: 'pandaSoundsEnabled',
   pandaAnimationsEnabled: 'pandaAnimationsEnabled',
   pandaReducedEffects: 'pandaReducedEffects',
+  pandaCloudSyncImported: 'pandaCloudSyncImported',
 } as const;
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];
@@ -50,6 +56,11 @@ export const KEYS = {
   selectedPracticeTextId: STORAGE_KEYS.pandaSelectedPracticeTextId,
   selectedPracticeTextTitle: STORAGE_KEYS.pandaSelectedPracticeTextTitle,
   selectedPracticeText: STORAGE_KEYS.pandaSelectedPracticeText,
+  selectedDailyChallengeId: STORAGE_KEYS.pandaSelectedDailyChallengeId,
+  dailyChallengeResult: STORAGE_KEYS.pandaDailyChallengeResult,
+  dailyChallengeDate: STORAGE_KEYS.pandaDailyChallengeDate,
+  dailyChallengeDismissedDate: STORAGE_KEYS.pandaDailyChallengeDismissedDate,
+  recentRandomWords: STORAGE_KEYS.pandaRecentRandomWords,
   sealBestScore: STORAGE_KEYS.pandaSealBestScore,
   startedLessons: STORAGE_KEYS.pandaStartedLessons,
   xpAwards: STORAGE_KEYS.pandaXpAwards,
@@ -58,4 +69,5 @@ export const KEYS = {
   soundsEnabled: STORAGE_KEYS.pandaSoundsEnabled,
   animationsEnabled: STORAGE_KEYS.pandaAnimationsEnabled,
   reducedEffects: STORAGE_KEYS.pandaReducedEffects,
+  cloudSyncImported: STORAGE_KEYS.pandaCloudSyncImported,
 } as const;

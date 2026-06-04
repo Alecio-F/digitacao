@@ -1,6 +1,10 @@
 import { useMemo } from 'react';
-import { KEYS } from '@/constants';
-import { getStorage, setStorage } from '@/services/storage/storageService';
+import {
+  getDailyMissions,
+  getMissionDate,
+  saveDailyMissions,
+  setMissionDate,
+} from '@/repositories/dailyMissionRepository';
 import { generateDailyMissions } from '../data/missionTemplates';
 import type { DailyMission } from '../types';
 
@@ -10,20 +14,20 @@ function getTodayKey() {
 
 function getOrResetMissions(): DailyMission[] {
   const today = getTodayKey();
-  const storedDate = getStorage<string>(KEYS.missionDate, '');
+  const storedDate = getMissionDate();
 
   if (storedDate !== today) {
     const fresh = generateDailyMissions();
-    setStorage(KEYS.dailyMissions, fresh);
-    setStorage(KEYS.missionDate, today);
+    saveDailyMissions(fresh);
+    setMissionDate(today);
     return fresh;
   }
 
-  const stored = getStorage<DailyMission[]>(KEYS.dailyMissions, []);
+  const stored = getDailyMissions();
   if (Array.isArray(stored) && stored.length) return stored;
 
   const fresh = generateDailyMissions();
-  setStorage(KEYS.dailyMissions, fresh);
+  saveDailyMissions(fresh);
   return fresh;
 }
 

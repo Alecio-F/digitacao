@@ -1,5 +1,6 @@
 import { PRACTICE_TEXTS } from '@/features/practiceTexts/data/practiceTexts';
 import { PracticeTextCard } from './PracticeTextCard';
+import { RandomWordsCard } from './RandomWordsCard';
 import styles from '../DojoMapPage.module.css';
 
 export function PracticeTextsSection() {
@@ -21,6 +22,7 @@ export function PracticeTextsSection() {
       </div>
 
       <div className={styles.practiceTextsGrid}>
+        <RandomWordsCard />
         {PRACTICE_TEXTS.map((text) => (
           <PracticeTextCard key={text.id} text={text} />
         ))}

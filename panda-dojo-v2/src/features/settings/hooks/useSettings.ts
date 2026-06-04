@@ -1,9 +1,22 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { KEYS } from '@/constants';
-import { getStorage, removeStorage, setStorage } from '@/services/storage/storageService';
+import {
+  getArenaCursor,
+  getAnimationsEnabled,
+  getPracticeTime,
+  getReducedEffects,
+  getSoundsEnabled,
+  getTheme,
+  getVirtualKeyboardEnabled,
+  resetTheme as resetThemeInStore,
+  setAnimationsEnabled as setAnimationsEnabledInStore,
+  setArenaCursor,
+  setPracticeTime,
+  setReducedEffects as setReducedEffectsInStore,
+  setSoundsEnabled as setSoundsEnabledInStore,
+  setTheme as setThemeInStore,
+  setVirtualKeyboardEnabled,
+} from '@/repositories/settingsRepository';
 import type { CursorMode, Settings, Theme } from '../types';
-
-const PRACTICE_TIME_OPTIONS = [0.25, 0.5, 1, 2, 5, 10, 15] as const;
 
 function canUseBrowserApis() {
   return typeof window !== 'undefined' && typeof document !== 'undefined';
@@ -12,32 +25,6 @@ function canUseBrowserApis() {
 function getPrefersReducedMotion() {
   if (!canUseBrowserApis()) return false;
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
-
-function readTheme(): Theme {
-  const stored = getStorage<Theme | boolean | string | null>(KEYS.tema, null);
-  if (stored === 'light' || stored === false) return 'light';
-  if (stored === 'dark' || stored === true) return 'dark';
-  return 'dark';
-}
-
-function readPracticeTime() {
-  const stored = Number(getStorage<string | number>(KEYS.tempoPratica, '1'));
-  return PRACTICE_TIME_OPTIONS.includes(stored as (typeof PRACTICE_TIME_OPTIONS)[number])
-    ? stored
-    : 1;
-}
-
-function readBoolean(key: string, fallback: boolean) {
-  const stored = getStorage<boolean | string | null>(key, null);
-  if (stored === true || stored === 'true') return true;
-  if (stored === false || stored === 'false') return false;
-  return fallback;
-}
-
-function readCursorMode(): CursorMode {
-  const value = getStorage<string>(KEYS.cursorMode, 'arcade');
-  return value === 'classic' ? 'classic' : 'arcade';
 }
 
 function applySettingsToDocument(settings: Settings) {
@@ -56,13 +43,13 @@ export function useSettings() {
   const initialSettings = useMemo<Settings>(() => {
     const prefersReducedMotion = getPrefersReducedMotion();
     return {
-      theme: readTheme(),
-      defaultPracticeTime: readPracticeTime(),
-      soundsEnabled: readBoolean(KEYS.soundsEnabled, true),
-      animationsEnabled: readBoolean(KEYS.animationsEnabled, !prefersReducedMotion),
-      reducedEffects: readBoolean(KEYS.reducedEffects, prefersReducedMotion),
-      cursorMode: readCursorMode(),
-      keyboardVisible: readBoolean(KEYS.keyboardVisible, true),
+      theme: getTheme(),
+      defaultPracticeTime: getPracticeTime(),
+      soundsEnabled: getSoundsEnabled(true),
+      animationsEnabled: getAnimationsEnabled(!prefersReducedMotion),
+      reducedEffects: getReducedEffects(prefersReducedMotion),
+      cursorMode: getArenaCursor(),
+      keyboardVisible: getVirtualKeyboardEnabled(true),
     };
   }, []);
 
@@ -73,53 +60,50 @@ export function useSettings() {
   }, [settings]);
 
   const setTheme = useCallback((theme: Theme) => {
-    setStorage(KEYS.tema, theme);
+    setThemeInStore(theme);
     setSettings((prev) => ({ ...prev, theme }));
   }, []);
 
   const toggleTheme = useCallback(() => {
     setSettings((prev) => {
       const theme: Theme = prev.theme === 'dark' ? 'light' : 'dark';
-      setStorage(KEYS.tema, theme);
+      setThemeInStore(theme);
       return { ...prev, theme };
     });
   }, []);
 
   const setDefaultPracticeTime = useCallback((value: number) => {
-    const next = PRACTICE_TIME_OPTIONS.includes(value as (typeof PRACTICE_TIME_OPTIONS)[number])
-      ? value
-      : 1;
-    setStorage(KEYS.tempoPratica, String(next));
+    const next = setPracticeTime(value);
     setSettings((prev) => ({ ...prev, defaultPracticeTime: next }));
   }, []);
 
   const setSoundsEnabled = useCallback((value: boolean) => {
-    setStorage(KEYS.soundsEnabled, value);
+    setSoundsEnabledInStore(value);
     setSettings((prev) => ({ ...prev, soundsEnabled: value }));
   }, []);
 
   const setAnimationsEnabled = useCallback((value: boolean) => {
-    setStorage(KEYS.animationsEnabled, value);
+    setAnimationsEnabledInStore(value);
     setSettings((prev) => ({ ...prev, animationsEnabled: value }));
   }, []);
 
   const setReducedEffects = useCallback((value: boolean) => {
-    setStorage(KEYS.reducedEffects, value);
+    setReducedEffectsInStore(value);
     setSettings((prev) => ({ ...prev, reducedEffects: value }));
   }, []);
 
   const setCursorMode = useCallback((value: CursorMode) => {
-    setStorage(KEYS.cursorMode, value);
+    setArenaCursor(value);
     setSettings((prev) => ({ ...prev, cursorMode: value }));
   }, []);
 
   const setKeyboardVisible = useCallback((value: boolean) => {
-    setStorage(KEYS.keyboardVisible, value);
+    setVirtualKeyboardEnabled(value);
     setSettings((prev) => ({ ...prev, keyboardVisible: value }));
   }, []);
 
   const resetTheme = useCallback(() => {
-    removeStorage(KEYS.tema);
+    resetThemeInStore();
     setSettings((prev) => ({ ...prev, theme: 'dark' }));
   }, []);
 

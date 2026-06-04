@@ -3,6 +3,7 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Button } from '@/components/ui';
 import { useLessonProgress } from '@/features/lessons/hooks/useLessonProgress';
 import type { Lesson } from '@/features/lessons/types';
+import { DailyChallengeMapCard } from './components/DailyChallengeMapCard';
 import { DojoMapHero } from './components/DojoMapHero';
 import { LessonTrail } from './components/LessonTrail';
 import { PlayerMapCard } from './components/PlayerMapCard';
@@ -32,6 +33,8 @@ export function DojoMapPage() {
           onStart={handleStart}
           onArena={() => navigate('/arena')}
         />
+
+        <DailyChallengeMapCard />
 
         <section className={styles.mapOverviewGrid} aria-label="Resumo do mapa">
           <PlayerMapCard progress={progress} />

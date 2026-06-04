@@ -1,6 +1,8 @@
 import { useCallback, useState } from 'react';
-import { KEYS } from '@/constants';
-import { getStorage, setStorage } from '@/services/storage/storageService';
+import {
+  getSealBestScore,
+  saveSealBestScore,
+} from '@/repositories/arcadeScoreRepository';
 
 const SEAL_WORDS = ['foco', 'calma', 'ritmo', 'tecla', 'panda', 'dojo', 'arena', 'precisão', 'treino'];
 const SEQUENCE_SIZE = 5;
@@ -25,7 +27,7 @@ function buildSequence(): string[] {
 }
 
 function getBestScore(): number {
-  return Number(getStorage<string>(KEYS.sealBestScore, '0')) || 0;
+  return getSealBestScore();
 }
 
 export function useSealChallenge() {
@@ -88,7 +90,7 @@ export function useSealChallenge() {
           // Finished!
           const best = getBestScore();
           const newBest = newScore > best;
-          if (newBest) setStorage(KEYS.sealBestScore, String(newScore));
+          if (newBest) saveSealBestScore(newScore);
 
           return {
             ...prev,

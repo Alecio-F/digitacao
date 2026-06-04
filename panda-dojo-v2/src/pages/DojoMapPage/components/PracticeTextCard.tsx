@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router';
 import { Badge, Button, Chip } from '@/components/ui';
-import { KEYS } from '@/constants';
+import { selectPracticeText } from '@/repositories/trainingSelectionRepository';
 import type { PracticeText } from '@/features/practiceTexts/types';
 import styles from '../DojoMapPage.module.css';
 
@@ -18,11 +18,7 @@ export function PracticeTextCard({ text }: PracticeTextCardProps) {
   const navigate = useNavigate();
 
   function handleStart() {
-    localStorage.removeItem(KEYS.selectedLessonId);
-    localStorage.setItem(KEYS.selectedPracticeTextId, text.id);
-    localStorage.setItem(KEYS.selectedPracticeTextTitle, text.title);
-    localStorage.setItem(KEYS.selectedPracticeText, text.text);
-    localStorage.setItem(KEYS.selectedTrainingMode, 'practice-text');
+    selectPracticeText({ id: text.id, title: text.title, text: text.text });
     navigate('/arena');
   }
 

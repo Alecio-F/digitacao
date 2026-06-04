@@ -1,12 +1,15 @@
-import { KEYS, MAX_HISTORY } from '@/constants';
-import { getStorage, setStorage } from '@/services/storage/storageService';
 import {
   calculateLevel,
   getProgressionTitle,
 } from '@/features/gamification/logic/xpCalculator';
 import type { HistoryItem } from '@/features/gamification/types';
-import { recordLessonAttempt } from '@/features/lessons/services/lessonProgressService';
 import type { LessonMedal } from '@/features/lessons/types';
+import { completeLesson } from '@/repositories/lessonProgressRepository';
+import * as profileProgressRepository from '@/repositories/profileProgressRepository';
+import * as typingResultRepository from '@/repositories/typingResultRepository';
+import { evaluateRankingEligibility } from '../logic/rankingEligibility';
+import { normalizeTrainingResult } from '../logic/normalizeTrainingResult';
+import type { RankingEligibility } from '../types';
 
 interface SaveResultPayload {
   ppm: number;
@@ -15,13 +18,20 @@ interface SaveResultPayload {
   errors: number;
   duration: number;
   lessonId: string | null;
-  mode?: 'random' | 'lesson' | 'practice-text';
+  mode?: 'random' | 'lesson' | 'practice-text' | 'daily-challenge';
   practiceTextId?: string | null;
   practiceTextTitle?: string | null;
   isRecord: boolean;
   topErrors: [string, number][];
   maxCombo: number;
   pauseUsed: boolean;
+  correctChars: number;
+  wrongChars: number;
+  totalTyped: number;
+  rawKeyCount: number;
+  repeatedKeyCount: number;
+  longestWrongStreak: number;
+  suspiciousInputBursts: number;
 }
 
 interface SaveResultOutput {
@@ -29,11 +39,13 @@ interface SaveResultOutput {
   xp: number;
   level: number;
   title: string;
+  isRecord: boolean;
   lessonCompleted: boolean;
   lessonCompletedNow: boolean;
   lessonMedal: LessonMedal | null;
   nextLessonId: string | null;
   nextLessonTitle: string | null;
+  rankingEligibility: RankingEligibility;
 }
 
 export function saveSessionResult(payload: SaveResultPayload): SaveResultOutput {
@@ -51,10 +63,32 @@ export function saveSessionResult(payload: SaveResultPayload): SaveResultOutput 
     topErrors,
     maxCombo,
     pauseUsed,
+    correctChars,
+    wrongChars,
+    totalTyped,
+    rawKeyCount,
+    repeatedKeyCount,
+    longestWrongStreak,
+    suspiciousInputBursts,
   } = payload;
+  const durationSeconds = Math.max(0, Math.round(duration * 60));
+  const rankingEligibility = evaluateRankingEligibility({
+    accuracy: precision,
+    durationSeconds,
+    correctChars,
+    wrongChars,
+    totalTyped,
+    rawKeyCount,
+    repeatedKeyCount,
+    maxCombo,
+    ppm,
+    cpm,
+    longestWrongStreak,
+    suspiciousInputBursts,
+  });
+  const validRecord = isRecord && rankingEligibility.validForRanking;
 
-  // 1. Save history
-  const history = getStorage<HistoryItem[]>(KEYS.historico, []);
+  // 1. Save history (via typingResultRepository)
   const newEntry: HistoryItem = {
     ppm,
     cpm,
@@ -65,28 +99,40 @@ export function saveSessionResult(payload: SaveResultPayload): SaveResultOutput 
     mode,
     practiceTextId: practiceTextId ?? undefined,
     practiceTextTitle: practiceTextTitle ?? undefined,
-    novoRecorde: isRecord,
+    novoRecorde: validRecord,
     data: new Date().toLocaleDateString('pt-BR'),
+    combo: maxCombo,
+    maxCombo,
+    correctChars,
+    wrongChars,
+    totalTyped,
+    rawKeyCount,
+    repeatedKeyCount,
+    longestWrongStreak,
+    suspiciousInputBursts,
+    validForRanking: rankingEligibility.validForRanking,
+    rankingScore: rankingEligibility.score,
+    rankingInvalidReasons: rankingEligibility.reasonCodes,
+    suspiciousFlags: rankingEligibility.suspiciousFlags,
   };
-  const updatedHistory = [newEntry, ...history].slice(0, MAX_HISTORY);
-  setStorage(KEYS.historico, updatedHistory);
+  const updatedHistory = typingResultRepository.saveResult(newEntry);
 
   // 2. Save top errors
   if (topErrors.length > 0) {
-    setStorage(KEYS.lastMistakes, topErrors);
+    profileProgressRepository.setLastMistakes(topErrors);
   }
 
   // 3. Compute XP
-  const currentXp = Number(getStorage<string>(KEYS.xp, '0')) || 0;
+  const currentXp = profileProgressRepository.getXp();
   let gainedXp = 50;
   if (precision >= 95) gainedXp += 60;
   else if (precision >= 90) gainedXp += 30;
-  if (isRecord) gainedXp += 80;
+  if (validRecord) gainedXp += 80;
   if (!pauseUsed) gainedXp += 20;
   if (maxCombo > 0) gainedXp += 10;
 
   const lessonAttempt = lessonId
-    ? recordLessonAttempt(lessonId, { accuracy: precision, ppm })
+    ? completeLesson(lessonId, { accuracy: precision, ppm })
     : null;
 
   if (lessonAttempt?.completedNow) {
@@ -97,50 +143,58 @@ export function saveSessionResult(payload: SaveResultPayload): SaveResultOutput 
   const level = calculateLevel(xp);
 
   // 4. Unlock achievements
-  const achievements = new Set(getStorage<string[]>(KEYS.achievements, []));
+  const achievements = new Set(profileProgressRepository.getAchievements());
   const historyCount = updatedHistory.length;
   if (historyCount >= 1) achievements.add('first-training');
   if (historyCount >= 3) achievements.add('three-trainings');
   if (historyCount >= 7) achievements.add('seven-trainings');
   if (precision >= 90) achievements.add('precision-90');
   if (precision >= 95) achievements.add('precision-95');
-  if (isRecord) achievements.add('new-record');
+  if (validRecord) achievements.add('new-record');
   if (maxCombo >= 24) achievements.add('strong-combo');
 
   // 5. Daily streak
   const today = new Date().toISOString().slice(0, 10);
-  const lastDate = getStorage<string>(KEYS.lastTrainingDate, '');
+  const lastDate = profileProgressRepository.getLastTrainingDate();
+  let streakUpdate: { dailyStreak: number; lastTrainingDate: string } | null = null;
   if (lastDate !== today) {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     const yKey = yesterday.toISOString().slice(0, 10);
-    const streak = lastDate === yKey ? (Number(getStorage<string>(KEYS.dailyStreak, '0')) || 0) + 1 : 1;
-    setStorage(KEYS.dailyStreak, String(streak));
-    setStorage(KEYS.lastTrainingDate, today);
+    const streak = lastDate === yKey ? profileProgressRepository.getDailyStreak() + 1 : 1;
+    streakUpdate = { dailyStreak: streak, lastTrainingDate: today };
     achievements.add('daily-routine');
   }
 
-  // 6. Persist
-  setStorage(KEYS.xp, String(xp));
-  setStorage(KEYS.level, String(level));
-  setStorage(KEYS.achievements, [...achievements]);
+  // 6. Persist (via profileProgressRepository)
+  profileProgressRepository.updateProfileProgress({
+    xp,
+    level,
+    achievements: [...achievements],
+    ...(streakUpdate ?? {}),
+  });
 
   return {
     gainedXp,
     xp,
     level,
     title: getProgressionTitle(level),
+    isRecord: validRecord,
     lessonCompleted: lessonAttempt?.completed ?? false,
     lessonCompletedNow: lessonAttempt?.completedNow ?? false,
     lessonMedal: lessonAttempt?.medal ?? null,
     nextLessonId: lessonAttempt?.nextLesson?.id ?? null,
     nextLessonTitle: lessonAttempt?.nextLesson?.title ?? null,
+    rankingEligibility,
   };
 }
 
 export function getBestPpm(): number {
-  const history = getStorage<HistoryItem[]>(KEYS.historico, []);
-  return history.reduce((best, item) => Math.max(best, Number(item.ppm) || 0), 0);
+  return typingResultRepository
+    .getHistory()
+    .map(normalizeTrainingResult)
+    .filter((item) => item.validForRanking)
+    .reduce((best, item) => Math.max(best, Number(item.ppm) || 0), 0);
 }
 
 export function getPrecisionFromResult(precision: number): string {
