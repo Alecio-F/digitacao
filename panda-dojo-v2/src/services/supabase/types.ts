@@ -60,9 +60,44 @@ export interface RemoteArcadeScore {
   played_at: string;
 }
 
+export interface RemoteAchievement {
+  id: string;
+  title: string;
+  description: string;
+  icon: string | null;
+  xp_reward: number;
+  created_at: string;
+}
+
 export interface RemoteUserAchievement {
   id: string;
   user_id: string;
   achievement_id: string;
   unlocked_at: string;
+}
+
+export interface RemoteDailyChallengeResult {
+  id: string;
+  user_id: string;
+  challenge_date: string;
+  challenge_id: string;
+  ppm: number;
+  cpm: number;
+  accuracy: number;
+  errors: number;
+  max_combo: number;
+  duration_seconds: number;
+  share_text: string | null;
+  completed_at: string;
+}
+
+export interface RemoteUserSettings {
+  user_id: string;
+  theme: string | null;
+  arena_cursor: string | null;
+  virtual_keyboard_enabled: boolean | null;
+  sounds_enabled: boolean | null;
+  animations_enabled: boolean | null;
+  default_practice_time: number | null;
+  updated_at: string;
 }

@@ -1,5 +1,6 @@
 import type { AuthChangeEvent, Session, User } from '@supabase/supabase-js';
 import { isSupabaseConfigured, supabase } from './supabaseClient';
+import { buildProfileIdentityFallbacks } from './profileIdentity';
 
 export interface AuthServiceResult<T> {
   data: T | null;
@@ -25,12 +26,19 @@ export async function signUpWithEmail(
 ): Promise<AuthServiceResult<{ user: User | null; session: Session | null }>> {
   const client = getAuthClient();
   if (!client) return disabledResult();
+  const identity = buildProfileIdentityFallbacks({
+    email,
+    displayName,
+  });
 
   const { data, error } = await client.auth.signUp({
     email,
     password,
     options: {
-      data: displayName ? { display_name: displayName } : undefined,
+      data: {
+        display_name: identity.displayName,
+        username: identity.username,
+      },
     },
   });
 

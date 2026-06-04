@@ -1,6 +1,10 @@
 import { supabase } from '@/services/supabase/supabaseClient';
 import type { RemoteProfile } from '@/services/supabase/types';
 import {
+  buildProfileIdentityFallbacks,
+  getUniqueFallbackUsername,
+} from '@/services/supabase/profileIdentity';
+import {
   disabledResult,
   errorResult,
   type RemoteRepositoryResult,
@@ -12,6 +16,60 @@ interface ProfileProgressMergeInput {
   title: string;
   dailyStreak: number;
   lastTrainingDate: string;
+}
+
+interface ProfileIdentityInput {
+  id?: string | null;
+  email?: string | null;
+  displayName?: string | null;
+  userMetadata?: Record<string, unknown> | null;
+}
+
+type ProfileUpdateInput = Partial<Pick<
+  RemoteProfile,
+  | 'username'
+  | 'display_name'
+  | 'avatar_url'
+  | 'level'
+  | 'xp'
+  | 'title'
+  | 'daily_streak'
+  | 'last_training_date'
+>>;
+
+function hasText(value: string | null | undefined): boolean {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function isDuplicateUsernameError(error: string | null | undefined): boolean {
+  return Boolean(
+    error &&
+    (
+      error.toLowerCase().includes('duplicate') ||
+      error.includes('profiles_username_key')
+    ),
+  );
+}
+
+function getProfileRepairPatch(
+  profile: RemoteProfile,
+  identity: ProfileIdentityInput | undefined,
+): ProfileUpdateInput {
+  const fallback = buildProfileIdentityFallbacks({
+    id: identity?.id ?? profile.id,
+    email: identity?.email,
+    displayName: identity?.displayName,
+    userMetadata: identity?.userMetadata,
+  });
+  const patch: ProfileUpdateInput = {};
+
+  if (!hasText(profile.display_name)) patch.display_name = fallback.displayName;
+  if (!hasText(profile.username)) patch.username = fallback.username;
+  if (!Number.isFinite(profile.level) || profile.level < 1) patch.level = 1;
+  if (!Number.isFinite(profile.xp) || profile.xp < 0) patch.xp = 0;
+  if (!hasText(profile.title)) patch.title = 'Filhote de Panda';
+
+  return patch;
 }
 
 export async function getProfile(userId: string): Promise<RemoteRepositoryResult<RemoteProfile>> {
@@ -32,7 +90,7 @@ export async function getProfile(userId: string): Promise<RemoteRepositoryResult
 
 export async function updateProfile(
   userId: string,
-  data: Partial<Pick<RemoteProfile, 'username' | 'display_name' | 'avatar_url'>>,
+  data: ProfileUpdateInput,
 ): Promise<RemoteRepositoryResult<RemoteProfile>> {
   if (!supabase) return disabledResult();
 
@@ -51,15 +109,60 @@ export async function updateProfile(
 }
 
 export async function ensureProfile(userId: string): Promise<RemoteRepositoryResult<RemoteProfile>> {
+  return ensureProfileWithIdentity(userId);
+}
+
+export async function ensureProfileWithIdentity(
+  userId: string,
+  identity?: ProfileIdentityInput,
+): Promise<RemoteRepositoryResult<RemoteProfile>> {
   if (!supabase) return disabledResult();
+  const fallback = buildProfileIdentityFallbacks({
+    id: identity?.id ?? userId,
+    email: identity?.email,
+    displayName: identity?.displayName,
+    userMetadata: identity?.userMetadata,
+  });
 
   const existing = await getProfile(userId);
-  if (existing.data || existing.error) return existing;
+  if (existing.error) return existing;
+  if (existing.data) {
+    const patch = getProfileRepairPatch(existing.data, identity);
+    if (Object.keys(patch).length === 0) return existing;
+
+    const repaired = await updateProfile(userId, patch);
+    if (!isDuplicateUsernameError(repaired.error)) return repaired.error ? existing : repaired;
+
+    const fallbackUsername = getUniqueFallbackUsername(userId, fallback.username);
+    const retried = await updateProfile(userId, { ...patch, username: fallbackUsername });
+    return retried.error ? existing : retried;
+  }
 
   try {
+    const baseInsert = {
+      id: userId,
+      username: fallback.username,
+      display_name: fallback.displayName,
+      level: 1,
+      xp: 0,
+      title: 'Filhote de Panda',
+    };
+    const firstAttempt = await supabase
+      .from('profiles')
+      .insert(baseInsert)
+      .select('*')
+      .single<RemoteProfile>();
+
+    if (!isDuplicateUsernameError(firstAttempt.error?.message)) {
+      return {
+        data: firstAttempt.data,
+        error: firstAttempt.error?.message ?? null,
+      };
+    }
+
     const { data, error } = await supabase
       .from('profiles')
-      .insert({ id: userId })
+      .insert({ ...baseInsert, username: fallback.uniqueUsername })
       .select('*')
       .single<RemoteProfile>();
 

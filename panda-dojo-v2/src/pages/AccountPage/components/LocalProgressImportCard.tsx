@@ -75,9 +75,17 @@ export function LocalProgressImportCard({ userId, onImported }: Props) {
   }
 
   if (!canImport) {
-    const message = alreadyImported
-      ? 'O progresso local deste navegador já foi importado para sua conta online.'
+    const importedNow = status === 'success';
+    const message = importedNow
+      ? 'Progresso importado com sucesso.'
+      : alreadyImported
+      ? 'Progresso já importado.'
       : 'Importação adiada nesta sessão. Seu progresso local continua salvo neste navegador.';
+    const title = importedNow
+      ? 'Progresso importado com sucesso'
+      : alreadyImported
+      ? 'Progresso já importado'
+      : 'Importação adiada';
 
     return (
       <div className={styles.syncNotice}>
@@ -85,7 +93,7 @@ export function LocalProgressImportCard({ userId, onImported }: Props) {
           {alreadyImported ? 'cloud_done' : 'schedule'}
         </span>
         <div>
-          <strong>{alreadyImported ? 'Progresso já importado' : 'Importação adiada'}</strong>
+          <strong>{title}</strong>
           <p>{message}</p>
         </div>
       </div>

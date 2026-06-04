@@ -15,7 +15,7 @@ import {
 } from '@/services/supabase/authService';
 import { isSupabaseConfigured } from '@/services/supabase/supabaseClient';
 import type { RemoteProfile } from '@/services/supabase/types';
-import { ensureProfile } from '@/repositories/remote/profileRemoteRepository';
+import { ensureProfileWithIdentity } from '@/repositories/remote/profileRemoteRepository';
 import { AuthContext, type AuthActionResult, type AuthContextValue } from './authContextValue';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -30,7 +30,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const result = await ensureProfile(currentUser.id);
+    const result = await ensureProfileWithIdentity(currentUser.id, {
+      id: currentUser.id,
+      email: currentUser.email,
+      userMetadata: currentUser.user_metadata,
+    });
     setProfile(result.data);
   }, []);
 

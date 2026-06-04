@@ -2,6 +2,10 @@ import { useState, type FormEvent } from 'react';
 import { Badge, Button, Card } from '@/components/ui';
 import { useAuth } from '@/features/auth/useAuth';
 import type { LocalProfile } from '@/features/profile/hooks/useLocalProfile';
+import {
+  getProfileDisplayName,
+  getProfileUsername,
+} from '@/services/supabase/profileIdentity';
 import { LocalProgressImportCard } from './LocalProgressImportCard';
 import styles from '../AccountPage.module.css';
 
@@ -29,6 +33,8 @@ export function OnlineAccountPanel({ localProfile }: Props) {
   const [password, setPassword] = useState('');
   const [feedback, setFeedback] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const profileDisplayName = getProfileDisplayName(profile, user);
+  const profileUsername = getProfileUsername(profile, user);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -97,23 +103,27 @@ export function OnlineAccountPanel({ localProfile }: Props) {
           <dl className={styles.dataList}>
             <div className={styles.dataRow}>
               <dt>Nome</dt>
-              <dd>{profile?.display_name ?? user?.email?.split('@')[0] ?? 'Conta Panda'}</dd>
+              <dd>{profileDisplayName}</dd>
+            </div>
+            <div className={styles.dataRow}>
+              <dt>Usuário</dt>
+              <dd>{profileUsername}</dd>
             </div>
             <div className={styles.dataRow}>
               <dt>E-mail</dt>
-              <dd>{user?.email ?? '--'}</dd>
+              <dd>{user?.email ?? 'E-mail não disponível'}</dd>
             </div>
             <div className={styles.dataRow}>
               <dt>Nível</dt>
-              <dd>{profile?.level ?? 1}</dd>
+              <dd>{Number.isFinite(profile?.level) ? profile?.level : 1}</dd>
             </div>
             <div className={styles.dataRow}>
               <dt>XP</dt>
-              <dd>{profile?.xp ?? 0}</dd>
+              <dd>{Number.isFinite(profile?.xp) ? profile?.xp : 0}</dd>
             </div>
             <div className={styles.dataRow}>
               <dt>Título</dt>
-              <dd>{profile?.title ?? 'Filhote de Panda'}</dd>
+              <dd>{profile?.title?.trim() || 'Filhote de Panda'}</dd>
             </div>
           </dl>
         </div>

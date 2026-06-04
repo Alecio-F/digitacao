@@ -143,14 +143,37 @@ create or replace function public.handle_new_user()
 returns trigger as $$
 declare
   base_username text;
+  resolved_username text;
+  resolved_display_name text;
 begin
-  base_username := lower(regexp_replace(split_part(new.email, '@', 1), '[^a-zA-Z0-9_]', '', 'g'));
+  resolved_display_name := coalesce(
+    nullif(new.raw_user_meta_data->>'display_name', ''),
+    nullif(split_part(coalesce(new.email, ''), '@', 1), ''),
+    'Aprendiz do Dojo'
+  );
+
+  base_username := lower(regexp_replace(
+    split_part(coalesce(new.email, ''), '@', 1),
+    '[^a-zA-Z0-9_]',
+    '',
+    'g'
+  ));
+  resolved_username := coalesce(
+    nullif(base_username, ''),
+    'panda_' || substring(replace(new.id::text, '-', ''), 1, 8)
+  );
+
+  if exists (
+    select 1 from public.profiles where username = resolved_username
+  ) then
+    resolved_username := left(resolved_username, 22) || '_' || substring(replace(new.id::text, '-', ''), 1, 8);
+  end if;
 
   insert into public.profiles (id, display_name, username)
   values (
     new.id,
-    coalesce(new.raw_user_meta_data->>'display_name', split_part(new.email, '@', 1)),
-    nullif(base_username, '')
+    resolved_display_name,
+    resolved_username
   )
   on conflict (id) do nothing;
 
