@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+﻿import { useEffect, useRef } from 'react';
 import type { CursorMode } from '@/features/settings/types';
 import type { Feedback, WordData } from '@/features/typing/types';
 import styles from './TextDisplay.module.css';
@@ -10,6 +10,9 @@ interface TextDisplayProps {
   feedback: Feedback;
   disabled?: boolean;
   cursorMode: CursorMode;
+  keyboardVisible: boolean;
+  showStartOverlay: boolean;
+  onFocusMode: () => void;
   onKey: (key: string) => void;
 }
 
@@ -20,15 +23,21 @@ export function TextDisplay({
   feedback,
   disabled,
   cursorMode,
+  keyboardVisible,
+  showStartOverlay,
+  onFocusMode,
   onKey,
 }: TextDisplayProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const currentWordRef = useRef<HTMLSpanElement>(null);
+  const safeWords = Array.isArray(words)
+    ? words.filter((word) => word && Array.isArray(word.letters))
+    : [];
 
   // Focus input on mount and whenever enabled
   useEffect(() => {
-    if (!disabled) inputRef.current?.focus();
-  }, [disabled]);
+    if (!disabled && !showStartOverlay) inputRef.current?.focus();
+  }, [disabled, showStartOverlay]);
 
   // Scroll current word into view
   useEffect(() => {
@@ -43,8 +52,27 @@ export function TextDisplay({
       (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey)
     ) {
       e.preventDefault();
+      onFocusMode();
       onKey(e.key);
     }
+  }
+
+  function handleInput(e: React.FormEvent<HTMLInputElement>) {
+    if (disabled) return;
+    const value = e.currentTarget.value;
+    if (!value) return;
+
+    onFocusMode();
+    for (const char of value) {
+      onKey(char === '\n' ? ' ' : char);
+    }
+
+    e.currentTarget.value = '';
+  }
+
+  function focusTypingArea() {
+    onFocusMode();
+    inputRef.current?.focus();
   }
 
   const feedbackClass = {
@@ -59,10 +87,14 @@ export function TextDisplay({
         className={[
           styles.wrapper,
           cursorMode === 'classic' ? styles.cursorClassic : styles.cursorArcade,
+          keyboardVisible ? styles.keyboardEnabled : styles.keyboardDisabled,
         ]
           .filter(Boolean)
           .join(' ')}
-        onClick={() => inputRef.current?.focus()}
+        onClick={focusTypingArea}
+        onFocusCapture={(event) => {
+          if (event.target === inputRef.current) onFocusMode();
+        }}
         role="textbox"
         aria-label="Área de digitação"
         aria-readonly={disabled}
@@ -70,13 +102,40 @@ export function TextDisplay({
         <input
           ref={inputRef}
           className={styles.input}
-          aria-hidden="true"
+          aria-label="Entrada de digitação"
           tabIndex={0}
-          readOnly
+          autoCapitalize="none"
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck={false}
           onKeyDown={handleKeyDown}
+          onInput={handleInput}
         />
+        {showStartOverlay && (
+          <button
+            type="button"
+            className={styles.startOverlay}
+            aria-label="Começar treino de digitação"
+            onClick={(event) => {
+              event.stopPropagation();
+              focusTypingArea();
+            }}
+          >
+            <span className="material-symbols-outlined" aria-hidden="true">
+              keyboard
+            </span>
+            <strong>
+              <span className={styles.desktopCopy}>Clique aqui para começar a digitar</span>
+              <span className={styles.mobileCopy}>Toque aqui para abrir o teclado</span>
+            </strong>
+            <small>O treino começa na primeira tecla.</small>
+          </button>
+        )}
         <div className={styles.words}>
-          {words.map((word, wi) => (
+          {safeWords.length === 0 && (
+            <span className={styles.loadingText}>Carregando texto da Arena...</span>
+          )}
+          {safeWords.map((word, wi) => (
             <span
               key={wi}
               ref={wi === currentWordIndex ? currentWordRef : undefined}
@@ -88,28 +147,31 @@ export function TextDisplay({
                 .join(' ')}
             >
               {word.letters.map((letter, li) => {
+                const status = letter?.status ?? 'pending';
+                const value = letter?.char ?? '';
+                const isExtra = Boolean(letter?.isExtra);
                 const isCurrent =
                   wi === currentWordIndex &&
                   li === currentLetterIndex &&
-                  !letter.isExtra;
+                  !isExtra;
                 const cls = [
                   styles.letter,
                   isCurrent ? styles.letterCurrent : '',
-                  letter.status === 'correct' ? styles.letterCorrect : '',
-                  letter.status === 'incorrect' && !letter.isExtra
+                  status === 'correct' ? styles.letterCorrect : '',
+                  status === 'incorrect' && !isExtra
                     ? styles.letterIncorrect
                     : '',
-                  letter.isExtra ? styles.letterExtra : '',
+                  isExtra ? styles.letterExtra : '',
                 ]
                   .filter(Boolean)
                   .join(' ');
                 return (
                   <span key={li} className={cls}>
-                    {letter.char}
+                    {value}
                   </span>
                 );
               })}
-              {wi === currentWordIndex && currentLetterIndex >= word.letters.length && (
+              {wi === currentWordIndex && currentLetterIndex >= (word.letters?.length ?? 0) && (
                 <span className={[styles.letter, styles.letterCurrent, styles.letterEnd].join(' ')}>
                   &nbsp;
                 </span>

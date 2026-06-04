@@ -6,6 +6,7 @@ import type { Lesson } from '@/features/lessons/types';
 import { DojoMapHero } from './components/DojoMapHero';
 import { LessonTrail } from './components/LessonTrail';
 import { PlayerMapCard } from './components/PlayerMapCard';
+import { PracticeTextsSection } from './components/PracticeTextsSection';
 import { RecommendedLessonPanel } from './components/RecommendedLessonPanel';
 import styles from './DojoMapPage.module.css';
 
@@ -41,12 +42,24 @@ export function DojoMapPage() {
           />
         </section>
 
+        <section className={styles.progressRules} aria-labelledby="map-rules-title">
+          <span className={styles.eyebrow}>Regra local</span>
+          <h2 id="map-rules-title">Como desbloquear a próxima fase</h2>
+          <p>
+            Inicie uma fase pelo Mapa e conclua a rodada na Type Arena. Quando o resultado local
+            atingir pelo menos 85% de precisão, a fase pode registrar conclusão, medalha e XP. O
+            tempo usado vem das preferências locais do navegador.
+          </p>
+        </section>
+
         <LessonTrail
           lessons={lessons}
           progress={progress}
           getStatus={getStatus}
           onStart={handleStart}
         />
+
+        <PracticeTextsSection />
 
         <section className={styles.mapFinalCta} aria-labelledby="map-final-title">
           <div>

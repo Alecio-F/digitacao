@@ -47,6 +47,8 @@ export function useTypingTimer({
   const onFinishRef = useRef(onFinish);
   const statsRef = useRef({ wordsCompleted, totalCharsTyped });
   const durationRef = useRef(initialSeconds);
+  const runningStartedAtRef = useRef<number | null>(null);
+  const elapsedBeforePauseRef = useRef(0);
 
   useEffect(() => {
     onFinishRef.current = onFinish;
@@ -72,13 +74,19 @@ export function useTypingTimer({
   const tick = useCallback(() => {
     setTimer((prev) => {
       const { wordsCompleted: currentWords, totalCharsTyped: currentChars } = statsRef.current;
-      if (prev.timeRemaining <= 1) {
+      const runningElapsed =
+        runningStartedAtRef.current === null
+          ? elapsedBeforePauseRef.current
+          : elapsedBeforePauseRef.current +
+            Math.floor((Date.now() - runningStartedAtRef.current) / 1000);
+      const elapsed = Math.min(prev.totalSeconds, Math.max(0, runningElapsed));
+      const remaining = Math.max(0, prev.totalSeconds - elapsed);
+
+      if (remaining <= 0) {
         const ppm = prev.totalSeconds > 0 ? Math.round((currentWords / prev.totalSeconds) * 60) : 0;
         const cpm = prev.totalSeconds > 0 ? Math.round((currentChars / prev.totalSeconds) * 60) : 0;
         return { ...prev, timeRemaining: 0, phase: 'finished', ppm, cpm };
       }
-      const remaining = prev.timeRemaining - 1;
-      const elapsed = prev.totalSeconds - remaining;
       const ppm = elapsed > 0 ? Math.round((currentWords / elapsed) * 60) : 0;
       const cpm = elapsed > 0 ? Math.round((currentChars / elapsed) * 60) : 0;
       return { ...prev, timeRemaining: remaining, ppm, cpm };
@@ -96,6 +104,8 @@ export function useTypingTimer({
   const start = useCallback(() => {
     setTimer((prev) => {
       if (prev.phase !== 'idle') return prev;
+      runningStartedAtRef.current = Date.now();
+      elapsedBeforePauseRef.current = 0;
       return {
         ...prev,
         phase: 'running',
@@ -108,10 +118,17 @@ export function useTypingTimer({
   const togglePause = useCallback(() => {
     setTimer((prev) => {
       if (prev.phase === 'running') {
+        if (runningStartedAtRef.current !== null) {
+          elapsedBeforePauseRef.current += Math.floor(
+            (Date.now() - runningStartedAtRef.current) / 1000,
+          );
+          runningStartedAtRef.current = null;
+        }
         clearTick();
         return { ...prev, phase: 'paused', pauseUsed: true };
       }
       if (prev.phase === 'paused') {
+        runningStartedAtRef.current = Date.now();
         return { ...prev, phase: 'running' };
       }
       return prev;
@@ -120,6 +137,8 @@ export function useTypingTimer({
 
   const reset = useCallback(() => {
     clearTick();
+    runningStartedAtRef.current = null;
+    elapsedBeforePauseRef.current = 0;
     setTimer({
       phase: 'idle',
       timeRemaining: durationRef.current,
@@ -133,7 +152,9 @@ export function useTypingTimer({
   // Run the interval when phase is 'running'
   useEffect(() => {
     if (timer.phase === 'running') {
-      intervalRef.current = setInterval(tick, 1000);
+      if (intervalRef.current === null) {
+        intervalRef.current = setInterval(tick, 250);
+      }
       return clearTick;
     }
     return undefined;

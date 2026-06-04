@@ -31,17 +31,24 @@ export function HomeHero({ profile }: Props) {
 
       <aside className={styles.heroVisual} aria-label="Resumo do jogador">
         <div className={styles.pandaCard}>
-          <img src="/panda-banner.png" alt="Mestre Panda do Dojo Arcade" />
           <div className={styles.pandaStatus}>
+            <span className={styles.playerKicker}>Painel do jogador</span>
+            <strong className={styles.playerLevel}>Nível {profile.level}</strong>
             <Chip variant="purple">{profile.title}</Chip>
-            <strong>Nível {profile.level}</strong>
-            <ProgressBar
-              value={profile.progressPercent}
-              label="XP do nível"
-              showValue
-              animated
-            />
+            <div className={styles.playerProgress}>
+              <ProgressBar
+                value={profile.progressPercent}
+                label="XP do nível"
+                showValue
+                animated
+              />
+            </div>
           </div>
+          <img
+            className={styles.pandaImg}
+            src="/panda-banner.png"
+            alt="Mestre Panda do Dojo Arcade"
+          />
         </div>
         <div className={styles.heroMetrics}>
           <MetricCard label="XP" value={profile.xp} compact tone="special" />

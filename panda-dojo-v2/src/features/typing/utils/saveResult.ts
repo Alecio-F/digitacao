@@ -5,6 +5,8 @@ import {
   getProgressionTitle,
 } from '@/features/gamification/logic/xpCalculator';
 import type { HistoryItem } from '@/features/gamification/types';
+import { recordLessonAttempt } from '@/features/lessons/services/lessonProgressService';
+import type { LessonMedal } from '@/features/lessons/types';
 
 interface SaveResultPayload {
   ppm: number;
@@ -13,6 +15,9 @@ interface SaveResultPayload {
   errors: number;
   duration: number;
   lessonId: string | null;
+  mode?: 'random' | 'lesson' | 'practice-text';
+  practiceTextId?: string | null;
+  practiceTextTitle?: string | null;
   isRecord: boolean;
   topErrors: [string, number][];
   maxCombo: number;
@@ -24,10 +29,29 @@ interface SaveResultOutput {
   xp: number;
   level: number;
   title: string;
+  lessonCompleted: boolean;
+  lessonCompletedNow: boolean;
+  lessonMedal: LessonMedal | null;
+  nextLessonId: string | null;
+  nextLessonTitle: string | null;
 }
 
 export function saveSessionResult(payload: SaveResultPayload): SaveResultOutput {
-  const { ppm, cpm, precision, errors, duration, lessonId, isRecord, topErrors, maxCombo, pauseUsed } = payload;
+  const {
+    ppm,
+    cpm,
+    precision,
+    errors,
+    duration,
+    lessonId,
+    mode,
+    practiceTextId,
+    practiceTextTitle,
+    isRecord,
+    topErrors,
+    maxCombo,
+    pauseUsed,
+  } = payload;
 
   // 1. Save history
   const history = getStorage<HistoryItem[]>(KEYS.historico, []);
@@ -38,6 +62,9 @@ export function saveSessionResult(payload: SaveResultPayload): SaveResultOutput 
     erros: errors,
     tempo: duration,
     lessonId: lessonId ?? undefined,
+    mode,
+    practiceTextId: practiceTextId ?? undefined,
+    practiceTextTitle: practiceTextTitle ?? undefined,
     novoRecorde: isRecord,
     data: new Date().toLocaleDateString('pt-BR'),
   };
@@ -57,6 +84,14 @@ export function saveSessionResult(payload: SaveResultPayload): SaveResultOutput 
   if (isRecord) gainedXp += 80;
   if (!pauseUsed) gainedXp += 20;
   if (maxCombo > 0) gainedXp += 10;
+
+  const lessonAttempt = lessonId
+    ? recordLessonAttempt(lessonId, { accuracy: precision, ppm })
+    : null;
+
+  if (lessonAttempt?.completedNow) {
+    gainedXp += lessonAttempt.lesson.xpReward;
+  }
 
   const xp = currentXp + gainedXp;
   const level = calculateLevel(xp);
@@ -90,7 +125,17 @@ export function saveSessionResult(payload: SaveResultPayload): SaveResultOutput 
   setStorage(KEYS.level, String(level));
   setStorage(KEYS.achievements, [...achievements]);
 
-  return { gainedXp, xp, level, title: getProgressionTitle(level) };
+  return {
+    gainedXp,
+    xp,
+    level,
+    title: getProgressionTitle(level),
+    lessonCompleted: lessonAttempt?.completed ?? false,
+    lessonCompletedNow: lessonAttempt?.completedNow ?? false,
+    lessonMedal: lessonAttempt?.medal ?? null,
+    nextLessonId: lessonAttempt?.nextLesson?.id ?? null,
+    nextLessonTitle: lessonAttempt?.nextLesson?.title ?? null,
+  };
 }
 
 export function getBestPpm(): number {

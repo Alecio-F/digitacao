@@ -1,20 +1,20 @@
-import { useCallback, useReducer } from 'react';
+import { useCallback, useEffect, useReducer } from 'react';
 import { COMBO_MILESTONE, MAX_EXTRA_LETTERS } from '@/constants';
 import { buildWordList } from '../utils/buildWords';
 import type { Feedback, TypingState, WordData } from '../types';
 
 type Action =
   | { type: 'KEY'; key: string }
-  | { type: 'RESET'; lessonId: string | null };
+  | { type: 'RESET'; lessonId: string | null; practiceText?: string | null };
 
 const INITIAL_FEEDBACK: Feedback = {
   text: 'Foco. Digite a primeira palavra para iniciar o desafio.',
   tone: 'neutral',
 };
 
-function makeState(lessonId: string | null): TypingState {
+function makeState(lessonId: string | null, practiceText?: string | null): TypingState {
   return {
-    words: buildWordList(lessonId),
+    words: buildWordList(lessonId, practiceText),
     currentWordIndex: 0,
     currentLetterIndex: 0,
     totalCorrect: 0,
@@ -29,7 +29,10 @@ function makeState(lessonId: string | null): TypingState {
 }
 
 function cloneWords(words: WordData[]): WordData[] {
-  return words.map((w) => ({ ...w, letters: w.letters.map((l) => ({ ...l })) }));
+  return words.map((w) => ({
+    ...w,
+    letters: Array.isArray(w.letters) ? w.letters.map((l) => ({ ...l })) : [],
+  }));
 }
 
 function registerError(
@@ -39,9 +42,32 @@ function registerError(
   return { ...errorsByChar, [char]: (errorsByChar[char] ?? 0) + 1 };
 }
 
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
+}
+
+function normalizeStateValues(
+  words: WordData[],
+  currentWordIndex: number,
+  currentLetterIndex: number,
+) {
+  const safeWordIndex = words.length > 0
+    ? clamp(Number.isFinite(currentWordIndex) ? currentWordIndex : 0, 0, words.length - 1)
+    : 0;
+  const word = words[safeWordIndex];
+  const maxLetterIndex = word?.letters?.length ?? 0;
+  const safeLetterIndex = clamp(
+    Number.isFinite(currentLetterIndex) ? currentLetterIndex : 0,
+    0,
+    maxLetterIndex,
+  );
+
+  return { currentWordIndex: safeWordIndex, currentLetterIndex: safeLetterIndex };
+}
+
 function reducer(state: TypingState, action: Action): TypingState {
   if (action.type === 'RESET') {
-    return makeState(action.lessonId);
+    return makeState(action.lessonId, action.practiceText);
   }
 
   const { key } = action;
@@ -51,12 +77,18 @@ function reducer(state: TypingState, action: Action): TypingState {
 
   if (!isLetter && !isSpace && !isBackspace) return state;
 
-  const words = cloneWords(state.words);
+  const words = cloneWords(Array.isArray(state.words) ? state.words : []);
   let { currentWordIndex, currentLetterIndex, totalCorrect, totalIncorrect, combo, maxCombo } =
     state;
   let errorsByChar = state.errorsByChar;
   let feedback: Feedback = state.feedback;
   let { wordsCompleted, totalCharsTyped } = state;
+
+  ({ currentWordIndex, currentLetterIndex } = normalizeStateValues(
+    words,
+    currentWordIndex,
+    currentLetterIndex,
+  ));
 
   const word = words[currentWordIndex];
   if (!word) return state;
@@ -67,6 +99,7 @@ function reducer(state: TypingState, action: Action): TypingState {
 
     if (currentLetterIndex < word.letters.length) {
       const letter = word.letters[currentLetterIndex];
+      if (!letter) return state;
       if (key === letter.char) {
         letter.status = 'correct';
         totalCorrect++;
@@ -110,6 +143,7 @@ function reducer(state: TypingState, action: Action): TypingState {
     if (currentLetterIndex < word.letters.length) {
       // Word not finished — penalise
       const letter = word.letters[currentLetterIndex];
+      if (!letter) return state;
       if (letter.status === 'pending') letter.status = 'incorrect';
       totalIncorrect++;
       combo = 0;
@@ -129,57 +163,90 @@ function reducer(state: TypingState, action: Action): TypingState {
 
   // ── Backspace ─────────────────────────────────────────────────────────────
   if (isBackspace) {
+    if (currentWordIndex <= 0 && currentLetterIndex <= 0) {
+      return {
+        ...state,
+        currentWordIndex: 0,
+        currentLetterIndex: 0,
+        totalCorrect: Math.max(0, totalCorrect),
+        totalIncorrect: Math.max(0, totalIncorrect),
+        totalCharsTyped: Math.max(0, totalCharsTyped),
+      };
+    }
+
     // Case 1: remove last extra letter
     const lastExtraIdx = word.letters.map((l, i) => ({ l, i })).reverse().find(({ l }) => l.isExtra)?.i;
     if (lastExtraIdx !== undefined) {
       word.letters.splice(lastExtraIdx, 1);
-      totalIncorrect--;
-      // currentLetterIndex stays at word.letters.length (now one less)
+      totalIncorrect = Math.max(0, totalIncorrect - 1);
+      currentLetterIndex = Math.min(currentLetterIndex, word.letters.length);
     }
     // Case 2: cursor at first letter → go to previous word
     else if (currentLetterIndex === 0) {
       if (currentWordIndex > 0) {
-        currentWordIndex--;
-        currentLetterIndex = words[currentWordIndex].letters.length;
+        currentWordIndex = Math.max(0, currentWordIndex - 1);
+        currentLetterIndex = words[currentWordIndex]?.letters?.length ?? 0;
       }
     }
     // Cases 3 & 4: undo previous letter
     else {
       const prevIdx = currentLetterIndex - 1;
       const prev = word.letters[prevIdx];
-      if (prev.status === 'correct') totalCorrect--;
-      else if (prev.status === 'incorrect') totalIncorrect--;
+      if (!prev) {
+        currentLetterIndex = clamp(currentLetterIndex, 0, word.letters.length);
+        return {
+          ...state,
+          words,
+          currentWordIndex,
+          currentLetterIndex,
+          totalCorrect: Math.max(0, totalCorrect),
+          totalIncorrect: Math.max(0, totalIncorrect),
+          totalCharsTyped: Math.max(0, totalCharsTyped),
+        };
+      }
+      if (prev.status === 'correct') totalCorrect = Math.max(0, totalCorrect - 1);
+      else if (prev.status === 'incorrect') totalIncorrect = Math.max(0, totalIncorrect - 1);
       prev.status = 'pending';
-      currentLetterIndex--;
+      currentLetterIndex = Math.max(0, currentLetterIndex - 1);
     }
   }
+
+  ({ currentWordIndex, currentLetterIndex } = normalizeStateValues(
+    words,
+    currentWordIndex,
+    currentLetterIndex,
+  ));
 
   return {
     ...state,
     words,
     currentWordIndex,
     currentLetterIndex,
-    totalCorrect,
-    totalIncorrect,
+    totalCorrect: Math.max(0, totalCorrect),
+    totalIncorrect: Math.max(0, totalIncorrect),
     combo,
     maxCombo,
     errorsByChar,
     feedback,
-    wordsCompleted,
-    totalCharsTyped,
+    wordsCompleted: Math.max(0, wordsCompleted),
+    totalCharsTyped: Math.max(0, totalCharsTyped),
   };
 }
 
-export function useTypingSession(lessonId: string | null) {
-  const [state, dispatch] = useReducer(reducer, null, () => makeState(lessonId));
+export function useTypingSession(lessonId: string | null, practiceText?: string | null) {
+  const [state, dispatch] = useReducer(reducer, null, () => makeState(lessonId, practiceText));
+
+  useEffect(() => {
+    dispatch({ type: 'RESET', lessonId, practiceText });
+  }, [lessonId, practiceText]);
 
   const handleKey = useCallback((key: string) => {
     dispatch({ type: 'KEY', key });
   }, []);
 
   const reset = useCallback(() => {
-    dispatch({ type: 'RESET', lessonId });
-  }, [lessonId]);
+    dispatch({ type: 'RESET', lessonId, practiceText });
+  }, [lessonId, practiceText]);
 
   const precision =
     state.totalCorrect + state.totalIncorrect > 0

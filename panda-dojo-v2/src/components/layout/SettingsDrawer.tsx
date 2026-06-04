@@ -53,6 +53,7 @@ export function SettingsDrawer({ open, onClose }: Props) {
     setAnimationsEnabled,
     setReducedEffects,
     setCursorMode,
+    setKeyboardVisible,
   } = useSettingsContext();
 
   useEffect(() => {
@@ -180,36 +181,52 @@ export function SettingsDrawer({ open, onClose }: Props) {
             <div className={styles.option}>
               <div className={styles.optionText}>
                 <strong>Cursor da arena</strong>
-                <span>Escolha entre o cursor arcade da V2 e a haste fina inspirada na V1.</span>
+                <span>Escolha pelo visual do cursor enquanto digita.</span>
               </div>
-              <div className={styles.segmented} role="group" aria-label="Cursor da Type Arena">
+              <div className={styles.cursorChoices} role="group" aria-label="Cursor da Type Arena">
                 <button
                   type="button"
                   className={[
-                    styles.segmentedButton,
-                    settings.cursorMode === 'arcade' ? styles.segmentedButtonActive : '',
+                    styles.cursorChoice,
+                    styles.cursorChoiceUnderline,
+                    settings.cursorMode === 'arcade' ? styles.cursorChoiceActive : '',
                   ]
                     .filter(Boolean)
                     .join(' ')}
                   aria-pressed={settings.cursorMode === 'arcade'}
                   onClick={() => setCursorMode('arcade')}
                 >
-                  Arcade
+                  <span className={styles.cursorPreviewWord}>Panda</span>
+                  <span className={styles.cursorPreviewLabel}>Linha</span>
                 </button>
                 <button
                   type="button"
                   className={[
-                    styles.segmentedButton,
-                    settings.cursorMode === 'classic' ? styles.segmentedButtonActive : '',
+                    styles.cursorChoice,
+                    styles.cursorChoiceBar,
+                    settings.cursorMode === 'classic' ? styles.cursorChoiceActive : '',
                   ]
                     .filter(Boolean)
                     .join(' ')}
                   aria-pressed={settings.cursorMode === 'classic'}
                   onClick={() => setCursorMode('classic')}
                 >
-                  V1 fino
+                  <span className={styles.cursorPreviewWord}>Panda</span>
+                  <span className={styles.cursorPreviewLabel}>Haste</span>
                 </button>
               </div>
+            </div>
+
+            <div className={styles.option}>
+              <div className={styles.optionText}>
+                <strong>Teclado virtual</strong>
+                <span>Mostra ou oculta o deck visual abaixo do texto da Arena.</span>
+              </div>
+              <SwitchControl
+                checked={settings.keyboardVisible}
+                label="Mostrar teclado virtual na Type Arena"
+                onChange={setKeyboardVisible}
+              />
             </div>
           </section>
 

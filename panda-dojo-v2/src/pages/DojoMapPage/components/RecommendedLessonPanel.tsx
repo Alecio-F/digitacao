@@ -33,6 +33,10 @@ export function RecommendedLessonPanel({ lesson, onStart, onArena }: Props) {
         <Chip variant="yellow">Recomendado</Chip>
         <strong>{lesson.title}</strong>
         <p>{lesson.description}</p>
+        <p className={styles.recommendedHint}>
+          Ao iniciar, a Arena abre com textos focados nesta fase. Busque 85% de precisão para
+          avançar no mapa local.
+        </p>
         <div className={styles.recommendedMeta}>
           <Chip>{lesson.difficulty}</Chip>
           <Chip variant="purple">+{lesson.xpReward} XP</Chip>

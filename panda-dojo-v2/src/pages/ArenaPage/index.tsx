@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { useSettingsContext } from '@/app/settingsContext';
 import { PageShell } from '@/components/layout/PageShell';
 import { KEYS } from '@/constants';
 import { getLessonById } from '@/features/lessons/data/lessons';
+import { selectLesson } from '@/features/lessons/services/lessonProgressService';
+import type { LessonMedal } from '@/features/lessons/types';
+import { getPracticeTextById } from '@/features/practiceTexts/data/practiceTexts';
 import { useTypingSession } from '@/features/typing/hooks/useTypingSession';
 import { useTypingTimer } from '@/features/typing/hooks/useTypingTimer';
 import { getBestPpm, saveSessionResult } from '@/features/typing/utils/saveResult';
@@ -23,24 +27,59 @@ interface SavedResult {
   isRecord: boolean;
   topErrors: [string, number][];
   duration: string;
+  lessonCompleted: boolean;
+  lessonCompletedNow: boolean;
+  lessonMedal: LessonMedal | null;
+  nextLessonId: string | null;
+  nextLessonTitle: string | null;
+  isPracticeText: boolean;
 }
 
 const PHASE_LABEL: Record<string, string> = {
   idle: 'Foco',
   running: 'Digitando',
   paused: 'Pausado',
-  finished: 'Concluido',
+  finished: 'Concluído',
 };
 
+function readStoredString(key: string): string {
+  const raw = localStorage.getItem(key);
+  if (raw === null) return '';
+
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    return typeof parsed === 'string' ? parsed : raw;
+  } catch {
+    return raw;
+  }
+}
+
 export function ArenaPage() {
-  const lessonId = localStorage.getItem(KEYS.selectedLessonId);
+  const navigate = useNavigate();
+  const [selectedTrainingMode] = useState<string>(() => readStoredString(KEYS.selectedTrainingMode));
+  const [selectedPracticeText] = useState<string>(() => readStoredString(KEYS.selectedPracticeText));
+  const [selectedPracticeTextId] = useState<string>(() => readStoredString(KEYS.selectedPracticeTextId));
+  const isPracticeTextMode =
+    selectedTrainingMode === 'practice-text' && selectedPracticeText.trim().length > 0;
+  const [lessonId, setLessonId] = useState<string | null>(() => {
+    if (isPracticeTextMode) return null;
+    return readStoredString(KEYS.selectedLessonId) || null;
+  });
+
   const lesson = getLessonById(lessonId ?? '');
+  const practiceTextMeta = getPracticeTextById(selectedPracticeTextId);
+  const practiceTextTitle =
+    practiceTextMeta?.title ?? readStoredString(KEYS.selectedPracticeTextTitle) ?? 'Texto livre';
   const { settings } = useSettingsContext();
 
   const [savedResult, setSavedResult] = useState<SavedResult | null>(null);
+  const [isArenaFocused, setIsArenaFocused] = useState(false);
   const savedRef = useRef(false);
 
-  const { state, handleKey, reset: resetSession, precision, topErrors } = useTypingSession(lessonId);
+  const { state, handleKey, reset: resetSession, precision, topErrors } = useTypingSession(
+    isPracticeTextMode ? null : lessonId,
+    isPracticeTextMode ? selectedPracticeText : null,
+  );
 
   const {
     timer,
@@ -57,8 +96,18 @@ export function ArenaPage() {
   });
 
   useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsArenaFocused(false);
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
+  useEffect(() => {
     if (timer.phase !== 'finished' || savedRef.current) return;
     savedRef.current = true;
+    setIsArenaFocused(false);
 
     const prevBest = getBestPpm();
     const isRecord = timer.ppm > 0 && timer.ppm > prevBest;
@@ -70,7 +119,10 @@ export function ArenaPage() {
       precision,
       errors: state.totalIncorrect,
       duration: dur,
-      lessonId,
+      lessonId: isPracticeTextMode ? null : lessonId,
+      mode: isPracticeTextMode ? 'practice-text' : lessonId ? 'lesson' : 'random',
+      practiceTextId: isPracticeTextMode ? selectedPracticeTextId : null,
+      practiceTextTitle: isPracticeTextMode ? practiceTextTitle : null,
       isRecord,
       topErrors,
       maxCombo: state.maxCombo,
@@ -99,35 +151,82 @@ export function ArenaPage() {
       isRecord,
       topErrors,
       duration: `${mm}:${ss}`,
+      lessonCompleted: output.lessonCompleted,
+      lessonCompletedNow: output.lessonCompletedNow,
+      lessonMedal: output.lessonMedal,
+      nextLessonId: output.nextLessonId,
+      nextLessonTitle: output.nextLessonTitle,
+      isPracticeText: isPracticeTextMode,
     });
   }, [timer.phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleTypingKey(key: string) {
     if (savedResult) return;
-    if (timer.phase === 'paused') return;
+    if (timer.phase === 'paused' || timer.phase === 'finished') return;
     if (timer.phase === 'idle') startTimer();
+    setIsArenaFocused(true);
     handleKey(key);
   }
 
   function handleRestart() {
     savedRef.current = false;
     setSavedResult(null);
+    setIsArenaFocused(false);
     resetSession();
+    resetTimer();
+  }
+
+  function handleNext() {
+    savedRef.current = false;
+    setSavedResult(null);
+    setIsArenaFocused(false);
+
+    if (savedResult?.nextLessonId) {
+      const nextLesson = getLessonById(savedResult.nextLessonId);
+      if (nextLesson) {
+        selectLesson(nextLesson);
+        setLessonId(nextLesson.id);
+      }
+    } else if (savedResult?.isPracticeText) {
+      navigate('/mapa');
+    } else {
+      resetSession();
+    }
+
     resetTimer();
   }
 
   const expectedChar =
     state.words[state.currentWordIndex]?.letters[state.currentLetterIndex]?.char ?? '';
-  const arenaTitle = lesson ? `Type Arena · ${lesson.title}` : 'Type Arena';
-  const modeLabel = lesson?.title ?? PHASE_LABEL[timer.phase] ?? timer.phase;
+  const cleanArenaTitle = isPracticeTextMode
+    ? `Type Arena · ${practiceTextTitle}`
+    : lesson
+    ? `Type Arena · ${lesson.title}`
+    : 'Type Arena';
+  const modeLabel = isPracticeTextMode
+    ? practiceTextTitle
+    : lesson?.title ?? PHASE_LABEL[timer.phase] ?? timer.phase;
   const feedbackText =
     timer.phase === 'idle'
-      ? 'Foco. Digite a primeira palavra para iniciar o desafio.'
+      ? 'O treino começa na primeira tecla.'
       : PHASE_LABEL[timer.phase] ?? timer.phase;
+  const cardClassName = [
+    styles.arenaCard,
+    settings.keyboardVisible ? styles.keyboardEnabledCard : styles.keyboardDisabledCard,
+    isArenaFocused ? styles.focusMode : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+  const pageClassName = [
+    styles.page,
+    isArenaFocused ? styles.pageFocused : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <PageShell title={arenaTitle}>
-      <div className={styles.page}>
+    <PageShell title={cleanArenaTitle} className={styles.focusShell}>
+      <div className={pageClassName}>
         {savedResult ? (
           <ResultsScreen
             ppm={savedResult.ppm}
@@ -141,14 +240,28 @@ export function ArenaPage() {
             isRecord={savedResult.isRecord}
             topErrors={savedResult.topErrors}
             duration={savedResult.duration}
+            lessonCompleted={savedResult.lessonCompleted}
+            lessonCompletedNow={savedResult.lessonCompletedNow}
+            lessonMedal={savedResult.lessonMedal}
+            nextLessonTitle={savedResult.nextLessonTitle}
+            nextActionLabel={
+              savedResult.isPracticeText
+                ? 'Escolher outro texto'
+                : savedResult.nextLessonTitle
+                ? 'Próxima fase'
+                : 'Próximo texto'
+            }
             onRestart={handleRestart}
+            onNext={handleNext}
           />
         ) : (
-          <div className={styles.arenaCard}>
+          <div className={cardClassName}>
             <div className={styles.cardBar}>
               <div className={styles.cardBarLeft}>
-                <span className={styles.mentorLabel}>{arenaTitle}</span>
-                <span className={styles.phaseChip}>{modeLabel}</span>
+                <span className={styles.mentorLabel}>{cleanArenaTitle}</span>
+                <span className={styles.phaseChip}>
+                  {isPracticeTextMode ? 'Texto livre' : modeLabel}
+                </span>
               </div>
 
               <div className={styles.cardBarRight}>
@@ -166,7 +279,7 @@ export function ArenaPage() {
                     <strong>{timer.cpm}</strong>
                   </div>
                   <div className={styles.inlineMetric}>
-                    <span>PRECISAO</span>
+                    <span>PRECISÃO</span>
                     <strong>{precision}%</strong>
                   </div>
                   <div className={styles.inlineMetric}>
@@ -232,21 +345,39 @@ export function ArenaPage() {
                 feedback={state.feedback}
                 disabled={timer.phase === 'finished'}
                 cursorMode={settings.cursorMode}
+                keyboardVisible={settings.keyboardVisible}
+                showStartOverlay={timer.phase === 'idle' && !isArenaFocused}
+                onFocusMode={() => setIsArenaFocused(true)}
                 onKey={handleTypingKey}
               />
             )}
 
-            <div className={styles.keyDeck}>
-              <div className={styles.keyDeckHeader}>
-                <span className={styles.keyDeckLabel}>Dojo Key Deck</span>
-                <div className={styles.keyDeckDots}>
-                  <span style={{ background: '#00a8cc' }} />
-                  <span style={{ background: '#7c5cff' }} />
-                  <span style={{ background: '#d99a17' }} />
+            {!settings.keyboardVisible && (
+              <aside className={styles.keyboardOffPanel} aria-label="Dica do Mestre Panda">
+                <div>
+                  <span>Dica do Mestre Panda</span>
+                  <strong>Priorize precisão antes de velocidade.</strong>
                 </div>
+                <p>
+                  Você pode reativar o teclado visual nas configurações. Meta da fase: 85% de
+                  precisão.
+                </p>
+              </aside>
+            )}
+
+            {settings.keyboardVisible && (
+              <div className={styles.keyDeck}>
+                <div className={styles.keyDeckHeader}>
+                  <span className={styles.keyDeckLabel}>Dojo Key Deck</span>
+                  <div className={styles.keyDeckDots}>
+                    <span style={{ background: '#00a8cc' }} />
+                    <span style={{ background: '#7c5cff' }} />
+                    <span style={{ background: '#d99a17' }} />
+                  </div>
+                </div>
+                <VirtualKeyboard activeKey={timer.phase === 'running' ? expectedChar : ''} />
               </div>
-              <VirtualKeyboard activeKey={timer.phase === 'running' ? expectedChar : ''} />
-            </div>
+            )}
           </div>
         )}
       </div>

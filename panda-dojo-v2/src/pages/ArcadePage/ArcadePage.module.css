@@ -1,3 +1,7 @@
+.arcadeShell {
+  padding-bottom: var(--dojo-space-8);
+}
+
 .hero {
   display: flex;
   flex-direction: column;
@@ -31,79 +35,44 @@
 }
 
 .sub {
-  max-width: 620px;
+  max-width: 720px;
   color: var(--dojo-text-muted);
   font-size: 0.96rem;
   line-height: 1.55;
 }
 
-.gameSection {
-  display: flex;
-  flex-direction: column;
-  gap: var(--dojo-space-3);
+.selectorSection,
+.gameFocus {
   padding-top: 18px;
-  padding-bottom: var(--dojo-space-6);
 }
 
-.gameLabel {
+.sideHeader,
+.gameFocusHeader {
   display: flex;
-  align-items: center;
-  gap: var(--dojo-space-3);
-}
-
-.gameLabelChip {
-  padding: 4px 11px;
-  border: 1px solid color-mix(in srgb, var(--dojo-primary) 35%, transparent);
-  border-radius: var(--dojo-radius-pill);
-  background: color-mix(in srgb, var(--dojo-primary) 14%, transparent);
-  color: var(--dojo-primary);
-  font-family: var(--font-title);
-  font-size: 0.68rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.gameLabelText {
-  color: var(--dojo-text-strong);
-  font-family: var(--font-title);
-  font-size: 1rem;
-  font-weight: 900;
-}
-
-.sideSection {
-  padding-top: 0;
-}
-
-.sideHeader {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--dojo-space-4);
   margin-bottom: var(--dojo-space-4);
 }
 
-.subHeading,
-.soonTitle {
+.subHeading {
   color: var(--dojo-text-strong);
   font-family: var(--font-title);
+  font-size: 1.15rem;
   font-weight: 900;
 }
 
-.subHeading {
-  font-size: 1.15rem;
-}
-
-.sideGrid {
+.minigameGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--dojo-space-5);
 }
 
-.soonCard {
+.minigameCard {
   display: flex;
+  min-height: 230px;
   flex-direction: column;
   gap: var(--dojo-space-3);
-  min-height: 230px;
   padding: var(--dojo-space-5);
   border: 1px solid rgba(20, 184, 212, 0.18);
   border-radius: 16px;
@@ -111,42 +80,140 @@
   box-shadow:
     0 16px 40px rgba(11, 57, 84, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.28);
-  opacity: 0.72;
+  transition:
+    border-color var(--dojo-duration-fast) var(--dojo-ease),
+    box-shadow var(--dojo-duration-fast) var(--dojo-ease),
+    transform var(--dojo-duration-fast) var(--dojo-ease),
+    opacity var(--dojo-duration-fast) var(--dojo-ease);
 }
 
-.soonHead {
+.minigameCard:hover:not(.minigameCardDisabled),
+.minigameCardActive {
+  border-color: var(--dojo-primary);
+  box-shadow:
+    0 0 0 1px rgba(20, 184, 212, 0.24),
+    0 22px 54px rgba(11, 57, 84, 0.15);
+  transform: translateY(-3px);
+}
+
+.minigameCardDisabled {
+  opacity: 0.64;
+}
+
+.minigameTop {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--dojo-space-3);
 }
 
-.soonIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  border: 1px solid rgba(20, 184, 212, 0.18);
-  border-radius: 12px;
-  background: var(--dojo-surface-tint);
-  color: var(--dojo-primary);
+.minigameTop span:last-child {
+  color: var(--dojo-text-muted);
   font-family: var(--font-title);
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 900;
 }
 
-.soonTitle {
-  font-size: 0.95rem;
+.minigameCard h3 {
+  color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+  font-size: 1rem;
+  font-weight: 900;
 }
 
-.soonDesc {
+.minigameCard p {
+  flex: 1;
   color: var(--dojo-text-muted);
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   line-height: 1.5;
 }
 
-@media (max-width: 560px) {
+.minigameAction,
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 16px;
+  border: 1px solid var(--dojo-border);
+  border-radius: 10px;
+  background: var(--dojo-text-strong);
+  color: #fff;
+  cursor: pointer;
+  font-family: var(--font-title);
+  font-size: 0.8rem;
+  font-weight: 900;
+  transition:
+    border-color var(--dojo-duration-fast) var(--dojo-ease),
+    box-shadow var(--dojo-duration-fast) var(--dojo-ease),
+    transform var(--dojo-duration-fast) var(--dojo-ease),
+    opacity var(--dojo-duration-fast) var(--dojo-ease);
+}
+
+.minigameAction:hover:not(:disabled),
+.backButton:hover {
+  border-color: var(--dojo-primary);
+  box-shadow: 0 0 0 3px rgba(20, 184, 212, 0.16);
+  transform: translateY(-1px);
+}
+
+.minigameAction:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.backButton {
+  flex: 0 0 auto;
+  background: var(--dojo-card-bg);
+  color: var(--dojo-text-strong);
+}
+
+.gameFocus {
+  padding-bottom: var(--dojo-space-8);
+}
+
+.gameFocusBody {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+}
+
+@media (max-width: 1120px) {
+  .minigameGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
   .hero {
     margin-top: 18px;
+  }
+
+  .sideHeader,
+  .gameFocusHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .minigameGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .backButton {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .minigameCard,
+  .minigameAction,
+  .backButton {
+    transition: none;
+  }
+
+  .minigameCard:hover:not(.minigameCardDisabled),
+  .minigameCardActive,
+  .minigameAction:hover:not(:disabled),
+  .backButton:hover {
+    transform: none;
   }
 }

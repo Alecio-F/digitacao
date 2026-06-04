@@ -35,13 +35,13 @@
 }
 
 .heroContent h1 {
-  max-width: 760px;
+  max-width: 700px;
   color: var(--dojo-title);
   font-family: var(--font-title);
-  font-size: clamp(2.65rem, 6.4vw, 5rem);
+  font-size: clamp(2.1rem, 4.4vw, 3.5rem);
   font-weight: 900;
   letter-spacing: 0;
-  line-height: 0.96;
+  line-height: 1;
 }
 
 .heroContent p {
@@ -68,47 +68,67 @@
 
 .pandaCard {
   position: relative;
-  min-height: 410px;
+  display: flex;
+  align-items: center;
+  min-height: 360px;
   overflow: hidden;
+  padding: var(--dojo-space-6);
   border: 1px solid var(--dojo-border-strong);
   border-radius: var(--dojo-radius-lg);
   background:
-    radial-gradient(circle at 80% 8%, rgba(124, 92, 255, 0.18), transparent 36%),
-    radial-gradient(circle at 18% 12%, rgba(20, 184, 212, 0.18), transparent 34%),
+    radial-gradient(circle at 82% 10%, rgba(124, 92, 255, 0.2), transparent 40%),
+    radial-gradient(circle at 14% 12%, rgba(20, 184, 212, 0.18), transparent 36%),
     var(--dojo-card-bg);
   box-shadow: var(--dojo-shadow-card);
 }
 
-.pandaCard img {
+/* Panda como personagem de apoio à direita, atrás do painel mas sem cobri-lo. */
+.pandaImg {
   position: absolute;
-  right: -4%;
-  bottom: -24px;
-  width: min(82%, 420px);
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  width: min(46%, 280px);
   filter: drop-shadow(0 22px 24px rgba(11, 57, 84, 0.26));
+  pointer-events: none;
+  user-select: none;
 }
 
 .pandaStatus {
-  position: absolute;
-  top: var(--dojo-space-6);
-  left: var(--dojo-space-6);
+  position: relative;
   z-index: 1;
   display: flex;
-  width: min(310px, calc(100% - 40px));
+  width: min(58%, 300px);
   flex-direction: column;
-  gap: var(--dojo-space-4);
+  align-items: flex-start;
+  gap: var(--dojo-space-3);
   padding: var(--dojo-space-5);
   border: 1px solid var(--dojo-border);
   border-radius: var(--dojo-radius-md);
-  background: color-mix(in srgb, var(--dojo-card-bg) 82%, transparent);
+  background: color-mix(in srgb, var(--dojo-card-bg) 84%, transparent);
   backdrop-filter: blur(12px);
 }
 
-.pandaStatus strong {
+.playerKicker {
+  color: var(--dojo-primary);
+  font-family: var(--font-title);
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.pandaStatus .playerLevel {
   color: var(--dojo-text-strong);
   font-family: var(--font-title);
-  font-size: 1.55rem;
+  font-size: 1.9rem;
   font-weight: 900;
   line-height: 1;
+}
+
+.playerProgress {
+  width: 100%;
+  margin-top: var(--dojo-space-2);
 }
 
 .heroMetrics {
@@ -318,7 +338,7 @@
   }
 
   .heroContent h1 {
-    font-size: clamp(2.25rem, 11vw, 3.25rem);
+    font-size: clamp(1.9rem, 9vw, 2.6rem);
   }
 
   .heroActions {
@@ -327,7 +347,15 @@
   }
 
   .pandaCard {
-    min-height: 330px;
+    min-height: 300px;
+  }
+
+  .pandaStatus {
+    width: min(72%, 320px);
+  }
+
+  .pandaImg {
+    width: min(42%, 200px);
   }
 
   .heroMetrics,

@@ -9,6 +9,7 @@ export interface SettingsContextValue {
   animationsEnabled: boolean;
   reducedEffects: boolean;
   cursorMode: CursorMode;
+  keyboardVisible: boolean;
   setTheme: (v: Theme) => void;
   toggleTheme: () => void;
   resetTheme: () => void;
@@ -17,6 +18,7 @@ export interface SettingsContextValue {
   setAnimationsEnabled: (v: boolean) => void;
   setReducedEffects: (v: boolean) => void;
   setCursorMode: (v: CursorMode) => void;
+  setKeyboardVisible: (v: boolean) => void;
 }
 
 export const SettingsContext = createContext<SettingsContextValue | null>(null);

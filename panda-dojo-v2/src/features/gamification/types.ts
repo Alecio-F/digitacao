@@ -11,6 +11,9 @@ export interface HistoryItem {
   erros?: number;
   tempo?: number;
   lessonId?: string | null;
+  mode?: 'random' | 'lesson' | 'practice-text';
+  practiceTextId?: string | null;
+  practiceTextTitle?: string | null;
   novoRecorde?: boolean;
   data?: string;
 }

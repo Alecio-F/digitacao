@@ -4,9 +4,25 @@ import { getLessonById as findLessonById, LESSONS } from '../data/lessons';
 import type {
   Lesson,
   LessonMedal,
+  LessonProgress,
   LessonProgressMap,
   LessonStatus,
 } from '../types';
+
+interface LessonAttemptResult {
+  lesson: Lesson;
+  completed: boolean;
+  completedNow: boolean;
+  medal: LessonMedal;
+  nextLesson: Lesson | null;
+}
+
+const MEDAL_RANK: Record<LessonMedal, number> = {
+  none: 0,
+  bronze: 1,
+  silver: 2,
+  gold: 3,
+};
 
 export function getLessonProgress(): LessonProgressMap {
   const progress = getStorage<LessonProgressMap>(KEYS.lessonProgress, {});
@@ -61,4 +77,47 @@ export function getMedalByAccuracy(accuracy: number): LessonMedal {
   if (accuracy >= 92) return 'silver';
   if (accuracy >= 85) return 'bronze';
   return 'none';
+}
+
+function getBestMedal(current: LessonMedal, next: LessonMedal): LessonMedal {
+  return MEDAL_RANK[next] > MEDAL_RANK[current] ? next : current;
+}
+
+export function recordLessonAttempt(
+  lessonId: string,
+  result: { accuracy: number; ppm: number },
+): LessonAttemptResult | null {
+  const lesson = findLessonById(lessonId);
+  if (!lesson) return null;
+
+  const progress = getLessonProgress();
+  const previous = progress[lessonId];
+  const alreadyCompleted = previous?.status === 'completed';
+  const reachedCompletion = result.accuracy >= 85;
+  const completed = alreadyCompleted || reachedCompletion;
+  const medal = getBestMedal(previous?.medal ?? 'none', getMedalByAccuracy(result.accuracy));
+
+  const nextEntry: LessonProgress = {
+    status: completed ? 'completed' : 'started',
+    bestAccuracy: Math.max(previous?.bestAccuracy ?? 0, result.accuracy),
+    bestPpm: Math.max(previous?.bestPpm ?? 0, result.ppm),
+    medal,
+    completedAt: alreadyCompleted
+      ? previous.completedAt
+      : reachedCompletion
+      ? new Date().toISOString()
+      : previous?.completedAt,
+    attempts: (previous?.attempts ?? 0) + 1,
+  };
+
+  progress[lessonId] = nextEntry;
+  saveLessonProgress(progress);
+
+  return {
+    lesson,
+    completed,
+    completedNow: reachedCompletion && !alreadyCompleted,
+    medal,
+    nextLesson: getNextRecommendedLesson(progress),
+  };
 }

@@ -3,62 +3,62 @@
 Use esta lista ao validar a versão publicada com testadores.
 
 ## Geral
-- [ ] Site carrega
-- [ ] Sem erro no console
-- [ ] Tema claro funciona
-- [ ] Tema escuro funciona
-- [ ] Mobile funciona
-- [ ] Sem scroll horizontal
+- [x] Site carrega
+- [x] Sem erro no console
+- [x] Tema claro funciona
+- [x] Tema escuro funciona
+- [x] Mobile funciona
+- [x] Sem scroll horizontal
 
 ## Navegação
-- [ ] Home (`/`)
-- [ ] Arena (`/arena`)
-- [ ] Aprenda (`/aprenda`)
-- [ ] Mapa (`/mapa`)
-- [ ] Arcade (`/arcade`)
-- [ ] Conta (`/conta`)
-- [ ] Ranking (`/ranking`)
-- [ ] Recarregar (F5) em uma rota interna não dá 404
-- [ ] Item ativo destacado no header/menu mobile
+- [x] Home (`/`)
+- [x] Arena (`/arena`)
+- [x] Aprenda (`/aprenda`)
+- [x] Mapa (`/mapa`)
+- [x] Arcade (`/arcade`)
+- [x] Conta (`/conta`)
+- [x] Ranking (`/ranking`)
+- [x] Recarregar (F5) em uma rota interna não dá 404
+- [x] Item ativo destacado no header/menu mobile
 
 ## Arena
-- [ ] Digitação funciona
-- [ ] Timer funciona
-- [ ] Pausar funciona
-- [ ] Reiniciar funciona
-- [ ] Resultado aparece
-- [ ] Histórico salva
-- [ ] Cursor Arcade funciona
-- [ ] Cursor V1 fino funciona
-- [ ] Tempo padrão (Configurações) é respeitado
+- [x] Digitação funciona
+- [x] Timer funciona
+- [x] Pausar funciona
+- [x] Reiniciar funciona
+- [x] Resultado aparece
+- [x] Histórico salva
+- [x] Cursor Arcade funciona
+- [x] Cursor V1 fino funciona
+- [x] Tempo padrão (Configurações) é respeitado
 
 ## Mapa
-- [ ] Fases aparecem
-- [ ] Fase bloqueada não inicia
-- [ ] Fase disponível inicia
-- [ ] Seleção salva para a Arena
+- [x] Fases aparecem
+- [x] Fase bloqueada não inicia
+- [x] Fase disponível inicia
+- [x] Seleção salva para a Arena
 
 ## Arcade
-- [ ] Panda Keys inicia
-- [ ] Pontuação funciona
-- [ ] Pausar funciona
-- [ ] Reiniciar funciona
-- [ ] Recorde salva
-- [ ] Canvas nítido (sem blur) em tela HiDPI
-- [ ] Sair da página não deixa loop rodando (console limpo)
+- [x] Panda Keys inicia
+- [x] Pontuação funciona
+- [x] Pausar funciona
+- [x] Reiniciar funciona
+- [x] Recorde salva
+- [x] Canvas nítido (sem blur) em tela HiDPI
+- [x] Sair da página não deixa loop rodando (console limpo)
 
 ## Conta e Ranking
-- [ ] Perfil local aparece
-- [ ] Ranking local aparece (ordenado por PPM)
-- [ ] Estado vazio funciona (localStorage limpo)
-- [ ] Limpar progresso local pede confirmação e preserva configurações
+- [x] Perfil local aparece
+- [x] Ranking local aparece (ordenado por PPM)
+- [x] Estado vazio funciona (localStorage limpo)
+- [x] Limpar progresso local pede confirmação e preserva configurações
 
 ## localStorage
-- [ ] localStorage vazio → sem tela branca
-- [ ] localStorage com dados antigos da V1 → não quebra
-- [ ] localStorage com JSON inválido → não quebra
+- [x] localStorage vazio → sem tela branca
+- [x] localStorage com dados antigos da V1 → não quebra
+- [x] localStorage com JSON inválido → não quebra
 
 ## Configurações
-- [ ] Abrir/fechar drawer de configurações
-- [ ] Alternar tema persiste após reload
-- [ ] Reduzir efeitos / animações funciona
+- [x] Abrir/fechar drawer de configurações
+- [x] Alternar tema persiste após reload
+- [x] Reduzir efeitos / animações funciona

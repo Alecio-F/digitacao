@@ -70,7 +70,7 @@ export function createInputManager(options: {
 
     const hitResult = applyHit(state, rating);
     const x = candidate.x + candidate.width / 2;
-    addLaneFlash(state, candidate.laneIndex, rating.color);
+    addLaneFlash(state, candidate.laneIndex, '#46d98c');
     addParticles(state, x, hitLineY, rating.color, rating.name === 'PERFECT' ? 8 : 4);
     audio.hit(rating.name);
 

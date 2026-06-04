@@ -8,4 +8,5 @@ export interface Settings {
   animationsEnabled: boolean;
   reducedEffects: boolean;
   cursorMode: CursorMode;
+  keyboardVisible: boolean;
 }

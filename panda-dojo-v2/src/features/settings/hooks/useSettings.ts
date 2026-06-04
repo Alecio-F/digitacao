@@ -62,6 +62,7 @@ export function useSettings() {
       animationsEnabled: readBoolean(KEYS.animationsEnabled, !prefersReducedMotion),
       reducedEffects: readBoolean(KEYS.reducedEffects, prefersReducedMotion),
       cursorMode: readCursorMode(),
+      keyboardVisible: readBoolean(KEYS.keyboardVisible, true),
     };
   }, []);
 
@@ -112,6 +113,11 @@ export function useSettings() {
     setSettings((prev) => ({ ...prev, cursorMode: value }));
   }, []);
 
+  const setKeyboardVisible = useCallback((value: boolean) => {
+    setStorage(KEYS.keyboardVisible, value);
+    setSettings((prev) => ({ ...prev, keyboardVisible: value }));
+  }, []);
+
   const resetTheme = useCallback(() => {
     removeStorage(KEYS.tema);
     setSettings((prev) => ({ ...prev, theme: 'dark' }));
@@ -125,6 +131,7 @@ export function useSettings() {
     animationsEnabled: settings.animationsEnabled,
     reducedEffects: settings.reducedEffects,
     cursorMode: settings.cursorMode,
+    keyboardVisible: settings.keyboardVisible,
     setTheme,
     toggleTheme,
     resetTheme,
@@ -133,5 +140,6 @@ export function useSettings() {
     setAnimationsEnabled,
     setReducedEffects,
     setCursorMode,
+    setKeyboardVisible,
   };
 }

@@ -111,3 +111,27 @@ não tem fallback de SPA nativo. Para usá-lo seria necessário:
 
 Por isso, **a Vercel é a opção recomendada** nesta etapa — mantém
 `BrowserRouter` e URLs limpas sem configuração extra.
+
+## Teste público controlado
+
+A V2 do PandaDigitações está em fase de **teste público controlado**.
+
+Objetivo:
+
+- validar a experiência da Type Arena;
+- validar o Mapa do Dojo;
+- validar o Arcade;
+- encontrar bugs;
+- coletar feedback real;
+- preparar uma versão V2.1.
+
+Arquivos relacionados:
+
+- [`USER_TEST_SCRIPT_V2.md`](./USER_TEST_SCRIPT_V2.md) — roteiro entregue a quem vai testar.
+- [`FEEDBACK_TEST_V2.md`](./FEEDBACK_TEST_V2.md) — onde registrar o feedback coletado.
+- [`POST_FEEDBACK_FIXES_V2.md`](./POST_FEEDBACK_FIXES_V2.md) — backlog de correções pós-teste (V2.1).
+- [`PUBLIC_TEST_CHECKLIST.md`](./PUBLIC_TEST_CHECKLIST.md) — checklist técnico de smoke test.
+
+Fluxo sugerido: entregue o `USER_TEST_SCRIPT_V2.md` ao testador → registre o
+retorno em `FEEDBACK_TEST_V2.md` → consolide o que virar ação em
+`POST_FEEDBACK_FIXES_V2.md` para planejar a V2.1.

@@ -18,6 +18,23 @@
   padding-top: 0;
 }
 
+@media (min-width: 901px) {
+  .focusRoot {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .focusRoot .content {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .focusRoot .appMain {
+    min-height: 0;
+    overflow: hidden;
+  }
+}
+
 @media (max-width: 900px) {
   .content {
     padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
