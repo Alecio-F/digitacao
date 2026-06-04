@@ -20,11 +20,11 @@ function lessonRec(id: string, title: string, message: string): TrainingRecommen
 function mistakeRecommendation(mistakes: [string, number][]): TrainingRecommendation | null {
   if (!mistakes.length) return null;
   const keys = mistakes.map(([k]) => String(k ?? '').toLowerCase()).join('');
-  if (['a','s','d','f'].some((c) => keys.includes(c))) return lessonRec('left-hand', 'Fase Teclas Base / Mão Esquerda', 'Você errou mais teclas da mão esquerda. Reforce ASDF.');
-  if (['j','k','l','ç'].some((c) => keys.includes(c))) return lessonRec('right-hand', 'Fase Teclas Base / Mão Direita', 'Você errou mais teclas da mão direita. Reforce J, K, L e Ç.');
-  if (['á','é','í','ó','ú','ã','õ'].some((c) => keys.includes(c))) return lessonRec('accents', 'Fase Acentuação', 'Acentos apareceram entre os erros. Treine palavras acentuadas.');
-  if (/[0-9]/.test(keys)) return lessonRec('numbers', 'Fase Números', 'Números apareceram entre os erros.');
-  if (/[.,;:?!]/.test(keys)) return lessonRec('punctuation', 'Fase Pontuação', 'Pontuação apareceu entre os erros.');
+  if (['a','s','d','f'].some((c) => keys.includes(c))) return lessonRec('left-hand', 'Fase Teclas Base / Mão Esquerda', 'Sua mão esquerda fez teatro no tatame. Reforce ASDF antes que o Dojo cobre ingresso.');
+  if (['j','k','l','ç'].some((c) => keys.includes(c))) return lessonRec('right-hand', 'Fase Teclas Base / Mão Direita', 'J, K, L e Ç estão pedindo respeito. O Mestre Panda recomenda domar essa ala do teclado.');
+  if (['á','é','í','ó','ú','ã','õ'].some((c) => keys.includes(c))) return lessonRec('accents', 'Fase Acentuação', 'Os acentos apareceram nos erros como ninjas dramáticos. Treine palavras acentuadas.');
+  if (/[0-9]/.test(keys)) return lessonRec('numbers', 'Fase Números', 'Os números entraram na rodada e bagunçaram o placar. Hora de chamar ordem no teclado.');
+  if (/[.,;:?!]/.test(keys)) return lessonRec('punctuation', 'Fase Pontuação', 'A pontuação tentou fazer pegadinha. Mostre que vírgula e ponto também obedecem ao Dojo.');
   return null;
 }
 
@@ -35,7 +35,7 @@ function generate(): TrainingRecommendation[] {
   const safeMistakes = Array.isArray(mistakes) ? mistakes : [];
 
   if (!safe.length) {
-    return [{ id: 'start-base-keys', title: 'Fase 01 — Teclas Base', message: 'Comece pela linha base e faça um teste rápido de 1 minuto.', targetPage: '/mapa', targetLessonId: 'base-keys', priority: 'high', reason: 'no-history' }];
+    return [{ id: 'start-base-keys', title: 'Fase 01: Teclas Base', message: 'Comece pela linha base. O teclado ainda não reconheceu sua autoridade, então vamos por partes.', targetPage: '/mapa', targetLessonId: 'base-keys', priority: 'high', reason: 'no-history' }];
   }
 
   const recent = safe.slice(0, 5);
@@ -47,12 +47,12 @@ function generate(): TrainingRecommendation[] {
   const mr = mistakeRecommendation(safeMistakes);
   if (mr) recs.push(mr);
 
-  if (avgAcc < 85) recs.push({ id: 'precision-training', title: 'Treino de Precisão', message: 'Sua precisão está baixa. Treine devagar antes de buscar velocidade.', targetPage: '/mapa', targetLessonId: 'base-keys', priority: 'high', reason: 'accuracy-low' });
-  else if (avgAcc >= 95 && avgPpm < 35) recs.push({ id: 'speed-training', title: 'Treino de Velocidade', message: 'Sua precisão está boa. Agora você pode treinar velocidade em rodadas curtas.', targetPage: '/arena', targetLessonId: null, priority: 'medium', reason: 'speed-low' });
+  if (avgAcc < 85) recs.push({ id: 'precision-training', title: 'Treino de Precisão', message: 'Sua precisão tropeçou no tatame. Respire, reduza o ritmo e mire nas teclas certas.', targetPage: '/mapa', targetLessonId: 'base-keys', priority: 'high', reason: 'accuracy-low' });
+  else if (avgAcc >= 95 && avgPpm < 35) recs.push({ id: 'speed-training', title: 'Treino de Velocidade', message: 'A precisão está afiada. Agora avise seus dedos que eles podem correr um pouco.', targetPage: '/arena', targetLessonId: null, priority: 'medium', reason: 'speed-low' });
 
-  if (recentRecord) recs.push({ id: 'daily-challenge', title: 'Desafio Diário', message: 'Você bateu recorde recentemente. Continue e tente o desafio diário.', targetPage: '/mapa', targetLessonId: null, priority: 'medium', reason: 'recent-record' });
+  if (recentRecord) recs.push({ id: 'daily-challenge', title: 'Desafio Diário', message: 'Você bateu recorde recentemente. O Mestre Panda fingiu calma e apontou para o desafio de hoje.', targetPage: '/mapa', targetLessonId: null, priority: 'medium', reason: 'recent-record' });
 
-  if (!recs.length) recs.push({ id: 'next-lesson', title: 'Próxima fase do Dojo', message: 'Mantenha a consistência e avance para a próxima fase desbloqueada.', targetPage: '/mapa', targetLessonId: null, priority: 'normal', reason: 'steady-progress' });
+  if (!recs.length) recs.push({ id: 'next-lesson', title: 'Próxima fase do Dojo', message: 'Seu treino está estável. O Dojo aprovou com um aceno curto e levemente metido.', targetPage: '/mapa', targetLessonId: null, priority: 'normal', reason: 'steady-progress' });
 
   saveRecommendations(recs);
   return recs;

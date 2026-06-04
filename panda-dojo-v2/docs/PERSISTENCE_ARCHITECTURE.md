@@ -146,3 +146,79 @@ sync local-first, sem conectar Supabase diretamente em componentes.
 
 O projeto está pronto para iniciar a Fase 1B de Supabase Foundation do ponto de
 vista da persistência local: a camada local está isolada, testável e substituível.
+
+## Fase 1B — Supabase Foundation
+
+A Fase 1B adiciona client Supabase, Auth, profile remoto, SQL schema, seed e RLS
+sem substituir o modo local. O app continua funcionando sem `.env.local`.
+
+O sync completo de histórico, progresso, Mapa, Arcade e ranking global virá na
+Fase 1C. Até lá, repositories locais seguem como fonte principal da experiência
+de treino.
+
+## Fase 1C — Sync Local Para Supabase
+
+A Fase 1C adiciona sincronização local-first sem trocar a fonte principal da UI.
+O fluxo continua sendo:
+
+```text
+Usuário joga/treina -> grava local -> tenta espelhar no Supabase -> falha remota não quebra a UI
+```
+
+### Repositories Remotos
+
+Os acessos ao Supabase ficam isolados em:
+
+- `src/repositories/remote/profileRemoteRepository.ts`
+- `src/repositories/remote/typingResultRemoteRepository.ts`
+- `src/repositories/remote/lessonProgressRemoteRepository.ts`
+- `src/repositories/remote/arcadeScoreRemoteRepository.ts`
+- `src/repositories/remote/userAchievementRemoteRepository.ts`
+
+Componentes não acessam Supabase diretamente. A página de Conta chama o service
+de sync, e os fluxos de Arena/Arcade chamam funções de espelhamento que usam os
+repositories remotos internamente.
+
+### Service de Sync
+
+`src/features/backend-sync/syncLocalProgressService.ts` concentra:
+
+- detecção de progresso local;
+- resumo para a Conta;
+- importação manual;
+- marcação de `pandaCloudSyncImported`;
+- sync de novos resultados da Type Arena;
+- sync de progresso do Mapa;
+- sync de recordes do Arcade;
+- sync de XP, nível e conquistas.
+
+### Importação Manual
+
+A importação é explícita. O usuário logado vê o card "Importar progresso local"
+em `/conta` quando há dados locais e a flag `pandaCloudSyncImported` ainda não
+foi marcada.
+
+Dados importados:
+
+- histórico da Arena para `typing_results`;
+- progresso das fases para `lesson_progress`;
+- recordes de Panda Keys e Selos para `arcade_scores`;
+- conquistas para `user_achievements`;
+- XP, nível, título e streak para `profiles`.
+
+A importação só marca `pandaCloudSyncImported=true` quando termina sem erro. Os
+dados locais não são apagados.
+
+### Fallback Local
+
+Se Supabase estiver sem configuração, sem sessão, com erro de rede ou erro de
+RLS, o app continua usando o localStorage. Novos resultados são preservados
+localmente mesmo se a tentativa remota falhar.
+
+### Limites Atuais
+
+- Não há fila offline de pending sync.
+- Não há ranking global.
+- Não há leitura remota para reconstruir progresso em novo dispositivo.
+- `daily_challenge_results` ainda não recebe sync dedicado; o Desafio Diário
+  entra em `typing_results` quando finalizado na Arena.

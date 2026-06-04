@@ -444,6 +444,200 @@
   gap: 10px;
 }
 
+/* Online account */
+.authPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dojo-space-4);
+  border-color: rgba(20, 184, 212, 0.24);
+  background:
+    radial-gradient(circle at 95% 0%, rgba(124, 92, 255, 0.12), transparent 32%),
+    radial-gradient(circle at 5% 0%, rgba(20, 184, 212, 0.14), transparent 36%),
+    rgba(255, 255, 255, 0.62);
+}
+
+.authStatusGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--dojo-space-3);
+}
+
+.authStatusGrid span,
+.remoteProfileBox {
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(20, 184, 212, 0.16);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.authStatusGrid strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--dojo-text-muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.remoteProfileBox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dojo-space-3);
+}
+
+.syncNotice {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border: 1px solid rgba(124, 92, 255, 0.18);
+  border-radius: 14px;
+  background: rgba(124, 92, 255, 0.08);
+}
+
+.syncNotice > span {
+  color: var(--dojo-secondary);
+}
+
+.syncNotice strong {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+}
+
+.syncNotice p {
+  color: var(--dojo-text-muted);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.importCard {
+  display: grid;
+  gap: var(--dojo-space-3);
+  padding: 16px;
+  border: 1px solid rgba(20, 184, 212, 0.24);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 92% 0%, rgba(20, 184, 212, 0.16), transparent 34%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(124, 92, 255, 0.08));
+}
+
+.importCardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--dojo-space-3);
+}
+
+.importCardHeader h3 {
+  margin-top: 2px;
+  color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+
+.importSummaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.importSummaryGrid span {
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(20, 184, 212, 0.14);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.44);
+  color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+  font-weight: 900;
+}
+
+.importSummaryGrid strong {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--dojo-text-muted);
+  font-family: var(--font-body);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.importFeedback {
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.importFeedbackSuccess {
+  border: 1px solid rgba(42, 209, 143, 0.28);
+  background: rgba(42, 209, 143, 0.1);
+  color: var(--dojo-green);
+}
+
+.importFeedbackError {
+  border: 1px solid rgba(255, 90, 121, 0.28);
+  background: rgba(255, 90, 121, 0.1);
+  color: var(--dojo-danger);
+}
+
+.importActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.authForm {
+  display: grid;
+  gap: var(--dojo-space-3);
+  max-width: 560px;
+}
+
+.authField {
+  display: grid;
+  gap: 7px;
+  color: var(--dojo-text-strong);
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.authField input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid rgba(20, 184, 212, 0.22);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--dojo-text-strong);
+  font: inherit;
+  outline: none;
+  transition:
+    border-color var(--dojo-duration-fast) var(--dojo-ease),
+    box-shadow var(--dojo-duration-fast) var(--dojo-ease);
+}
+
+.authField input:focus-visible {
+  border-color: var(--dojo-primary);
+  box-shadow: 0 0 0 4px rgba(20, 184, 212, 0.16);
+}
+
+.authActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.authFeedback {
+  color: var(--dojo-text-muted);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
 /* ── Dark theme ── */
 :global(.dark) .heroCard {
   border-color: rgba(114, 245, 255, 0.18);
@@ -459,9 +653,26 @@
 :global(.dark) .heroChipMuted,
 :global(.dark) .ctaSecondary,
 :global(.dark) .medal,
-:global(.dark) .historyItem {
+:global(.dark) .historyItem,
+:global(.dark) .authPanel,
+:global(.dark) .authStatusGrid span,
+:global(.dark) .remoteProfileBox,
+:global(.dark) .authField input {
   border-color: rgba(114, 245, 255, 0.12);
   background: rgba(255, 255, 255, 0.05);
+}
+
+:global(.dark) .syncNotice {
+  border-color: rgba(124, 92, 255, 0.28);
+  background: rgba(124, 92, 255, 0.1);
+}
+
+:global(.dark) .importCard,
+:global(.dark) .importSummaryGrid span {
+  border-color: rgba(114, 245, 255, 0.13);
+  background:
+    radial-gradient(circle at 92% 0%, rgba(20, 184, 212, 0.12), transparent 34%),
+    rgba(255, 255, 255, 0.05);
 }
 
 /* ── Responsive ── */
@@ -481,10 +692,22 @@
   .statsGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .authStatusGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .importSummaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 460px) {
   .historyMetrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .importSummaryGrid {
+    grid-template-columns: 1fr;
   }
 }

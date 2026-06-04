@@ -170,7 +170,7 @@ function reducer(state: TypingState, action: Action): TypingState {
     totalCharsTyped++;
 
     if (currentLetterIndex < word.letters.length) {
-      // Word not finished — penalise
+      // Word not finished, penalise
       const letter = word.letters[currentLetterIndex];
       if (!letter) return state;
       if (letter.status === 'pending') letter.status = 'incorrect';

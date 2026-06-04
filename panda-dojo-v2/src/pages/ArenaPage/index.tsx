@@ -216,6 +216,7 @@ export function ArenaPage() {
         : 'random',
       practiceTextId: isPracticeTextMode ? selectedPracticeTextId : null,
       practiceTextTitle: isPracticeTextMode ? practiceTextTitle : null,
+      dailyChallengeId: isDailyChallengeMode ? dailyChallenge.challengeId : null,
       isRecord,
       topErrors,
       maxCombo: state.maxCombo,

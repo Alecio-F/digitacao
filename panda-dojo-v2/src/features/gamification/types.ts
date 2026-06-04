@@ -16,10 +16,13 @@ export interface HistoryItem {
   mode?: 'random' | 'lesson' | 'practice-text' | 'daily-challenge';
   practiceTextId?: string | null;
   practiceTextTitle?: string | null;
+  dailyChallengeId?: string | null;
   novoRecorde?: boolean;
   data?: string;
+  completedAt?: string;
   combo?: number;
   maxCombo?: number;
+  mistakeKeys?: Record<string, number>;
   correctChars?: number;
   wrongChars?: number;
   totalTyped?: number;

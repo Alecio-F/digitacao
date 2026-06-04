@@ -3,6 +3,11 @@ import {
   getProgressionTitle,
 } from '@/features/gamification/logic/xpCalculator';
 import type { HistoryItem } from '@/features/gamification/types';
+import {
+  syncLessonProgressToSupabase,
+  syncProfileProgressToSupabase,
+  syncTypingResultToSupabase,
+} from '@/features/backend-sync/syncLocalProgressService';
 import type { LessonMedal } from '@/features/lessons/types';
 import { completeLesson } from '@/repositories/lessonProgressRepository';
 import * as profileProgressRepository from '@/repositories/profileProgressRepository';
@@ -10,6 +15,7 @@ import * as typingResultRepository from '@/repositories/typingResultRepository';
 import { evaluateRankingEligibility } from '../logic/rankingEligibility';
 import { normalizeTrainingResult } from '../logic/normalizeTrainingResult';
 import type { RankingEligibility } from '../types';
+import { getMasterPandaRecommendation } from './masterPandaRecommendation';
 
 interface SaveResultPayload {
   ppm: number;
@@ -21,6 +27,7 @@ interface SaveResultPayload {
   mode?: 'random' | 'lesson' | 'practice-text' | 'daily-challenge';
   practiceTextId?: string | null;
   practiceTextTitle?: string | null;
+  dailyChallengeId?: string | null;
   isRecord: boolean;
   topErrors: [string, number][];
   maxCombo: number;
@@ -59,6 +66,7 @@ export function saveSessionResult(payload: SaveResultPayload): SaveResultOutput 
     mode,
     practiceTextId,
     practiceTextTitle,
+    dailyChallengeId,
     isRecord,
     topErrors,
     maxCombo,
@@ -99,10 +107,13 @@ export function saveSessionResult(payload: SaveResultPayload): SaveResultOutput 
     mode,
     practiceTextId: practiceTextId ?? undefined,
     practiceTextTitle: practiceTextTitle ?? undefined,
+    dailyChallengeId: dailyChallengeId ?? undefined,
     novoRecorde: validRecord,
     data: new Date().toLocaleDateString('pt-BR'),
+    completedAt: new Date().toISOString(),
     combo: maxCombo,
     maxCombo,
+    mistakeKeys: Object.fromEntries(topErrors),
     correctChars,
     wrongChars,
     totalTyped,
@@ -174,6 +185,10 @@ export function saveSessionResult(payload: SaveResultPayload): SaveResultOutput 
     ...(streakUpdate ?? {}),
   });
 
+  void syncTypingResultToSupabase(newEntry);
+  if (lessonId) void syncLessonProgressToSupabase(lessonId);
+  void syncProfileProgressToSupabase();
+
   return {
     gainedXp,
     xp,
@@ -206,41 +221,15 @@ export function getResultRecommendation(
   ppm: number,
   topErrors: [string, number][],
 ): { text: string; href: string | null; linkText: string | null } {
-  if (topErrors.length >= 3 && (topErrors[0]?.[1] ?? 0) >= 4) {
-    const keys = topErrors
-      .slice(0, 3)
-      .map(([c]) => (c === ' ' ? 'Espaço' : c.toUpperCase()))
-      .join(', ');
-    return {
-      text: `Você errou mais nas teclas ${keys}. Reforce essas teclas no Mapa do Dojo.`,
-      href: '/mapa',
-      linkText: 'Ir para o Mapa',
-    };
-  }
-  if (precision > 0 && precision < 85) {
-    return {
-      text: 'Precisão abaixo de 85%. Diminua o ritmo e foque em digitar cada letra corretamente.',
-      href: '/aprenda',
-      linkText: 'Ver dicas de precisão',
-    };
-  }
-  if (precision >= 90 && ppm > 0 && ppm < 35) {
-    return {
-      text: 'Boa precisão! Agora foque em ritmo — treine reflexo com o Panda Keys.',
-      href: '/arcade',
-      linkText: 'Abrir Arcade',
-    };
-  }
-  if (precision >= 92 && ppm >= 60) {
-    return {
-      text: 'Excelente combinação de ritmo e precisão. Tente aumentar a duração do treino.',
-      href: null,
-      linkText: null,
-    };
-  }
-  return {
-    text: 'Continue praticando todo dia — a consistência é o segredo do Dojo.',
-    href: null,
-    linkText: null,
-  };
+  const errors = topErrors.reduce((total, [, count]) => total + count, 0);
+
+  return getMasterPandaRecommendation({
+    accuracy: precision,
+    ppm,
+    errors,
+    maxCombo: 0,
+    topErrors,
+    validForRanking: true,
+    seedHint: `legacy-${precision}-${ppm}-${errors}`,
+  });
 }

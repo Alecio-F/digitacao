@@ -17,23 +17,23 @@ type PandaResultInput = Partial<DailyChallengeResult> & {
 
 const PANDA_MESSAGES: Record<PandaMessageCategory, string[]> = {
   perfectRun: [
-    'Impecável. O teclado até fez reverência.',
+    'Impecável. O teclado até fez reverência e tentou parecer profissional.',
     'Sem erros? Interessante... talvez eu tenha um rival.',
     'Hoje você digitou como se tivesse treinado no templo secreto.',
   ],
   highSpeedHighAccuracy: [
     'Rápido e preciso. Está começando a ficar perigoso.',
     'Você foi bem. Não melhor que o Mestre Panda, mas bem.',
-    'O teclado sobreviveu, e isso já é impressionante.',
+    'O teclado sobreviveu, e isso já merece um selo de coragem.',
   ],
   highSpeedLowAccuracy: [
-    'Velocidade você teve. Controle... ficou para amanhã.',
+    'Velocidade você teve. Controle... o Dojo ainda está procurando.',
     'Você digitou como um foguete sem volante.',
-    'Foi rápido, sim. O texto que lute para acompanhar.',
+    'Foi rápido, sim. Agora falta o texto concordar com as suas escolhas.',
   ],
   lowAccuracy: [
     'O teclado pediu férias depois dessa rodada.',
-    'O importante é participar... e talvez mirar nas teclas certas.',
+    'Sua precisão tropeçou no tatame. Respire e mire melhor na próxima.',
     'O Dojo registrou sua tentativa com coragem e um pouco de preocupação.',
   ],
   mediumResult: [
@@ -49,10 +49,10 @@ const PANDA_MESSAGES: Record<PandaMessageCategory, string[]> = {
   manyErrors: [
     'Você encontrou muitas teclas. Algumas até eram as certas.',
     'Essa rodada foi uma exploração completa do teclado.',
-    'O importante é que nenhuma tecla se sentiu esquecida.',
+    'Nenhuma tecla se sentiu esquecida. O texto, por outro lado, ficou confuso.',
   ],
   validForRanking: [
-    'Resultado digno de ranking. O Dojo aprovou.',
+    'Resultado digno de ranking. O Dojo aprovou e tentou não fazer escândalo.',
     'Essa marca pode ir para o mural. Não se acostume.',
     'Competitivo o suficiente para chamar atenção.',
   ],

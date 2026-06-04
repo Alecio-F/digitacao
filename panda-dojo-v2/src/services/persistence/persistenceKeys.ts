@@ -33,6 +33,7 @@ export const PERSISTENCE_KEYS = {
   dailyStreak: STORAGE_KEYS.pandaDailyStreak,
   lastTrainingDate: STORAGE_KEYS.pandaLastTrainingDate,
   lastMistakes: STORAGE_KEYS.pandaLastMistakes,
+  lastMasterPandaRecommendation: STORAGE_KEYS.pandaLastMasterPandaRecommendation,
   recommendations: STORAGE_KEYS.pandaTrainingRecommendations,
   dailyMissions: STORAGE_KEYS.pandaDailyMissions,
   missionDate: STORAGE_KEYS.pandaMissionDate,

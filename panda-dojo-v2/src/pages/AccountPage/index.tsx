@@ -5,6 +5,7 @@ import { FutureAccountNotice } from './components/FutureAccountNotice';
 import { LocalDataActions } from './components/LocalDataActions';
 import { LocalProgressPanel } from './components/LocalProgressPanel';
 import { MapProgressPanel } from './components/MapProgressPanel';
+import { OnlineAccountPanel } from './components/OnlineAccountPanel';
 import { ProfileHero } from './components/ProfileHero';
 import { RecentHistoryPanel } from './components/RecentHistoryPanel';
 import { StatsOverview } from './components/StatsOverview';
@@ -17,6 +18,9 @@ export function AccountPage() {
     <PageShell title="Conta">
       <div className={styles.page}>
         <ProfileHero profile={profile} />
+        <section className="dojo-section">
+          <OnlineAccountPanel localProfile={profile} />
+        </section>
         <StatsOverview profile={profile} />
 
         <section className="dojo-section">

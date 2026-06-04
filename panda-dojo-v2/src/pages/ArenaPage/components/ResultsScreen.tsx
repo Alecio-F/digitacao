@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import { copyDailyResultToClipboard } from '@/features/dailyChallenge/utils/shareDailyResult';
 import type { LessonMedal } from '@/features/lessons/types';
 import { normalizeTrainingResult } from '@/features/typing/logic/normalizeTrainingResult';
 import type { RankingEligibility, RankingInvalidReason } from '@/features/typing/types';
-import { getResultRecommendation } from '@/features/typing/utils/saveResult';
+import {
+  getMasterPandaRecommendation,
+  saveLastMasterPandaRecommendation,
+} from '@/features/typing/utils/masterPandaRecommendation';
 import { getHistory } from '@/repositories/typingResultRepository';
 import styles from './ResultsScreen.module.css';
 
@@ -117,7 +120,37 @@ export function ResultsScreen({
   onNext,
 }: ResultsScreenProps) {
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'failed'>('idle');
-  const recommendation = getResultRecommendation(precision, ppm, topErrors);
+  const recommendationMode = isDailyChallenge
+    ? 'daily-challenge'
+    : lessonCompleted
+    ? 'lesson'
+    : 'arena';
+  const recommendation = useMemo(
+    () => getMasterPandaRecommendation({
+      ppm,
+      accuracy: precision,
+      errors,
+      maxCombo,
+      topErrors,
+      validForRanking: rankingEligibility.validForRanking,
+      mode: recommendationMode,
+      seedHint: `${duration}-${ppm}-${precision}-${errors}-${maxCombo}`,
+    }),
+    [
+      duration,
+      errors,
+      maxCombo,
+      ppm,
+      precision,
+      rankingEligibility.validForRanking,
+      recommendationMode,
+      topErrors,
+    ],
+  );
+
+  useEffect(() => {
+    saveLastMasterPandaRecommendation(recommendation);
+  }, [recommendation]);
 
   async function handleShare() {
     if (!dailyShareText) return;

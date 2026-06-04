@@ -133,7 +133,7 @@ export const shortWords = [
   'um', 'dois', 'tres', 'cinco', 'seis', 'sete', 'oito', 'nove', 'dez', 'cem',
 ];
 
-/** Lista com acentos — usada apenas quando includeAccents = true. */
+/** Lista com acentos, usada apenas quando includeAccents = true. */
 export const accentedWords = [
   'coração', 'ânimo', 'água', 'pé', 'avó', 'avô', 'café', 'chá', 'pão', 'mãe',
   'irmã', 'lição', 'atenção', 'paciência', 'memória', 'história', 'número', 'série', 'área', 'média',

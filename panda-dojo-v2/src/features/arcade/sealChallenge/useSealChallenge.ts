@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { syncArcadeScoreToSupabase } from '@/features/backend-sync/syncLocalProgressService';
 import {
   getSealBestScore,
   saveSealBestScore,
@@ -90,7 +91,10 @@ export function useSealChallenge() {
           // Finished!
           const best = getBestScore();
           const newBest = newScore > best;
-          if (newBest) saveSealBestScore(newScore);
+          if (newBest) {
+            saveSealBestScore(newScore);
+            void syncArcadeScoreToSupabase('seal', newScore);
+          }
 
           return {
             ...prev,

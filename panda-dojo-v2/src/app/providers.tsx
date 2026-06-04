@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { AuthProvider } from '@/features/auth/AuthContext';
 import { useSettings } from '@/features/settings/hooks/useSettings';
 import { SettingsContext } from './settingsContext';
 
@@ -6,7 +7,9 @@ export function Providers({ children }: { children: ReactNode }) {
   const settingsApi = useSettings();
   return (
     <SettingsContext.Provider value={settingsApi}>
-      {children}
+      <AuthProvider>
+        {children}
+      </AuthProvider>
     </SettingsContext.Provider>
   );
 }

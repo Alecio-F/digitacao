@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSettingsContext } from '@/app/settingsContext';
 import { Button } from '@/components/ui';
 import { createAudioManager } from '@/features/arcade/pandaKeys/audio';
+import { syncArcadeScoreToSupabase } from '@/features/backend-sync/syncLocalProgressService';
 import { createInputManager } from '@/features/arcade/pandaKeys/input';
 import { createGameLoop } from '@/features/arcade/pandaKeys/loop';
 import { getRenderScale, viewHeight, viewWidth } from '@/features/arcade/pandaKeys/renderer';
@@ -175,6 +176,10 @@ export function PandaKeysGame() {
         const currentBest = getPandaKeysBestScore();
         if (state.score > currentBest) {
           savePandaKeysBestScore(state.score);
+          void syncArcadeScoreToSupabase('panda-keys', state.score, {
+            maxCombo: state.maxCombo,
+            levelReached: state.level,
+          });
           setHud((prev) => ({ ...prev, best: state.score }));
         }
         setPhase('over');

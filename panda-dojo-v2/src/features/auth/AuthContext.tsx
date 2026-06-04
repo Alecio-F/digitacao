@@ -1,0 +1,128 @@
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
+import type { Session, User } from '@supabase/supabase-js';
+import {
+  getSession,
+  onAuthStateChange,
+  signInWithEmail,
+  signOut as signOutService,
+  signUpWithEmail,
+} from '@/services/supabase/authService';
+import { isSupabaseConfigured } from '@/services/supabase/supabaseClient';
+import type { RemoteProfile } from '@/services/supabase/types';
+import { ensureProfile } from '@/repositories/remote/profileRemoteRepository';
+import { AuthContext, type AuthActionResult, type AuthContextValue } from './authContextValue';
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<RemoteProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const loadProfile = useCallback(async (currentUser: User | null) => {
+    if (!isSupabaseConfigured || !currentUser) {
+      setProfile(null);
+      return;
+    }
+
+    const result = await ensureProfile(currentUser.id);
+    setProfile(result.data);
+  }, []);
+
+  const refreshProfile = useCallback(async () => {
+    await loadProfile(user);
+  }, [loadProfile, user]);
+
+  useEffect(() => {
+    let active = true;
+
+    async function bootstrap() {
+      if (!isSupabaseConfigured) {
+        if (active) setLoading(false);
+        return;
+      }
+
+      const result = await getSession();
+      if (!active) return;
+
+      const nextSession = result.data;
+      const nextUser = nextSession?.user ?? null;
+      setSession(nextSession);
+      setUser(nextUser);
+      await loadProfile(nextUser);
+      if (active) setLoading(false);
+    }
+
+    void bootstrap();
+
+    const subscription = onAuthStateChange((_event, nextSession) => {
+      const nextUser = nextSession?.user ?? null;
+      setSession(nextSession);
+      setUser(nextUser);
+      void loadProfile(nextUser);
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, [loadProfile]);
+
+  const signUp = useCallback(async (
+    email: string,
+    password: string,
+    displayName?: string,
+  ): Promise<AuthActionResult> => {
+    const result = await signUpWithEmail(email, password, displayName);
+    if (result.error) return { ok: false, error: result.error };
+
+    const nextUser = result.data?.user ?? null;
+    const nextSession = result.data?.session ?? null;
+    setUser(nextUser);
+    setSession(nextSession);
+    await loadProfile(nextUser);
+    return { ok: true, error: null };
+  }, [loadProfile]);
+
+  const signIn = useCallback(async (email: string, password: string): Promise<AuthActionResult> => {
+    const result = await signInWithEmail(email, password);
+    if (result.error) return { ok: false, error: result.error };
+
+    const nextUser = result.data?.user ?? null;
+    const nextSession = result.data?.session ?? null;
+    setUser(nextUser);
+    setSession(nextSession);
+    await loadProfile(nextUser);
+    return { ok: true, error: null };
+  }, [loadProfile]);
+
+  const signOut = useCallback(async (): Promise<AuthActionResult> => {
+    const result = await signOutService();
+    if (result.error) return { ok: false, error: result.error };
+
+    setUser(null);
+    setSession(null);
+    setProfile(null);
+    return { ok: true, error: null };
+  }, []);
+
+  const value = useMemo<AuthContextValue>(() => ({
+    user,
+    session,
+    profile,
+    loading,
+    isAuthenticated: Boolean(user),
+    isSupabaseEnabled: isSupabaseConfigured,
+    signUp,
+    signIn,
+    signOut,
+    refreshProfile,
+  }), [loading, profile, refreshProfile, session, signIn, signOut, signUp, user]);
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}

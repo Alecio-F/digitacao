@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router';
 import { IconButton } from '@/components/ui';
+import { useAuth } from '@/features/auth/useAuth';
 import { PlayerStatus } from '@/features/gamification/components/PlayerStatus';
 import styles from './HeaderHud.module.css';
 
@@ -20,6 +21,10 @@ interface Props {
 
 export function HeaderHud({ onSettingsOpen, isSettingsOpen = false }: Props) {
   const [scrolled, setScrolled] = useState(false);
+  const { isAuthenticated, profile, user } = useAuth();
+  const accountLabel = isAuthenticated
+    ? profile?.display_name ?? user?.email?.split('@')[0] ?? 'Conta'
+    : 'Entrar';
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 12);
@@ -84,7 +89,7 @@ export function HeaderHud({ onSettingsOpen, isSettingsOpen = false }: Props) {
             }
             to="/conta"
           >
-            Entrar
+            {accountLabel}
           </NavLink>
 
           <IconButton
