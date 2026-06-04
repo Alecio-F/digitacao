@@ -45,6 +45,12 @@ const MEDAL_LABEL: Record<LessonMedal, string> = {
   gold: 'Ouro',
 };
 
+interface Metric {
+  label: string;
+  value: string;
+  tone?: 'mSuccess' | 'mWarning' | 'mSpecial';
+}
+
 export function ResultsScreen({
   ppm,
   cpm,
@@ -67,128 +73,133 @@ export function ResultsScreen({
 }: ResultsScreenProps) {
   const recommendation = getResultRecommendation(precision, ppm, topErrors);
   const history = getStorage<HistoryItem[]>(KEYS.historico, []);
-  const bestPpm = history.reduce((best, result) => Math.max(best, Number(result.ppm) || 0), 0);
+  const safeHistory = Array.isArray(history) ? history : [];
+  const bestPpm = safeHistory.reduce((best, result) => Math.max(best, Number(result.ppm) || 0), 0);
   const achievement = getAchievement(precision, ppm);
+  const hasMedal = lessonCompleted && lessonMedal != null && lessonMedal !== 'none';
+  const hasStatus = Boolean(achievement || isRecord || hasMedal);
 
-  const metrics = [
+  const metrics: Metric[] = [
     { label: 'TEMPO', value: duration },
     { label: 'PPM', value: String(ppm) },
     { label: 'CPM', value: String(cpm) },
-    { label: 'PRECISÃO', value: `${precision}%` },
-    { label: 'ERROS', value: String(errors) },
-    { label: 'COMBO MÁX.', value: `${maxCombo}x` },
+    { label: 'PRECISÃO', value: `${precision}%`, tone: 'mSuccess' },
+    { label: 'ERROS', value: String(errors), tone: 'mWarning' },
+    { label: 'COMBO MÁX.', value: `${maxCombo}x`, tone: 'mSpecial' },
   ];
+
+  const reviewKeys = [...topErrors].sort((a, b) => b[1] - a[1]).slice(0, 6);
 
   return (
     <div className={styles.screen}>
-      <div className={styles.levelHeader}>
-        <div className={styles.levelInfo}>
-          <span className={styles.levelEyebrow}>Resultado da rodada</span>
-          <span className={styles.levelTitle}>
-            Nível {level} · {title}
-          </span>
-        </div>
-        <span className={styles.xpBadge}>+{gainedXp} XP</span>
-      </div>
-
-      {(achievement || isRecord) && (
-        <div
-          className={[
-            styles.achievementBanner,
-            achievement ? styles[`tier_${achievement.tier}`] : styles.tier_record,
-          ].join(' ')}
-        >
-          <span className={`material-symbols-outlined ${styles.achieveIcon}`}>
-            emoji_events
-          </span>
-          <span className={styles.achieveLabel}>
-            {achievement ? achievement.label : 'Novo recorde pessoal!'}
-          </span>
-          {isRecord && achievement && <span className={styles.recordTag}>Novo recorde!</span>}
-        </div>
-      )}
-
-      {lessonCompleted && (
-        <div className={styles.lessonBanner}>
-          <span className="material-symbols-outlined">verified</span>
-          <div>
-            <strong>{lessonCompletedNow ? 'Fase concluída' : 'Fase já concluída'}</strong>
-            <span>
-              {lessonMedal && lessonMedal !== 'none'
-                ? `Medalha ${MEDAL_LABEL[lessonMedal]}`
-                : 'Meta de 85% alcançada'}
-            </span>
+      <section className={styles.resultCard}>
+        <header className={styles.resultHeader}>
+          <div className={styles.resultHeadInfo}>
+            <span className={styles.resultEyebrow}>Resultado da rodada</span>
+            <h2 className={styles.resultTitle}>
+              Nível {level} · {title}
+            </h2>
+            {lessonCompleted && (
+              <p className={styles.resultSubline}>
+                {lessonCompletedNow ? 'Fase concluída' : 'Fase já concluída'}
+                {hasMedal ? ` · Medalha ${MEDAL_LABEL[lessonMedal as LessonMedal]}` : ''}
+              </p>
+            )}
           </div>
-        </div>
-      )}
+          <span className={styles.xpChip}>+{gainedXp} XP</span>
+        </header>
 
-      <section>
-        <h3 className={styles.sectionTitle}>Desempenho</h3>
+        {hasStatus && (
+          <div className={styles.statusRow}>
+            {achievement && (
+              <span className={[styles.statusBadge, styles[`tier_${achievement.tier}`]].join(' ')}>
+                <span className="material-symbols-outlined" aria-hidden="true">emoji_events</span>
+                {achievement.label}
+              </span>
+            )}
+            {hasMedal && (
+              <span className={[styles.statusBadge, styles.tier_lesson].join(' ')}>
+                <span className="material-symbols-outlined" aria-hidden="true">verified</span>
+                Medalha {MEDAL_LABEL[lessonMedal as LessonMedal]}
+              </span>
+            )}
+            {isRecord && (
+              <span className={[styles.statusBadge, styles.tier_record].join(' ')}>
+                <span className="material-symbols-outlined" aria-hidden="true">bolt</span>
+                Novo recorde!
+              </span>
+            )}
+          </div>
+        )}
+
         <div className={styles.metricsGrid}>
-          {metrics.map(({ label, value }) => (
-            <div key={label} className={styles.metricCard}>
+          {metrics.map(({ label, value, tone }) => (
+            <div
+              key={label}
+              className={[styles.metricCard, tone ? styles[tone] : ''].filter(Boolean).join(' ')}
+            >
               <span className={styles.metricLabel}>{label}</span>
               <strong className={styles.metricValue}>{value}</strong>
             </div>
           ))}
         </div>
-      </section>
 
-      {topErrors.length > 0 ? (
-        <div className={styles.errorsRow}>
-          <span className={styles.errorsLabel}>Teclas para revisar</span>
-          <div className={styles.errorKeys}>
-            {[...topErrors]
-              .sort((a, b) => b[1] - a[1])
-              .slice(0, 8)
-              .map(([char, count]) => (
-                <span key={char} className={styles.errorKey}>
+        {reviewKeys.length > 0 ? (
+          <div className={styles.reviewKeys}>
+            <span className={styles.reviewLabel}>Teclas para revisar</span>
+            <div className={styles.reviewChips}>
+              {reviewKeys.map(([char, count]) => (
+                <span key={char} className={styles.reviewChip}>
                   {formatErrorKey(char)}
                   <small>{count}x</small>
                 </span>
               ))}
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className={styles.noErrorsRow}>
-          <span className="material-symbols-outlined" aria-hidden="true">task_alt</span>
-          Nenhuma tecla errada nesta rodada.
-        </div>
-      )}
-
-      <div className={styles.recCard}>
-        <div className={styles.recIconWrap}>
-          <span className="material-symbols-outlined">lightbulb</span>
-        </div>
-        <div className={styles.recContent}>
-          <span className={styles.recTitle}>Recomendação do Mestre Panda</span>
-          <p className={styles.recText}>{recommendation.text}</p>
-        </div>
-        {recommendation.href && recommendation.linkText && (
-          <Link to={recommendation.href} className={styles.recBtn}>
-            {recommendation.linkText}
-          </Link>
+        ) : (
+          <div className={styles.noErrors}>
+            <span className="material-symbols-outlined" aria-hidden="true">task_alt</span>
+            Nenhuma tecla errada nesta rodada.
+          </div>
         )}
-      </div>
 
-      <div className={styles.actions}>
-        <button className={styles.btnSecondary} onClick={onRestart}>
-          Tentar novamente
-        </button>
-        <button className={styles.btnPrimary} onClick={onNext}>
-          {nextActionLabel ?? (nextLessonTitle ? 'Próxima fase' : 'Próximo texto')}
-        </button>
-      </div>
+        <div className={styles.masterTip}>
+          <span className={`material-symbols-outlined ${styles.masterTipIcon}`} aria-hidden="true">
+            lightbulb
+          </span>
+          <div className={styles.masterTipBody}>
+            <span className={styles.masterTipTitle}>Recomendação do Mestre Panda</span>
+            <p className={styles.masterTipText}>{recommendation.text}</p>
+          </div>
+          {recommendation.href && recommendation.linkText && (
+            <Link to={recommendation.href} className={styles.tipBtn}>
+              {recommendation.linkText}
+            </Link>
+          )}
+        </div>
 
-      {nextLessonTitle && (
-        <p className={styles.nextHint}>Próxima fase: {nextLessonTitle}</p>
-      )}
+        <div className={styles.actions}>
+          <button type="button" className={styles.btnSecondary} onClick={onRestart}>
+            Tentar novamente
+          </button>
+          <button type="button" className={styles.btnPrimary} onClick={onNext}>
+            {nextActionLabel ?? (nextLessonTitle ? 'Próxima fase' : 'Próximo texto')}
+          </button>
+          <Link to="/mapa" className={styles.btnGhost}>
+            Ir para o Mapa
+          </Link>
+        </div>
 
-      {history.length > 0 && (
+        {nextLessonTitle && (
+          <p className={styles.nextHint}>Próxima fase: {nextLessonTitle}</p>
+        )}
+      </section>
+
+      {safeHistory.length > 0 && (
         <section className={styles.historySection}>
           <h3 className={styles.historyTitle}>Últimos resultados</h3>
           <div className={styles.historyScroll}>
-            {history.slice(0, 10).map((item, index) => {
+            {safeHistory.slice(0, 8).map((item, index) => {
               const itemPpm = Number(item.ppm) || 0;
               const isItemRecord = itemPpm > 0 && itemPpm === bestPpm;
               const isFirst = index === 0;
@@ -216,14 +227,6 @@ export function ResultsScreen({
                   <div className={styles.historyMeta}>
                     <span>{item.precisao}</span>
                     {item.cpm != null && <span>{item.cpm} CPM</span>}
-                    {item.erros != null && <span>{item.erros} erros</span>}
-                    {item.tempo != null && (
-                      <span>
-                        {item.tempo < 1
-                          ? `${Math.round(item.tempo * 60)}s`
-                          : `${item.tempo}min`}
-                      </span>
-                    )}
                   </div>
                 </div>
               );

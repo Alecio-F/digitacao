@@ -99,10 +99,10 @@
   --dojo-warning: #ffd166;
   --dojo-yellow: #ffd166;
   --dojo-danger: #ff6b6b;
-  --dojo-text: #c1cbd0;
-  --dojo-text-muted: #c1cbd0;
-  --dojo-text-strong: #96b4c6;
-  --dojo-title: #96b4c6;
+  --dojo-text: #d9e8ee;
+  --dojo-text-muted: #aebfc9;
+  --dojo-text-strong: #ebf7fd;
+  --dojo-title: #ebf7fd;
 
   --dojo-surface: rgba(255, 255, 255, 0.06);
   --dojo-surface-soft: rgba(255, 255, 255, 0.04);

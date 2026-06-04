@@ -423,6 +423,40 @@
     var(--dojo-surface-soft);
 }
 
+/* ── Cursor preview no tema dark ── */
+:global(.dark) .cursorChoice,
+:global([data-theme='dark']) .cursorChoice {
+  border-color: rgba(114, 245, 255, 0.22);
+  background:
+    linear-gradient(145deg, rgba(18, 32, 38, 0.96), rgba(10, 16, 22, 0.96)),
+    var(--dojo-surface-soft);
+  box-shadow:
+    inset 0 -2px 0 rgba(114, 245, 255, 0.1),
+    0 8px 18px rgba(0, 0, 0, 0.34);
+}
+
+:global(.dark) .cursorChoiceActive,
+:global([data-theme='dark']) .cursorChoiceActive {
+  border-color: rgba(114, 245, 255, 0.7);
+  background:
+    linear-gradient(145deg, rgba(22, 40, 48, 0.96), rgba(12, 20, 26, 0.96)),
+    color-mix(in srgb, var(--dojo-primary) 12%, transparent);
+  box-shadow:
+    0 0 0 1px rgba(114, 245, 255, 0.22),
+    0 0 22px rgba(114, 245, 255, 0.18);
+}
+
+:global(.dark) .cursorPreviewWord,
+:global([data-theme='dark']) .cursorPreviewWord {
+  color: #eafbff;
+  text-shadow: 0 0 12px rgba(94, 234, 247, 0.2);
+}
+
+:global(.dark) .cursorPreviewLabel,
+:global([data-theme='dark']) .cursorPreviewLabel {
+  color: #a9c0ca;
+}
+
 @media (max-width: 560px) {
   .drawer {
     width: min(100vw, 430px);

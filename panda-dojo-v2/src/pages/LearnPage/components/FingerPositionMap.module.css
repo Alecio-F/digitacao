@@ -76,6 +76,13 @@
   font-style: normal;
 }
 
+/* A tecla mantém o fundo claro também no dark, então o texto precisa ser
+   escuro para não sumir (o token de texto claro do dark deixaria claro/claro). */
+:global(.dark) .keycap,
+:global([data-theme='dark']) .keycap {
+  color: #0b3954;
+}
+
 .space {
   min-width: 72px;
   font-size: 0.72rem;
