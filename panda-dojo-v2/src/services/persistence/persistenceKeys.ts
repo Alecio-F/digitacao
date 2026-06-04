@@ -58,8 +58,9 @@ export const PERSISTENCE_KEYS = {
   // Palavras aleatórias
   recentRandomWords: STORAGE_KEYS.pandaRecentRandomWords,
 
-  // Futuro: marca que o progresso local já foi importado para a nuvem.
+  // Sync com a nuvem: importação local -> nuvem e restauração nuvem -> local.
   cloudSyncImported: STORAGE_KEYS.pandaCloudSyncImported,
+  cloudRestoreCompleted: STORAGE_KEYS.pandaCloudRestoreCompleted,
 } as const;
 
 export type PersistenceKeyName = keyof typeof PERSISTENCE_KEYS;

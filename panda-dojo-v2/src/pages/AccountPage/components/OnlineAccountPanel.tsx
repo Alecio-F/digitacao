@@ -7,6 +7,7 @@ import {
   getProfileUsername,
 } from '@/services/supabase/profileIdentity';
 import { LocalProgressImportCard } from './LocalProgressImportCard';
+import { RestoreRemoteProgressCard } from './RestoreRemoteProgressCard';
 import styles from '../AccountPage.module.css';
 
 interface Props {
@@ -127,6 +128,10 @@ export function OnlineAccountPanel({ localProfile }: Props) {
             </div>
           </dl>
         </div>
+
+        {user?.id && (
+          <RestoreRemoteProgressCard userId={user.id} />
+        )}
 
         {user?.id && (
           <LocalProgressImportCard userId={user.id} onImported={refreshProfile} />

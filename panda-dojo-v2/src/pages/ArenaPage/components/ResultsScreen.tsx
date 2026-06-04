@@ -9,6 +9,7 @@ import {
   saveLastMasterPandaRecommendation,
 } from '@/features/typing/utils/masterPandaRecommendation';
 import { getHistory } from '@/repositories/typingResultRepository';
+import { ArenaShortcutsHint } from './ArenaShortcutsHint';
 import styles from './ResultsScreen.module.css';
 
 interface ResultsScreenProps {
@@ -329,6 +330,8 @@ export function ResultsScreen({
             Ir para o Mapa
           </Link>
         </div>
+
+        <ArenaShortcutsHint variant="result" />
 
         {nextLessonTitle && (
           <p className={styles.nextHint}>Próxima fase: {nextLessonTitle}</p>

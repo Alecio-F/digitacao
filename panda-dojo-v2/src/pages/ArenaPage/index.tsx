@@ -28,8 +28,10 @@ import {
   selectPracticeText,
   selectRandomWords,
 } from '@/repositories/trainingSelectionRepository';
+import { useArenaShortcuts } from '@/features/typing/hooks/useArenaShortcuts';
 import type { RankingEligibility, WordData } from '@/features/typing/types';
 import { getBestPpm, saveSessionResult } from '@/features/typing/utils/saveResult';
+import { ArenaShortcutsHint } from './components/ArenaShortcutsHint';
 import { ResultsScreen } from './components/ResultsScreen';
 import { TextDisplay } from './components/TextDisplay';
 import { VirtualKeyboard } from './components/VirtualKeyboard';
@@ -147,6 +149,7 @@ export function ArenaPage() {
   ));
   const savedRef = useRef(false);
   const textCompletionRef = useRef(false);
+  const arenaRootRef = useRef<HTMLDivElement>(null);
 
   const {
     state,
@@ -339,6 +342,11 @@ export function ArenaPage() {
     resetTimer();
   }
 
+  function handleFocusArenaShortcut() {
+    if (savedResult || timer.phase === 'finished') return;
+    setIsArenaFocused(true);
+  }
+
   function handleNext() {
     savedRef.current = false;
     textCompletionRef.current = false;
@@ -399,8 +407,24 @@ export function ArenaPage() {
     setShowDailyPrompt(false);
   }
 
+  useArenaShortcuts({
+    enabled: true,
+    isArenaFocused,
+    isResultVisible: Boolean(savedResult),
+    arenaRootRef,
+    onRestart: handleRestart,
+    onPauseToggle: () => {
+      if (savedResult || timer.phase === 'idle' || timer.phase === 'finished') return;
+      togglePause();
+    },
+    onNextAction: handleNext,
+    onGoToMap: () => navigate('/mapa'),
+    onFocusArena: handleFocusArenaShortcut,
+  });
+
   const showRandomWordsHint =
     !savedResult && !isArenaFocused && timer.phase === 'idle' && !isRandomWordsMode;
+  const showShortcutFooterHint = !savedResult && !isArenaFocused && timer.phase === 'idle';
 
   const expectedChar =
     state.words[state.currentWordIndex]?.letters[state.currentLetterIndex]?.char ?? '';
@@ -437,7 +461,7 @@ export function ArenaPage() {
   return (
     <>
       <PageShell title={cleanArenaTitle} className={styles.focusShell}>
-        <div className={pageClassName}>
+        <div ref={arenaRootRef} className={pageClassName}>
         {savedResult ? (
           <ResultsScreen
             ppm={savedResult.ppm}
@@ -518,6 +542,7 @@ export function ArenaPage() {
                 </div>
 
                 <div className={styles.controls}>
+                  <ArenaShortcutsHint variant="chip" className={styles.shortcutsControl} />
                   <button
                     className={styles.iconBtn}
                     onClick={togglePause}
@@ -592,6 +617,10 @@ export function ArenaPage() {
                 onKey={handleTypingKey}
                 onRepeatedKey={registerRepeatedKey}
               />
+            )}
+
+            {showShortcutFooterHint && (
+              <ArenaShortcutsHint variant="inline" className={styles.shortcutFooterHint} />
             )}
 
             {!settings.keyboardVisible && (

@@ -150,6 +150,14 @@
   gap: 8px;
 }
 
+.shortcutsControl {
+  margin-right: 2px;
+}
+
+.shortcutFooterHint {
+  margin-top: 10px;
+}
+
 .iconBtn {
   display: inline-flex;
   align-items: center;

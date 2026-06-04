@@ -116,10 +116,48 @@ Ainda não há:
 - desafio diário online separado em `daily_challenge_results`;
 - resolução avançada de conflitos entre múltiplos dispositivos.
 
-## Próximos Passos — Fase 1D
+## Fase 1D — Leitura Remota e Reconstrução de Progresso
 
-1. Criar fila de pending sync para falhas de rede.
-2. Sincronizar `daily_challenge_results`.
-3. Criar leitura remota do progresso ao logar em novo dispositivo.
-4. Criar ranking global com regras no banco/Edge Functions.
-5. Adicionar testes automatizados dos mapeamentos local/remoto.
+Implementada a leitura remota para reconstruir o progresso local ao logar em
+outro navegador/dispositivo.
+
+### Serviço
+
+`src/features/backend-sync/restoreRemoteProgressService.ts`:
+
+- `getRemoteProgressSummary(userId)` — busca perfil, resultados, fases, recordes
+  e conquistas; retorna `{ ok, error, summary }` com nível, XP, título, streak,
+  total de treinos, fases concluídas, recordes do Arcade, conquistas e melhor PPM.
+- `hasRemoteProgress(userId)` — `true` se houver qualquer progresso remoto.
+- `restoreRemoteProgressToLocal(userId)` — reconstrói o estado local a partir do
+  Supabase (controle de erro, sem throw).
+- Flags `hasCompletedRestore()` / `markRestoreCompleted()`.
+
+### Repositories remotos (leitura) usados
+
+- `profileRemoteRepository.getProfile`
+- `typingResultRemoteRepository.getUserTypingResults` (+ `getRankingEligibleResults`)
+- `lessonProgressRemoteRepository.getLessonProgress`
+- `arcadeScoreRemoteRepository.getArcadeScores` (+ `getBestArcadeScore`)
+- `userAchievementRemoteRepository.getUserAchievements`
+
+### Repositories locais (escrita) usados
+
+- `typingResultRepository.setHistory` (bulk restore, respeita `MAX_HISTORY`)
+- `profileProgressRepository.updateProfileProgress`
+- `lessonProgressRepository.saveLessonProgress`
+- `arcadeScoreRepository.saveScore` (best-of)
+
+### UI
+
+`/conta` (logado) exibe `RestoreRemoteProgressCard` com resumo remoto e os botões
+"Restaurar progresso" / "Agora não". Após sucesso, a tela é recarregada para
+refletir o progresso reconstruído.
+
+## Próximos Passos — Fase 1E
+
+1. Criar fila de pending sync para falhas de rede (offline-first).
+2. Sincronizar `daily_challenge_results` de forma dedicada.
+3. Criar ranking global com regras no banco/Edge Functions.
+4. Resolução avançada de conflitos entre múltiplos dispositivos (merge com timestamps).
+5. Adicionar testes automatizados dos mapeamentos local/remoto e da restauração.

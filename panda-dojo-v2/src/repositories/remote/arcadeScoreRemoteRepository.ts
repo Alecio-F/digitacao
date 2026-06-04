@@ -42,6 +42,25 @@ export async function saveArcadeScore(
   }
 }
 
+export async function getArcadeScores(
+  userId: string,
+): Promise<RemoteRepositoryResult<RemoteArcadeScore[]>> {
+  if (!supabase) return disabledResult();
+
+  try {
+    const { data, error } = await supabase
+      .from('arcade_scores')
+      .select('*')
+      .eq('user_id', userId)
+      .order('score', { ascending: false })
+      .returns<RemoteArcadeScore[]>();
+
+    return { data: data ?? [], error: error?.message ?? null };
+  } catch (error) {
+    return errorResult(error);
+  }
+}
+
 export async function getBestArcadeScore(
   userId: string,
   gameId: string,

@@ -33,6 +33,7 @@ export const STORAGE_KEYS = {
   pandaAnimationsEnabled: 'pandaAnimationsEnabled',
   pandaReducedEffects: 'pandaReducedEffects',
   pandaCloudSyncImported: 'pandaCloudSyncImported',
+  pandaCloudRestoreCompleted: 'pandaCloudRestoreCompleted',
 } as const;
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];
@@ -72,4 +73,5 @@ export const KEYS = {
   animationsEnabled: STORAGE_KEYS.pandaAnimationsEnabled,
   reducedEffects: STORAGE_KEYS.pandaReducedEffects,
   cloudSyncImported: STORAGE_KEYS.pandaCloudSyncImported,
+  cloudRestoreCompleted: STORAGE_KEYS.pandaCloudRestoreCompleted,
 } as const;

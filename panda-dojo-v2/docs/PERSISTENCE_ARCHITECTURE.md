@@ -147,6 +147,26 @@ sync local-first, sem conectar Supabase diretamente em componentes.
 O projeto está pronto para iniciar a Fase 1B de Supabase Foundation do ponto de
 vista da persistência local: a camada local está isolada, testável e substituível.
 
+## Fluxo Remoto -> Local (Fase 1D)
+
+Com o Supabase conectado, a leitura remota reconstrói o estado local **através
+dos mesmos repositories locais** — componentes continuam alheios à origem dos
+dados:
+
+```text
+Supabase -> *RemoteRepository (leitura) -> restoreRemoteProgressService
+         -> repositories locais (setHistory / updateProfileProgress /
+            saveLessonProgress / saveScore) -> StorageAdapter -> localStorage
+```
+
+- Leitura: `*RemoteRepository.get*` (retornam `{ data, error }`, nunca quebram).
+- Reconstrução: `restoreRemoteProgressToLocal(userId)` normaliza e grava nos
+  repositories locais, mantendo o melhor dos dois lados (sem perda de dados).
+- A UI (`/conta`) usa os mesmos hooks locais (`usePlayerProgress`,
+  `useLocalRanking`), que já leem dos repositories — por isso, após restaurar e
+  recarregar, todo o site reflete o progresso reconstruído sem mudanças nos
+  componentes. Detalhes em `SUPABASE_SYNC_RULES.md`.
+
 ## Fase 1B — Supabase Foundation
 
 A Fase 1B adiciona client Supabase, Auth, profile remoto, SQL schema, seed e RLS

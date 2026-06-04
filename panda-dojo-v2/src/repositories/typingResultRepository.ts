@@ -32,6 +32,16 @@ export function getRankingEligibleResults(): HistoryItem[] {
   return getHistory().filter((item) => item.validForRanking !== false);
 }
 
+/**
+ * Substitui o histórico local pela lista informada (mantém o limite MAX_HISTORY).
+ * Usado pela restauração de progresso da nuvem.
+ */
+export function setHistory(items: HistoryItem[]): HistoryItem[] {
+  const safe = Array.isArray(items) ? items.slice(0, MAX_HISTORY) : [];
+  persistence.setItem(PERSISTENCE_KEYS.history, safe);
+  return safe;
+}
+
 export function clearHistory(): void {
   persistence.removeItem(PERSISTENCE_KEYS.history);
 }

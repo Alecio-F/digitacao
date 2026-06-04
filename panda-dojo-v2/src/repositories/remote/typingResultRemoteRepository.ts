@@ -95,6 +95,29 @@ export async function getUserTypingResults(
   }
 }
 
+export async function getRankingEligibleResults(
+  userId: string,
+  limit = 200,
+): Promise<RemoteRepositoryResult<RemoteTypingResult[]>> {
+  if (!supabase) return disabledResult();
+
+  try {
+    const { data, error } = await supabase
+      .from('typing_results')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('valid_for_ranking', true)
+      .order('ranking_score', { ascending: false })
+      .order('ppm', { ascending: false })
+      .limit(Math.max(1, Math.min(200, Math.round(limit) || 200)))
+      .returns<RemoteTypingResult[]>();
+
+    return { data: data ?? [], error: error?.message ?? null };
+  } catch (error) {
+    return errorResult(error);
+  }
+}
+
 export async function getBestTypingResult(
   userId: string,
 ): Promise<RemoteRepositoryResult<RemoteTypingResult>> {
