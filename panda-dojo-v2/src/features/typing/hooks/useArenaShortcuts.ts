@@ -12,7 +12,7 @@ interface UseArenaShortcutsOptions {
   onFocusArena: () => void;
 }
 
-function isTypingInEditableElement(target: EventTarget | null): boolean {
+function isEditableTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
 
   const tagName = target.tagName.toUpperCase();
@@ -21,7 +21,8 @@ function isTypingInEditableElement(target: EventTarget | null): boolean {
     tagName === 'TEXTAREA' ||
     tagName === 'SELECT' ||
     target.isContentEditable ||
-    target.closest('[contenteditable="true"]') !== null
+    target.closest('[contenteditable="true"]') !== null ||
+    target.closest('form') !== null
   );
 }
 
@@ -29,12 +30,16 @@ function isBlockingDialogOpen(): boolean {
   return document.querySelector('[role="dialog"][aria-modal="true"]') !== null;
 }
 
-function isNeutralDocumentTarget(target: EventTarget | null): boolean {
-  return target === document.body || target === document.documentElement || target === window;
+function isArenaTypingInput(target: EventTarget | null, insideArena: boolean): boolean {
+  return (
+    insideArena &&
+    target instanceof HTMLInputElement &&
+    target.getAttribute('aria-label') === 'Entrada de digitação'
+  );
 }
 
-function isModifierCombination(event: KeyboardEvent): boolean {
-  return event.ctrlKey || event.metaKey || event.altKey;
+function isSystemModifierCombination(event: KeyboardEvent): boolean {
+  return event.ctrlKey || event.metaKey;
 }
 
 export function useArenaShortcuts(options: UseArenaShortcutsOptions): void {
@@ -55,52 +60,89 @@ export function useArenaShortcuts(options: UseArenaShortcutsOptions): void {
       tabChordActiveRef.current = false;
     }
 
+    function hasActiveArenaContext(insideArena: boolean): boolean {
+      const activeElementInsideArena = isInsideArena(document.activeElement);
+      const current = optionsRef.current;
+
+      return (
+        current.isArenaFocused ||
+        current.isResultVisible ||
+        insideArena ||
+        activeElementInsideArena
+      );
+    }
+
+    function shouldIgnoreTarget(target: EventTarget | null, insideArena: boolean): boolean {
+      return isEditableTarget(target) && !isArenaTypingInput(target, insideArena);
+    }
+
+    function getShortcutAction(event: KeyboardEvent): (() => void) | null {
+      const current = optionsRef.current;
+      const key = event.key.toLowerCase();
+
+      if (key === 'r') return current.onRestart;
+      if (key === 'p' && !current.isResultVisible) return current.onPauseToggle;
+      if (event.key === 'Enter') return current.onNextAction;
+      if (key === 'm') return current.onGoToMap;
+      if (key === 'a') return current.onFocusArena;
+
+      return null;
+    }
+
+    function runAction(event: KeyboardEvent, action: () => void) {
+      event.preventDefault();
+      event.stopPropagation();
+      resetChord();
+      action();
+    }
+
     function handleKeyDown(event: KeyboardEvent) {
       const current = optionsRef.current;
       if (!current.enabled) return;
-      if (isModifierCombination(event)) return;
+      if (isSystemModifierCombination(event)) return;
 
       const target = event.target;
       const insideArena = isInsideArena(target);
-      const editableOutsideArena = isTypingInEditableElement(target) && !insideArena;
-      if (editableOutsideArena || isBlockingDialogOpen()) {
+      if (shouldIgnoreTarget(target, insideArena) || isBlockingDialogOpen()) {
         resetChord();
         return;
       }
 
-      if (event.key === 'Tab') {
-        const canStartChord =
-          current.isArenaFocused ||
-          current.isResultVisible ||
-          insideArena ||
-          isNeutralDocumentTarget(target);
+      if (event.key === 'Escape') {
+        resetChord();
+        return;
+      }
 
-        if (!canStartChord) return;
+      const activeArenaContext = hasActiveArenaContext(insideArena);
+      const isAltShortcut = event.altKey && !event.shiftKey;
+
+      if (isAltShortcut) {
+        if (!activeArenaContext) return;
+
+        const action = getShortcutAction(event);
+        if (!action) return;
+
+        runAction(event, action);
+        return;
+      }
+
+      if (event.key === 'Tab') {
+        if (event.shiftKey || event.altKey || !activeArenaContext) {
+          resetChord();
+          return;
+        }
 
         tabChordActiveRef.current = true;
-
-        if (current.isArenaFocused && !current.isResultVisible) {
-          event.preventDefault();
-        }
+        event.preventDefault();
         return;
       }
 
       if (!tabChordActiveRef.current || event.repeat) return;
 
-      const key = event.key.toLowerCase();
-      const canUseArenaAction = current.isArenaFocused || current.isResultVisible || insideArena;
-      const canUseGlobalFocus = key === 'a' && isNeutralDocumentTarget(target);
-      if (!canUseArenaAction && !canUseGlobalFocus) return;
-
-      let action: (() => void) | null = null;
-      if (key === 'r') action = current.onRestart;
-      else if (key === 'p' && !current.isResultVisible) action = current.onPauseToggle;
-      else if (event.key === 'Enter' && current.isResultVisible) action = current.onNextAction;
-      else if (key === 'm') action = current.onGoToMap;
-      else if (key === 'a') action = current.onFocusArena;
+      const action = getShortcutAction(event);
 
       if (!action) {
-        if (canUseArenaAction) {
+        if (activeArenaContext) {
           event.preventDefault();
           event.stopPropagation();
           resetChord();
@@ -108,24 +150,27 @@ export function useArenaShortcuts(options: UseArenaShortcutsOptions): void {
         return;
       }
 
-      event.preventDefault();
-      event.stopPropagation();
-      resetChord();
-      action();
+      runAction(event, action);
     }
 
     function handleKeyUp(event: KeyboardEvent) {
       if (event.key === 'Tab') resetChord();
     }
 
+    function handleVisibilityChange() {
+      if (document.visibilityState === 'hidden') resetChord();
+    }
+
     window.addEventListener('keydown', handleKeyDown, true);
     window.addEventListener('keyup', handleKeyUp, true);
     window.addEventListener('blur', resetChord);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown, true);
       window.removeEventListener('keyup', handleKeyUp, true);
       window.removeEventListener('blur', resetChord);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
 }

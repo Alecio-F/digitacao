@@ -16,6 +16,8 @@ const SHORTCUTS = [
   { keys: ['Tab', 'A'], action: 'Focar Arena' },
 ];
 
+const ALT_SHORTCUTS = ['Alt + R', 'Alt + P', 'Alt + Enter', 'Alt + M', 'Alt + A'];
+
 function joinClassNames(...classNames: Array<string | undefined>) {
   return classNames.filter(Boolean).join(' ');
 }
@@ -67,7 +69,8 @@ export function ArenaShortcutsHint({
     return (
       <p className={joinClassNames(styles.inlineHint, className)}>
         <strong>Atalhos:</strong> <kbd>Tab + R</kbd> reinicia <span>·</span>{' '}
-        <kbd>Tab + P</kbd> pausa <span>·</span> <kbd>Tab + Enter</kbd> avança
+        <kbd>Tab + P</kbd> pausa <span>·</span> <kbd>Tab + Enter</kbd> avança{' '}
+        <small>Alt também funciona.</small>
       </p>
     );
   }
@@ -76,7 +79,8 @@ export function ArenaShortcutsHint({
     return (
       <p className={joinClassNames(styles.resultHint, className)}>
         <strong>Atalhos:</strong> <kbd>Tab + R</kbd> tentar novamente <span>·</span>{' '}
-        <kbd>Tab + Enter</kbd> próxima ação <span>·</span> <kbd>Tab + M</kbd> mapa
+        <kbd>Tab + Enter</kbd> próxima ação <span>·</span> <kbd>Tab + M</kbd> mapa{' '}
+        <small>Fallback: Alt + tecla.</small>
       </p>
     );
   }
@@ -121,6 +125,15 @@ export function ArenaShortcutsHint({
               </div>
             ))}
           </dl>
+          <p className={styles.popoverNote}>
+            Tab funciona como atalho apenas enquanto a Arena está ativa.
+          </p>
+          <p className={styles.popoverAlt}>
+            <span>Atalhos alternativos:</span>{' '}
+            {ALT_SHORTCUTS.map((shortcut) => (
+              <kbd key={shortcut}>{shortcut}</kbd>
+            ))}
+          </p>
         </div>
       )}
     </div>
