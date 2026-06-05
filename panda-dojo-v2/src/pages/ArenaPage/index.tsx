@@ -333,13 +333,21 @@ export function ArenaPage() {
     handleKey(key);
   }
 
-  function handleRestart() {
+  function restartArena(focusAfterRestart = false) {
     savedRef.current = false;
     textCompletionRef.current = false;
     setSavedResult(null);
-    setIsArenaFocused(false);
+    setIsArenaFocused(focusAfterRestart);
     resetSession();
     resetTimer();
+  }
+
+  function handleRestart() {
+    restartArena(false);
+  }
+
+  function handleShortcutRestart() {
+    restartArena(true);
   }
 
   function handleFocusArenaShortcut() {
@@ -412,7 +420,7 @@ export function ArenaPage() {
     isArenaFocused,
     isResultVisible: Boolean(savedResult),
     arenaRootRef,
-    onRestart: handleRestart,
+    onRestart: handleShortcutRestart,
     onPauseToggle: () => {
       if (savedResult || timer.phase === 'idle' || timer.phase === 'finished') return;
       togglePause();
@@ -461,7 +469,7 @@ export function ArenaPage() {
   return (
     <>
       <PageShell title={cleanArenaTitle} className={styles.focusShell}>
-        <div ref={arenaRootRef} className={pageClassName}>
+        <div ref={arenaRootRef} className={pageClassName} data-arena-root data-type-arena>
         {savedResult ? (
           <ResultsScreen
             ppm={savedResult.ppm}
@@ -613,6 +621,9 @@ export function ArenaPage() {
                 cursorMode={settings.cursorMode}
                 keyboardVisible={settings.keyboardVisible}
                 showStartOverlay={timer.phase === 'idle' && !isArenaFocused}
+                showSmoothCursor={
+                  isArenaFocused && (timer.phase === 'idle' || timer.phase === 'running')
+                }
                 onFocusMode={() => setIsArenaFocused(true)}
                 onKey={handleTypingKey}
                 onRepeatedKey={registerRepeatedKey}

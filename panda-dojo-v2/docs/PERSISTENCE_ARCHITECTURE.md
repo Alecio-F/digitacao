@@ -55,6 +55,7 @@ Regras do adapter local:
 | `randomWordsRepository` | Palavras recentes do modo Palavras Aleatórias. |
 | `settingsRepository` | Tema, cursor, teclado virtual, som, animações e efeitos. |
 | `trainingSelectionRepository` | Seleção de treino carregada pela Type Arena. |
+| `pendingSyncRepository` | Fila local de itens que falharam ao enviar para o Supabase. |
 
 `src/repositories/index.ts` expõe um barrel namespaced para a camada.
 
@@ -237,8 +238,48 @@ localmente mesmo se a tentativa remota falhar.
 
 ### Limites Atuais
 
-- Não há fila offline de pending sync.
 - Não há ranking global.
-- Não há leitura remota para reconstruir progresso em novo dispositivo.
 - `daily_challenge_results` ainda não recebe sync dedicado; o Desafio Diário
   entra em `typing_results` quando finalizado na Arena.
+
+## Fase 1E — Pending Sync Simples
+
+A Fase 1E adiciona uma fila local para falhas temporárias no espelhamento remoto.
+O fluxo continua local-first:
+
+```text
+Usuário joga/treina -> grava local -> tenta Supabase
+                              -> se falhar, grava em pandaPendingSyncQueue
+                              -> tenta reenviar depois
+```
+
+### Arquivos
+
+- `src/features/backend-sync/pendingSyncTypes.ts`: tipos da fila.
+- `src/repositories/pendingSyncRepository.ts`: leitura/escrita local da fila.
+- `src/features/backend-sync/pendingSyncService.ts`: enfileiramento e flush.
+- `src/features/backend-sync/usePendingSync.ts`: flush automático ao carregar e
+  ao voltar online.
+- `src/features/backend-sync/PendingSyncRunner.tsx`: componente sem UI montado
+  no provider global.
+- `src/pages/AccountPage/components/PendingSyncCard.tsx`: contador e botão
+  "Sincronizar agora".
+
+### Chave local
+
+- `pandaPendingSyncQueue`
+
+### Tipos de item
+
+- `typing_result`
+- `lesson_progress`
+- `arcade_score`
+- `user_achievement`
+
+### Regras
+
+- A fila guarda no máximo 100 itens.
+- Cada item começa com `attempts: 0` e `status: "pending"`.
+- O flush automático ignora itens com 5 tentativas ou mais.
+- O botão manual em `/conta` pode tentar novamente itens esgotados.
+- O app nunca apaga dados locais por falha remota.

@@ -204,16 +204,16 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .minigameCard,
-  .minigameAction,
-  .backButton {
+  :global(:root:not([data-motion-preference='user'])) .minigameCard,
+  :global(:root:not([data-motion-preference='user'])) .minigameAction,
+  :global(:root:not([data-motion-preference='user'])) .backButton {
     transition: none;
   }
 
-  .minigameCard:hover:not(.minigameCardDisabled),
-  .minigameCardActive,
-  .minigameAction:hover:not(:disabled),
-  .backButton:hover {
+  :global(:root:not([data-motion-preference='user'])) .minigameCard:hover:not(.minigameCardDisabled),
+  :global(:root:not([data-motion-preference='user'])) .minigameCardActive,
+  :global(:root:not([data-motion-preference='user'])) .minigameAction:hover:not(:disabled),
+  :global(:root:not([data-motion-preference='user'])) .backButton:hover {
     transform: none;
   }
 }

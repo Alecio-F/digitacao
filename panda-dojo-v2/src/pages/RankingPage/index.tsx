@@ -1,37 +1,51 @@
 import { PageShell } from '@/components/layout/PageShell';
-import { useLocalRanking } from '@/features/ranking/hooks/useLocalRanking';
-import { ArcadeRecordsPanel } from './components/ArcadeRecordsPanel';
-import { BestStatsPanel } from './components/BestStatsPanel';
-import { GlobalRankingNotice } from './components/GlobalRankingNotice';
-import { LocalLeaderboard } from './components/LocalLeaderboard';
-import { PerformanceTimeline } from './components/PerformanceTimeline';
+import { useRankingViewModel } from '@/features/ranking/useRankingViewModel';
+import { RankingControls } from './components/RankingControls';
+import { RankingEmptyState } from './components/RankingEmptyState';
 import { RankingHero } from './components/RankingHero';
+import { RankingInsightCard } from './components/RankingInsightCard';
+import { RankingList } from './components/RankingList';
+import { RankingPodium } from './components/RankingPodium';
+import { RankingStatsSummary } from './components/RankingStatsSummary';
 import styles from './RankingPage.module.css';
 
 export function RankingPage() {
-  const ranking = useLocalRanking();
+  const viewModel = useRankingViewModel();
+  const shouldShowEmpty = viewModel.isOnlineLoading || Boolean(viewModel.onlineError) || viewModel.entries.length === 0;
 
   return (
     <PageShell title="Ranking">
-      <div className={styles.page}>
-        <RankingHero ranking={ranking} />
-        <BestStatsPanel ranking={ranking} />
+      <main className={styles.page}>
+        <RankingHero viewModel={viewModel} />
+        <RankingControls viewModel={viewModel} />
+        <RankingStatsSummary stats={viewModel.stats} />
 
-        <section className="dojo-section">
-          <LocalLeaderboard ranking={ranking} />
-        </section>
+        {shouldShowEmpty ? (
+          <RankingEmptyState
+            isPreparedOnly={viewModel.isPreparedOnly}
+            categoryTitle={viewModel.selectedConfig.title}
+            scope={viewModel.scope}
+            isLoading={viewModel.isOnlineLoading}
+            error={viewModel.onlineError}
+          />
+        ) : (
+          <>
+            <RankingPodium
+              entries={viewModel.podiumEntries}
+              metric={viewModel.metric}
+              metricLabel={viewModel.currentMetricLabel}
+            />
+            <RankingList
+              entries={viewModel.listEntries}
+              fallbackEntries={viewModel.entries}
+              metric={viewModel.metric}
+              metricLabel={viewModel.currentMetricLabel}
+            />
+          </>
+        )}
 
-        <section className="dojo-section">
-          <div className={styles.twoColumn}>
-            <PerformanceTimeline ranking={ranking} />
-            <ArcadeRecordsPanel ranking={ranking} />
-          </div>
-        </section>
-
-        <section className="dojo-section">
-          <GlobalRankingNotice />
-        </section>
-      </div>
+        <RankingInsightCard insight={viewModel.insight} />
+      </main>
     </PageShell>
   );
 }

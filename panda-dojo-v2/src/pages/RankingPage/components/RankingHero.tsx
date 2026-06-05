@@ -1,40 +1,60 @@
 import { Link } from 'react-router';
-import type { LocalRanking } from '@/features/ranking/hooks/useLocalRanking';
+import type { RankingViewModel } from '@/features/ranking/useRankingViewModel';
 import styles from '../RankingPage.module.css';
 
 interface Props {
-  ranking: LocalRanking;
+  viewModel: RankingViewModel;
 }
 
-export function RankingHero({ ranking }: Props) {
+export function RankingHero({ viewModel }: Props) {
+  const { ranking, selectedConfig, currentMetricLabel, currentMetricValue } = viewModel;
+
   return (
-    <section className={`dojo-section ${styles.hero}`}>
-      <div className={styles.heroCard}>
-        <div className={styles.heroInfo}>
-          <span className={styles.eyebrow}>Ranking do Dojo</span>
-          <h1 className={styles.heroTitle}>Compare sua evolução.</h1>
-          <p className={styles.heroSubtitle}>
-            Veja seus melhores resultados locais elegíveis e acompanhe sua progressão até o ranking
-            global chegar.
-          </p>
+    <section className={styles.hero} aria-labelledby="ranking-title">
+      <div className={styles.heroContent}>
+        <span className={styles.heroBadge}>Panda Dojo Arcade</span>
+        <h1 id="ranking-title" className={styles.heroTitle}>
+          Ranking do Dojo
+        </h1>
+        <p className={styles.heroLead}>
+          Velocidade impressiona, mas precisão conquista respeito.
+        </p>
+        <p className={styles.heroText}>
+          Compare seus melhores resultados, descubra sua posição e suba no mural dos
+          digitadores mais afiados.
+        </p>
 
-          <div className={styles.heroActions}>
-            <Link className={styles.ctaPrimary} to="/arena">
-              Treinar na Arena
-            </Link>
-            <Link className={styles.ctaSecondary} to="/arcade">
-              Jogar Arcade
-            </Link>
-          </div>
+        <div className={styles.heroActions}>
+          <Link className={styles.ctaPrimary} to="/arena">
+            Treinar na Type Arena
+          </Link>
+          <Link className={styles.ctaSecondary} to="/mapa">
+            Ver Mapa do Dojo
+          </Link>
         </div>
+      </div>
 
-        <div className={styles.heroHighlight} aria-hidden={ranking.bestPpm === 0}>
-          <span className={styles.heroHighlightLabel}>Melhor PPM</span>
-          <strong className={styles.heroHighlightValue}>{ranking.bestPpm || '--'}</strong>
-          <span className={styles.heroHighlightHint}>
-            {ranking.eligibleTrainings} de {ranking.totalTrainings} treinos no placar
-          </span>
-        </div>
+      <div className={styles.heroMetrics} aria-label="Resumo do ranking selecionado">
+        <article className={styles.heroMetricCard}>
+          <span>{currentMetricLabel}</span>
+          <strong>{currentMetricValue}</strong>
+          <small>métrica atual</small>
+        </article>
+        <article className={styles.heroMetricCard}>
+          <span>Sua melhor marca</span>
+          <strong>{ranking.bestPpm || '--'}</strong>
+          <small>PPM local</small>
+        </article>
+        <article className={styles.heroMetricCard}>
+          <span>Treinos elegíveis</span>
+          <strong>{ranking.eligibleTrainings}</strong>
+          <small>de {ranking.totalTrainings} treinos</small>
+        </article>
+        <article className={styles.heroMetricCard}>
+          <span>Categoria atual</span>
+          <strong>{selectedConfig.title}</strong>
+          <small>{selectedConfig.status === 'soon' ? 'em preparação' : 'ativa'}</small>
+        </article>
       </div>
     </section>
   );

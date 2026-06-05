@@ -49,10 +49,8 @@ sync automático, a falha fica silenciosa nesta fase.
 
 ## Riscos Conhecidos
 
-- Sem fila offline, uma falha no sync automático de novo resultado não é
-  reenviada depois.
-- Sem leitura remota completa, login em novo dispositivo ainda não reconstrói o
-  progresso local.
+- A fila de Pending Sync é simples: não resolve conflito avançado entre
+  dispositivos e usa deduplicação local por chave previsível.
 - Importação parcial pode deixar registros já enviados se uma etapa posterior
   falhar. A flag não é marcada nesses casos, então o usuário pode tentar de
   novo.
@@ -102,7 +100,40 @@ Sem merge automático complexo. Regra simples, baseada em dois cards em `/conta`
   "Seu progresso local continua salvo neste navegador." / "Nenhum progresso
   remoto encontrado." (o card simplesmente não aparece).
 
+## Fase 1E — Pending Sync
+
+Quando um novo dado local já foi salvo e o espelhamento remoto falha, o app
+adiciona um item em `pandaPendingSyncQueue`. A fila preserva o modo local-first:
+o usuário não perde resultado, fase, recorde ou conquista por queda de rede.
+
+### Tipos suportados
+
+- `typing_result`: resultado da Type Arena.
+- `lesson_progress`: progresso de fase do Mapa do Dojo.
+- `arcade_score`: recordes de Panda Keys e Selos do Teclado.
+- `user_achievement`: conquistas desbloqueadas localmente.
+
+### Reenvio
+
+O reenvio é feito por `flushPendingSyncQueue(userId)`:
+
+- roda automaticamente ao carregar o app com usuário logado;
+- roda novamente quando o navegador dispara o evento `online`;
+- pode ser acionado manualmente em `/conta` pelo botão "Sincronizar agora";
+- tenta item por item, sem travar a fila inteira quando um item falha;
+- ignora automaticamente itens com 5 tentativas ou mais;
+- a tentativa manual pode tentar novamente itens que já atingiram esse limite.
+
+### Limites
+
+- A fila local guarda até 100 itens e descarta os mais antigos quando passa do
+  limite.
+- A deduplicação é simples: usa chaves como `completedAt + mode + ppm +
+  accuracy`, `lessonId`, `gameId + score` e `achievementId`.
+- `daily_challenge_results` ainda não tem sync dedicado; o Desafio Diário
+  continua entrando em `typing_results` quando finalizado na Arena.
+
 ## Próxima Fase Recomendada
 
-Fase 1E: fila de pending sync (offline-first), `daily_challenge_results`
-dedicado, ranking global e resolução avançada de conflitos por timestamp.
+`daily_challenge_results` dedicado, ranking global e resolução avançada de
+conflitos por timestamp.

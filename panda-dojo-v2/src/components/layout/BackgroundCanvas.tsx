@@ -71,8 +71,7 @@ export function BackgroundCanvas({ density }: Props) {
   const { animationsEnabled, reducedEffects } = useSettingsContext();
 
   useEffect(() => {
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reducedMotion || !animationsEnabled || reducedEffects) {
+    if (!animationsEnabled || reducedEffects) {
       return;
     }
 

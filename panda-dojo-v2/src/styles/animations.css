@@ -53,9 +53,9 @@
 
 /* ─── Reduced-motion nuclear override ──────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  :root:not([data-motion-preference='user']) *,
+  :root:not([data-motion-preference='user']) *::before,
+  :root:not([data-motion-preference='user']) *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

@@ -269,13 +269,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .chipButton {
+  :global(:root:not([data-motion-preference='user'])) .chipButton {
     transition: none;
   }
 
-  .chipButton:hover,
-  .chipButton:focus-visible,
-  .chipButton[data-open='true'] {
+  :global(:root:not([data-motion-preference='user'])) .chipButton:hover,
+  :global(:root:not([data-motion-preference='user'])) .chipButton:focus-visible,
+  :global(:root:not([data-motion-preference='user'])) .chipButton[data-open='true'] {
     transform: none;
   }
 }

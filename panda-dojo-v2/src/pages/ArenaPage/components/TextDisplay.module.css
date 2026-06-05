@@ -20,6 +20,11 @@
   height: clamp(320px, 47vh, 470px);
 }
 
+.keyboardEnabled {
+  min-height: clamp(300px, 38vh, 390px);
+  height: clamp(300px, 38vh, 390px);
+}
+
 /* Foco de teclado visível na área de digitação (o input real é invisível). */
 .wrapper:focus-within {
   border-color: var(--dojo-primary);
@@ -56,9 +61,10 @@
   display: flex;
   flex-wrap: wrap;
   column-gap: 0.78em;
-  row-gap: 0.04em;
+  row-gap: 0.08em;
   align-content: flex-start;
   line-height: 1.56;
+  padding-top: 0.14em;
   padding-bottom: min(46%, 180px);
 }
 
@@ -109,53 +115,34 @@
   margin-inline: 0 -0.36em;
 }
 
-/* Realce de fundo do caractere atual: indicação que não depende do cursor
-   nem de animação, mantendo o foco visível com prefers-reduced-motion. */
+.letterEnd.letterCurrent {
+  background: transparent;
+}
+
+/* O caractere atual recebe apenas um cantinho arredondado; o cursor visível é o
+   SmoothTypingCursor (bloco ou linha), não o fundo do caractere. */
 .letterCurrent {
   border-radius: 6px;
-  background: rgba(20, 184, 212, 0.16);
 }
 
-:global(.dark) .letterCurrent {
-  background: rgba(114, 245, 255, 0.18);
-}
-
+/* Bloco/haste (arcade): realce leve no caractere sob o cursor bloco. */
 .cursorArcade .letterCurrent {
   color: var(--dojo-text-strong);
+  background: rgba(20, 184, 212, 0.12);
   text-shadow: 0 0 14px rgba(0, 168, 204, 0.2);
 }
 
-.cursorArcade .letterCurrent::after {
-  content: '';
-  position: absolute;
-  left: 0.06em;
-  right: 0.06em;
-  bottom: 0.08em;
-  height: 0.12em;
-  border-radius: var(--dojo-radius-pill);
-  background: linear-gradient(90deg, var(--dojo-primary), var(--dojo-secondary));
-  box-shadow: 0 0 12px rgba(0, 168, 204, 0.38);
-  animation: cursorBlink 1.1s ease-in-out infinite;
+:global(.dark) .cursorArcade .letterCurrent {
+  background: rgba(114, 245, 255, 0.14);
 }
 
-.cursorClassic .letterCurrent::before {
-  content: '';
-  position: absolute;
-  top: 0.18em;
-  left: -0.08em;
-  width: clamp(2px, 0.16vw, 3px);
-  height: 1.12em;
-  border-radius: var(--dojo-radius-pill);
-  background: linear-gradient(180deg, #72f5ff 0%, var(--dojo-primary) 48%, var(--dojo-secondary) 100%);
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.5),
-    0 0 8px rgba(0, 168, 204, 0.54),
-    0 0 16px rgba(124, 92, 255, 0.24);
-  animation: cursorPulse 0.95s ease-in-out infinite;
-}
+/* Linha fina (classic): sem realce de fundo — o cursor é a linha vertical, sem
+   "borrão" no caractere atual. */
 
-.cursorClassic .letterEnd::before {
-  left: 0;
+.cursorClassic .letterCurrent {
+  background: transparent;
+  box-shadow: none;
+  text-shadow: none;
 }
 
 .letterCorrect {
@@ -255,22 +242,6 @@
 .feedbackSuccess { color: var(--dojo-success); }
 .feedbackDanger  { color: var(--dojo-danger, #f56565); }
 
-@keyframes cursorBlink {
-  0%, 45%, 100% { opacity: 1; }
-  55%, 90%      { opacity: 0.18; }
-}
-
-@keyframes cursorPulse {
-  0%, 100% {
-    opacity: 1;
-    filter: saturate(1);
-  }
-  50% {
-    opacity: 0.45;
-    filter: saturate(1.35);
-  }
-}
-
 @keyframes charCorrect {
   0%   { transform: translateY(-2px); opacity: 0.7; }
   100% { transform: translateY(0); opacity: 1; }
@@ -336,14 +307,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .viewport {
+  :global(:root:not([data-motion-preference='user'])) .viewport {
     scroll-behavior: auto;
   }
 
-  .letter,
-  .cursorArcade .letterCurrent::after,
-  .cursorClassic .letterCurrent::before,
-  .startOverlay {
+  :global(:root:not([data-motion-preference='user'])) .letter,
+  :global(:root:not([data-motion-preference='user'])) .startOverlay {
     animation: none;
     transition: none;
   }

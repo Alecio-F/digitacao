@@ -330,7 +330,7 @@
 .keyDeck {
   width: min(860px, calc(100% - 270px));
   min-width: 680px;
-  margin: 17px auto 0;
+  margin: 12px auto 0;
   overflow: hidden;
   border: 1px solid rgba(20, 184, 212, 0.26);
   border-radius: 16px;
@@ -403,7 +403,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 17px 20px 8px;
+  padding: 13px 20px 6px;
 }
 
 .keyDeckLabel {
@@ -495,7 +495,7 @@
   }
 
   .focusShell .keyDeck {
-    margin-top: 14px;
+    margin-top: 10px;
   }
 }
 
@@ -583,13 +583,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .page,
-  .arenaCard,
-  .keyboardOffPanel {
+  :global(:root:not([data-motion-preference='user'])) .page,
+  :global(:root:not([data-motion-preference='user'])) .arenaCard,
+  :global(:root:not([data-motion-preference='user'])) .keyboardOffPanel {
     transition: none;
   }
 
-  .focusMode {
+  :global(:root:not([data-motion-preference='user'])) .focusMode {
     transform: none;
   }
 }

@@ -7,6 +7,7 @@ import {
   getProfileUsername,
 } from '@/services/supabase/profileIdentity';
 import { LocalProgressImportCard } from './LocalProgressImportCard';
+import { PendingSyncCard } from './PendingSyncCard';
 import { RestoreRemoteProgressCard } from './RestoreRemoteProgressCard';
 import styles from '../AccountPage.module.css';
 
@@ -128,6 +129,10 @@ export function OnlineAccountPanel({ localProfile }: Props) {
             </div>
           </dl>
         </div>
+
+        {user?.id && (
+          <PendingSyncCard userId={user.id} />
+        )}
 
         {user?.id && (
           <RestoreRemoteProgressCard userId={user.id} />

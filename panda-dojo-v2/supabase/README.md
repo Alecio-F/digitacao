@@ -1,11 +1,13 @@
 # Supabase — PandaDigitações V2
 
-Esta pasta contém a fundação SQL da Fase 1B.
+Esta pasta contém a fundação SQL do Supabase para a V2.
 
 ## Arquivos
 
-- `schema.sql`: tabelas principais, triggers e RLS.
+- `schema.sql`: tabelas principais, triggers, índices e RLS.
 - `seed.sql`: conquistas iniciais.
+- `ranking_views.sql`: view pública segura para o Ranking Online inicial.
+- `fix_profiles_null_names.sql`: correção auxiliar para perfis antigos sem nome.
 
 ## Ordem de Execução
 
@@ -13,6 +15,8 @@ Esta pasta contém a fundação SQL da Fase 1B.
 2. Acesse SQL Editor.
 3. Execute `schema.sql`.
 4. Execute `seed.sql`.
+5. Execute `ranking_views.sql`.
+6. Execute scripts auxiliares somente se precisar corrigir dados antigos.
 
 ## Variáveis
 
@@ -40,7 +44,23 @@ Todas as tabelas públicas do schema têm Row Level Security ativo. As policies
 permitem que usuários autenticados acessem apenas seus próprios dados, exceto
 `achievements`, que é catálogo de leitura.
 
+## Ranking Online
+
+`ranking_views.sql` cria `public.online_typing_ranking`, uma view de leitura para
+o mural online. Ela expõe somente resultados `valid_for_ranking = true` e os
+campos mínimos de perfil necessários na UI:
+
+- nome de exibição;
+- username;
+- título;
+- modo/fase/texto;
+- PPM, CPM, precisão, erros, combo, score e data.
+
+O front-end usa a publishable key e nunca usa `service_role`. Se a view ainda
+não tiver sido executada, a página `/ranking` mostra um erro amigável no escopo
+Online e mantém o ranking local funcionando.
+
 ## Escopo Atual
 
-A Fase 1B cria client, Auth, profile remoto e SQL. O sync completo de histórico,
-progresso, ranking e Arcade fica para a Fase 1C.
+A base atual cobre Auth, perfis, sync local-first, restauração nuvem para local,
+fila de pending sync e Ranking Online inicial por `typing_results`.

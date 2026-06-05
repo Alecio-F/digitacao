@@ -58,7 +58,8 @@ export function Drawer({
           .filter(Boolean)
           .join(' ')}
         role="dialog"
-        aria-modal="true"
+        aria-hidden={!open}
+        aria-modal={open ? 'true' : undefined}
         aria-labelledby={titleId}
         aria-describedby={description ? descriptionId : undefined}
       >

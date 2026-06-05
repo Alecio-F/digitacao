@@ -280,17 +280,23 @@
   line-height: 1.1;
 }
 
-.cursorChoiceUnderline .cursorPreviewWord::after {
+/* Amostra "Haste": bloco arredondado sobre o fim da palavra, espelhando o
+   cursor bloco/haste da Arena. */
+.cursorChoiceBlock .cursorPreviewWord::after {
   content: '';
   position: absolute;
-  right: 0.05em;
-  bottom: -0.18em;
-  width: 0.86em;
-  height: 0.12em;
-  border-radius: var(--dojo-radius-pill);
-  background: linear-gradient(90deg, var(--dojo-primary), var(--dojo-secondary));
-  box-shadow: 0 0 10px rgba(20, 184, 212, 0.36);
-  animation: cursorPreviewBlink 1.05s ease-in-out infinite;
+  right: -0.06em;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0.62em;
+  height: 1.16em;
+  border: 1px solid rgba(114, 245, 255, 0.5);
+  border-radius: 7px;
+  background: linear-gradient(135deg, rgba(114, 245, 255, 0.32), rgba(124, 92, 255, 0.16));
+  box-shadow:
+    0 0 0 1px rgba(20, 184, 212, 0.1),
+    0 0 12px rgba(20, 184, 212, 0.32);
+  animation: cursorPreviewPulse 1.1s ease-in-out infinite;
 }
 
 .cursorChoiceBar .cursorPreviewWord::before {
@@ -313,11 +319,6 @@
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-}
-
-@keyframes cursorPreviewBlink {
-  0%, 45%, 100% { opacity: 1; }
-  55%, 90% { opacity: 0.2; }
 }
 
 @keyframes cursorPreviewPulse {
@@ -502,15 +503,15 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .backdrop,
-  .drawer,
-  .closeButton,
-  .segmentedButton,
-  .cursorChoice,
-  .cursorPreviewWord::before,
-  .cursorPreviewWord::after,
-  .switchButton,
-  .switchKnob {
+  :global(:root:not([data-motion-preference='user'])) .backdrop,
+  :global(:root:not([data-motion-preference='user'])) .drawer,
+  :global(:root:not([data-motion-preference='user'])) .closeButton,
+  :global(:root:not([data-motion-preference='user'])) .segmentedButton,
+  :global(:root:not([data-motion-preference='user'])) .cursorChoice,
+  :global(:root:not([data-motion-preference='user'])) .cursorPreviewWord::before,
+  :global(:root:not([data-motion-preference='user'])) .cursorPreviewWord::after,
+  :global(:root:not([data-motion-preference='user'])) .switchButton,
+  :global(:root:not([data-motion-preference='user'])) .switchKnob {
     transition-duration: 0.001ms !important;
     animation: none !important;
   }

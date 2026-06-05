@@ -5,6 +5,8 @@ import type { HistoryItem } from '@/features/gamification/types';
 import { normalizeTrainingResult } from '@/features/typing/logic/normalizeTrainingResult';
 import * as arcadeScoreRepository from '@/repositories/arcadeScoreRepository';
 import * as typingResultRepository from '@/repositories/typingResultRepository';
+import { mapLocalHistoryToRankingEntries } from '../rankingMappers';
+import { getAccuracyRanking, getGeneralRanking, getSpeedRanking } from '../rankingSelectors';
 
 const TOP_LIMIT = 10;
 const RECENT_LIMIT = 5;
@@ -40,7 +42,9 @@ export function useLocalRanking() {
     // regras de ranking permanecem aqui, inalteradas.
     const rawHistory = typingResultRepository.getHistory() as RankingResult[];
     const history = rawHistory.map((item) => normalizeTrainingResult(item) as RankingResult);
+    const rankingEntries = mapLocalHistoryToRankingEntries(rawHistory);
     const validResults = history.filter((item) => item.validForRanking);
+    const topEntries = getGeneralRanking(rankingEntries, TOP_LIMIT);
 
     const ppmValues = validResults.map((item) => Number(item.ppm) || 0);
     const cpmValues = validResults.map((item) => Number(item.cpm) || 0);
@@ -67,6 +71,10 @@ export function useLocalRanking() {
       averagePpm: safeAverage(ppmValues),
       recentResults: validResults.slice(0, RECENT_LIMIT),
       topResults,
+      rankingEntries,
+      topEntries,
+      speedEntries: getSpeedRanking(rankingEntries, 'ppm', TOP_LIMIT),
+      accuracyEntries: getAccuracyRanking(rankingEntries, TOP_LIMIT),
       allResults: history,
       validResults,
       pandaKeysBestScore: profile.gameBestScore,

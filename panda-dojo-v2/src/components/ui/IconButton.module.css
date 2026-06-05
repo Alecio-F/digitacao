@@ -114,9 +114,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .btn,
-  .icon,
-  .customIcon {
+  :global(:root:not([data-motion-preference='user'])) .btn,
+  :global(:root:not([data-motion-preference='user'])) .icon,
+  :global(:root:not([data-motion-preference='user'])) .customIcon {
     transition-duration: 0.001ms !important;
   }
 }

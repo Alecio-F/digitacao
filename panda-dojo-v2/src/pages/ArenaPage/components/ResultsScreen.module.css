@@ -786,7 +786,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .screen {
+  :global(:root:not([data-motion-preference='user'])) .screen {
     animation: none;
   }
 }

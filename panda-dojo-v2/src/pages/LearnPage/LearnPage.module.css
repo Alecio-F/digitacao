@@ -571,10 +571,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .masterCard img,
-  .primaryLink,
-  .secondaryLink,
-  .keycap {
+  :global(:root:not([data-motion-preference='user'])) .masterCard img,
+  :global(:root:not([data-motion-preference='user'])) .primaryLink,
+  :global(:root:not([data-motion-preference='user'])) .secondaryLink,
+  :global(:root:not([data-motion-preference='user'])) .keycap {
     animation: none !important;
     transition-duration: 0.001ms !important;
   }

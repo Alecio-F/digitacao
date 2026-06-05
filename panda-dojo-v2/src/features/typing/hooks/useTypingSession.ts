@@ -169,7 +169,14 @@ function reducer(state: TypingState, action: Action): TypingState {
     rawKeyCount++;
     totalCharsTyped++;
 
-    if (currentLetterIndex < word.letters.length) {
+    // Letras "extras" digitadas além do fim da palavra não devem impedir o
+    // avanço: a palavra está pronta quando todas as letras reais foram
+    // percorridas, mesmo que existam extras penalizados depois delas. Usar
+    // word.letters.length (que inclui extras) travava o avanço e fazia o
+    // espaço apenas penalizar, exigindo apertar espaço várias vezes.
+    const realLength = word.letters.filter((l) => !l.isExtra).length;
+
+    if (currentLetterIndex < realLength) {
       // Word not finished, penalise
       const letter = word.letters[currentLetterIndex];
       if (!letter) return state;

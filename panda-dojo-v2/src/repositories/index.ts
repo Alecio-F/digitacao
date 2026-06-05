@@ -15,3 +15,5 @@ export * as settingsRepository from './settingsRepository';
 export * as trainingSelectionRepository from './trainingSelectionRepository';
 export * as randomWordsRepository from './randomWordsRepository';
 export * as recommendationRepository from './recommendationRepository';
+export * as pendingSyncRepository from './pendingSyncRepository';
+export * as rankingRemoteRepository from './remote/rankingRemoteRepository';

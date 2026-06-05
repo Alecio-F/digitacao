@@ -65,7 +65,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .fill {
+  :global(:root:not([data-motion-preference='user'])) .fill {
     transition-duration: 0.001ms !important;
   }
 }

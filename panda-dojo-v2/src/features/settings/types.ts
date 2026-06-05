@@ -7,6 +7,7 @@ export interface Settings {
   soundsEnabled: boolean;
   animationsEnabled: boolean;
   reducedEffects: boolean;
+  motionPreferenceTouched: boolean;
   cursorMode: CursorMode;
   keyboardVisible: boolean;
 }

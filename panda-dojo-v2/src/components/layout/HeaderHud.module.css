@@ -445,19 +445,19 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .header {
+  :global(:root:not([data-motion-preference='user'])) .header {
     animation: none;
   }
 
-  .header,
-  .hud,
-  .brandMark,
-  .navKey,
-  .navKey::after,
-  .trainButton,
-  .trainButton::before,
-  .loginLink,
-  .settingsButton {
+  :global(:root:not([data-motion-preference='user'])) .header,
+  :global(:root:not([data-motion-preference='user'])) .hud,
+  :global(:root:not([data-motion-preference='user'])) .brandMark,
+  :global(:root:not([data-motion-preference='user'])) .navKey,
+  :global(:root:not([data-motion-preference='user'])) .navKey::after,
+  :global(:root:not([data-motion-preference='user'])) .trainButton,
+  :global(:root:not([data-motion-preference='user'])) .trainButton::before,
+  :global(:root:not([data-motion-preference='user'])) .loginLink,
+  :global(:root:not([data-motion-preference='user'])) .settingsButton {
     transition: none;
   }
 }

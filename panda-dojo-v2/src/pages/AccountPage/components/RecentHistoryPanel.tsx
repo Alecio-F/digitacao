@@ -31,21 +31,25 @@ export function RecentHistoryPanel({ profile }: Props) {
       </header>
 
       {recentHistory.length === 0 ? (
-        <>
+        <div className={styles.historyEmpty}>
           <p className={styles.emptyText}>
-            Seu histórico aparecerá depois do primeiro treino na Arena.
+            <strong>Você ainda não tem treinos recentes.</strong>
+            <span>Faça um treino na Type Arena para começar seu histórico.</span>
           </p>
           <Link className={styles.ctaSecondary} to="/arena">
             Ir para Arena
           </Link>
-        </>
+        </div>
       ) : (
         <ul className={styles.historyList}>
           {recentHistory.map((item, index) => (
             <li key={`${item.data ?? 'item'}-${index}`} className={styles.historyItem}>
               <div className={styles.historyHead}>
-                <span className={styles.historyDate}>{formatDate(item.data)}</span>
-                <span className={styles.historyMode}>{modeLabel(item)}</span>
+                <span className={styles.historyMeta}>
+                  <strong>{formatDate(item.data)}</strong>
+                  <span aria-hidden="true">·</span>
+                  <em>{modeLabel(item)}</em>
+                </span>
                 {item.novoRecorde && <Badge variant="special">Recorde</Badge>}
               </div>
               <div className={styles.historyMetrics}>

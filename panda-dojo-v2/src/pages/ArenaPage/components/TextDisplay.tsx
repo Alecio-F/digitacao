@@ -1,6 +1,7 @@
 ﻿import { useEffect, useRef } from 'react';
 import type { CursorMode } from '@/features/settings/types';
 import type { Feedback, WordData } from '@/features/typing/types';
+import { SmoothTypingCursor } from './SmoothTypingCursor';
 import styles from './TextDisplay.module.css';
 
 interface TextDisplayProps {
@@ -12,6 +13,7 @@ interface TextDisplayProps {
   cursorMode: CursorMode;
   keyboardVisible: boolean;
   showStartOverlay: boolean;
+  showSmoothCursor: boolean;
   onFocusMode: () => void;
   onKey: (key: string) => void;
   onRepeatedKey: (key: string) => void;
@@ -20,10 +22,15 @@ interface TextDisplayProps {
 const CURSOR_ANCHOR_RATIO = 0.45;
 const CURSOR_UPPER_RATIO = 0.28;
 const CURSOR_LOWER_RATIO = 0.54;
+const KEYBOARD_ANCHOR_RATIO = 0.38;
+const KEYBOARD_UPPER_RATIO = 0.24;
+const KEYBOARD_LOWER_RATIO = 0.5;
 
 function prefersInstantScroll(): boolean {
+  const root = document.documentElement;
   return (
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+    root.dataset.animations === 'off' ||
+    root.dataset.reducedEffects === 'true' ||
     window.matchMedia('(max-width: 760px)').matches
   );
 }
@@ -37,11 +44,13 @@ export function TextDisplay({
   cursorMode,
   keyboardVisible,
   showStartOverlay,
+  showSmoothCursor,
   onFocusMode,
   onKey,
   onRepeatedKey,
 }: TextDisplayProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const currentAnchorRef = useRef<HTMLSpanElement>(null);
   const safeWords = Array.isArray(words)
@@ -64,18 +73,26 @@ export function TextDisplay({
       const currentRect = current.getBoundingClientRect();
       if (viewportRect.height <= 0 || currentRect.height <= 0) return;
 
-      const anchorY = viewportRect.top + viewportRect.height * CURSOR_ANCHOR_RATIO;
-      const upperLimit = viewportRect.top + viewportRect.height * CURSOR_UPPER_RATIO;
-      const lowerLimit = viewportRect.top + viewportRect.height * CURSOR_LOWER_RATIO;
+      const anchorRatio = keyboardVisible ? KEYBOARD_ANCHOR_RATIO : CURSOR_ANCHOR_RATIO;
+      const upperRatio = keyboardVisible ? KEYBOARD_UPPER_RATIO : CURSOR_UPPER_RATIO;
+      const lowerRatio = keyboardVisible ? KEYBOARD_LOWER_RATIO : CURSOR_LOWER_RATIO;
+      const anchorY = viewportRect.top + viewportRect.height * anchorRatio;
+      const upperLimit = viewportRect.top + viewportRect.height * upperRatio;
+      const lowerLimit = viewportRect.top + viewportRect.height * lowerRatio;
       const isPastLowerLimit = currentRect.top > lowerLimit;
       const isBeforeUpperLimit = currentRect.top < upperLimit && viewport.scrollTop > 0;
 
       if (!isPastLowerLimit && !isBeforeUpperLimit) return;
 
-      const nextScrollTop = Math.max(
+      const rawNextScrollTop = Math.max(
         0,
         viewport.scrollTop + currentRect.top - anchorY,
       );
+      const computedStyle = window.getComputedStyle(current);
+      const lineHeight = Number.parseFloat(computedStyle.lineHeight) || currentRect.height;
+      const nextScrollTop = keyboardVisible && lineHeight > 0
+        ? Math.max(0, Math.round(rawNextScrollTop / lineHeight) * lineHeight)
+        : rawNextScrollTop;
 
       viewport.scrollTo({
         top: nextScrollTop,
@@ -84,7 +101,7 @@ export function TextDisplay({
     });
 
     return () => window.cancelAnimationFrame(frame);
-  }, [currentWordIndex, currentLetterIndex, safeWords.length]);
+  }, [currentWordIndex, currentLetterIndex, keyboardVisible, safeWords.length]);
 
   function handleKeyDown(e: React.KeyboardEvent) {
     if (disabled) return;
@@ -132,10 +149,22 @@ export function TextDisplay({
     success: styles.feedbackSuccess,
     danger: styles.feedbackDanger,
   }[feedback.tone];
+  const cursorVariant = cursorMode === 'classic' ? 'line' : 'block';
+  const cursorUpdateKey = [
+    currentWordIndex,
+    currentLetterIndex,
+    safeWords.length,
+    cursorMode,
+    keyboardVisible ? 'keyboard-on' : 'keyboard-off',
+    showSmoothCursor ? 'cursor-on' : 'cursor-off',
+    showStartOverlay ? 'overlay-on' : 'overlay-off',
+  ].join(':');
 
   return (
     <div>
       <div
+        ref={wrapperRef}
+        data-typing-area
         className={[
           styles.wrapper,
           cursorMode === 'classic' ? styles.cursorClassic : styles.cursorArcade,
@@ -223,7 +252,8 @@ export function TextDisplay({
                     </span>
                   );
                 })}
-                {wi === currentWordIndex && currentLetterIndex >= (word.letters?.length ?? 0) && (
+                {wi === currentWordIndex &&
+                  currentLetterIndex >= word.letters.filter((letter) => !letter.isExtra).length && (
                   <span
                     ref={currentAnchorRef}
                     className={[styles.letter, styles.letterCurrent, styles.letterEnd].join(' ')}
@@ -235,6 +265,14 @@ export function TextDisplay({
             ))}
           </div>
         </div>
+        <SmoothTypingCursor
+          activeCharRef={currentAnchorRef}
+          containerRef={wrapperRef}
+          scrollRef={viewportRef}
+          variant={cursorVariant}
+          visible={showSmoothCursor && !disabled && !showStartOverlay}
+          updateKey={cursorUpdateKey}
+        />
       </div>
       <p className={[styles.feedback, feedbackClass].join(' ')}>{feedback.text}</p>
     </div>

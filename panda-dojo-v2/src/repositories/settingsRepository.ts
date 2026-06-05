@@ -90,3 +90,18 @@ export function getReducedEffects(fallback: boolean): boolean {
 export function setReducedEffects(value: boolean): void {
   persistence.setItem(PERSISTENCE_KEYS.reducedEffects, value);
 }
+
+export function getMotionPreferenceTouched(): boolean {
+  const stored = persistence.getItem<boolean | string | null>(PERSISTENCE_KEYS.motionPreferenceTouched, null);
+  if (stored === true || stored === 'true') return true;
+  if (stored === false || stored === 'false') return false;
+
+  return (
+    persistence.getItem<boolean | string | null>(PERSISTENCE_KEYS.animationsEnabled, null) !== null ||
+    persistence.getItem<boolean | string | null>(PERSISTENCE_KEYS.reducedEffects, null) !== null
+  );
+}
+
+export function setMotionPreferenceTouched(value = true): void {
+  persistence.setItem(PERSISTENCE_KEYS.motionPreferenceTouched, value);
+}

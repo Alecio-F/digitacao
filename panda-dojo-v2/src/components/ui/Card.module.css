@@ -97,8 +97,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card,
-  .card::before {
+  :global(:root:not([data-motion-preference='user'])) .card,
+  :global(:root:not([data-motion-preference='user'])) .card::before {
     transition-duration: 0.001ms !important;
   }
 }

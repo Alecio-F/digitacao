@@ -14,6 +14,12 @@ import * as lessonProgressRemoteRepository from '@/repositories/remote/lessonPro
 import * as profileRemoteRepository from '@/repositories/remote/profileRemoteRepository';
 import * as typingResultRemoteRepository from '@/repositories/remote/typingResultRemoteRepository';
 import * as userAchievementRemoteRepository from '@/repositories/remote/userAchievementRemoteRepository';
+import {
+  enqueuePendingAchievement,
+  enqueuePendingArcadeScore,
+  enqueuePendingLessonProgress,
+  enqueuePendingTypingResult,
+} from './pendingSyncService';
 
 export interface LocalProgressSummary {
   hasProgress: boolean;
@@ -71,6 +77,10 @@ function parseStoredDate(value: string | undefined): string | null {
 
 function getHistoryCompletedAt(item: HistoryItem): string {
   return item.completedAt ?? parseStoredDate(item.data) ?? new Date().toISOString();
+}
+
+function getSyncErrorMessage(error: unknown, fallback: string): string {
+  return error instanceof Error ? error.message : fallback;
 }
 
 function getMistakeKeys(item: HistoryItem): Record<string, number> {
@@ -314,14 +324,15 @@ export async function importLocalProgressToSupabase(
 }
 
 export async function syncTypingResultToSupabase(result: HistoryItem): Promise<SyncStatus> {
+  let input: typingResultRemoteRepository.RemoteTypingResultInput | null = null;
+
   try {
+    input = toRemoteTypingInput(result);
     const userId = await getAuthenticatedUserId();
     if (!userId) return { ok: true, skipped: true, error: null };
 
-    const remoteResult = await typingResultRemoteRepository.saveTypingResult(
-      userId,
-      toRemoteTypingInput(result),
-    );
+    const remoteResult = await typingResultRemoteRepository.saveTypingResult(userId, input);
+    if (remoteResult.error) enqueuePendingTypingResult(input);
 
     return {
       ok: !remoteResult.error,
@@ -329,20 +340,24 @@ export async function syncTypingResultToSupabase(result: HistoryItem): Promise<S
       error: remoteResult.error,
     };
   } catch (error) {
+    if (input) enqueuePendingTypingResult(input);
     return {
       ok: false,
       skipped: false,
-      error: error instanceof Error ? error.message : 'Falha ao sincronizar resultado.',
+      error: getSyncErrorMessage(error, 'Falha ao sincronizar resultado.'),
     };
   }
 }
 
 export async function syncProfileProgressToSupabase(): Promise<SyncStatus> {
+  let pendingAchievements: string[] = [];
+
   try {
     const userId = await getAuthenticatedUserId();
     if (!userId) return { ok: true, skipped: true, error: null };
 
     const profile = profileProgressRepository.getProfileProgress();
+    pendingAchievements = profile.achievements;
     const profileResult = await profileRemoteRepository.mergeProfileProgress(userId, {
       xp: profile.xp,
       level: profile.level,
@@ -350,35 +365,44 @@ export async function syncProfileProgressToSupabase(): Promise<SyncStatus> {
       dailyStreak: profile.dailyStreak,
       lastTrainingDate: profile.lastTrainingDate,
     });
-    if (profileResult.error) return { ok: false, skipped: false, error: profileResult.error };
+    if (profileResult.error) {
+      pendingAchievements.forEach(enqueuePendingAchievement);
+      return { ok: false, skipped: false, error: profileResult.error };
+    }
 
     for (const achievementId of profile.achievements) {
-      await userAchievementRemoteRepository.unlockAchievement(userId, achievementId);
+      const achievementResult = await userAchievementRemoteRepository.unlockAchievement(
+        userId,
+        achievementId,
+      );
+      if (achievementResult.error) enqueuePendingAchievement(achievementId);
     }
 
     return { ok: true, skipped: false, error: null };
   } catch (error) {
+    pendingAchievements.forEach(enqueuePendingAchievement);
     return {
       ok: false,
       skipped: false,
-      error: error instanceof Error ? error.message : 'Falha ao sincronizar perfil.',
+      error: getSyncErrorMessage(error, 'Falha ao sincronizar perfil.'),
     };
   }
 }
 
 export async function syncLessonProgressToSupabase(lessonId: string): Promise<SyncStatus> {
+  const progress = lessonProgressRepository.getLessonProgress()[lessonId];
+  if (!progress) return { ok: true, skipped: true, error: null };
+
   try {
     const userId = await getAuthenticatedUserId();
     if (!userId) return { ok: true, skipped: true, error: null };
-
-    const progress = lessonProgressRepository.getLessonProgress()[lessonId];
-    if (!progress) return { ok: true, skipped: true, error: null };
 
     const result = await lessonProgressRemoteRepository.upsertLessonProgress(
       userId,
       lessonId,
       progress,
     );
+    if (result.error) enqueuePendingLessonProgress(lessonId, progress);
 
     return {
       ok: !result.error,
@@ -386,10 +410,11 @@ export async function syncLessonProgressToSupabase(lessonId: string): Promise<Sy
       error: result.error,
     };
   } catch (error) {
+    enqueuePendingLessonProgress(lessonId, progress);
     return {
       ok: false,
       skipped: false,
-      error: error instanceof Error ? error.message : 'Falha ao sincronizar fase.',
+      error: getSyncErrorMessage(error, 'Falha ao sincronizar fase.'),
     };
   }
 }
@@ -399,20 +424,21 @@ export async function syncArcadeScoreToSupabase(
   score: number,
   metadata: { maxCombo?: number; levelReached?: number } = {},
 ): Promise<SyncStatus> {
+  if (score <= 0) return { ok: true, skipped: true, error: null };
+
+  const remoteGameId = REMOTE_GAME_ID[gameId];
+  const input = {
+    score,
+    maxCombo: metadata.maxCombo,
+    levelReached: metadata.levelReached,
+  };
+
   try {
     const userId = await getAuthenticatedUserId();
     if (!userId) return { ok: true, skipped: true, error: null };
-    if (score <= 0) return { ok: true, skipped: true, error: null };
 
-    const result = await arcadeScoreRemoteRepository.saveArcadeScore(
-      userId,
-      REMOTE_GAME_ID[gameId],
-      {
-        score,
-        maxCombo: metadata.maxCombo,
-        levelReached: metadata.levelReached,
-      },
-    );
+    const result = await arcadeScoreRemoteRepository.saveArcadeScore(userId, remoteGameId, input);
+    if (result.error) enqueuePendingArcadeScore(remoteGameId, input);
 
     return {
       ok: !result.error,
@@ -420,10 +446,11 @@ export async function syncArcadeScoreToSupabase(
       error: result.error,
     };
   } catch (error) {
+    enqueuePendingArcadeScore(remoteGameId, input);
     return {
       ok: false,
       skipped: false,
-      error: error instanceof Error ? error.message : 'Falha ao sincronizar recorde.',
+      error: getSyncErrorMessage(error, 'Falha ao sincronizar recorde.'),
     };
   }
 }

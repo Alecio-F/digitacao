@@ -31,12 +31,12 @@ export function LocalDataActions({ profile }: Props) {
     <Card as="section" className={styles.dataActions} aria-labelledby="data-title">
       <header className={styles.panelHeader}>
         <span className={styles.eyebrow}>Dados locais</span>
-        <h2 id="data-title" className={styles.panelTitle}>Gerenciar dados</h2>
+        <h2 id="data-title" className={styles.panelTitle}>Dados locais</h2>
       </header>
 
       <p className={styles.mutedText}>
-        Seus dados ficam apenas neste navegador. Você pode exportá-los como backup ou limpar o
-        progresso para recomeçar.
+        Gerencie os dados salvos neste navegador. Mesmo com conta online, seus dados locais
+        continuam servindo como backup rápido deste dispositivo.
       </p>
 
       <div className={styles.dataButtons}>

@@ -35,10 +35,22 @@
 }
 
 .emptyText {
-  margin-bottom: var(--dojo-space-3);
   color: var(--dojo-text-muted);
   font-size: 0.9rem;
   line-height: 1.55;
+}
+
+.emptyText strong,
+.emptyText span {
+  display: block;
+}
+
+.emptyText strong {
+  margin-bottom: 3px;
+  color: var(--dojo-text-strong);
+  font-family: var(--font-title);
+  font-size: 0.98rem;
+  font-weight: 900;
 }
 
 /* CTA links styled as buttons (links reais para navegação) */
@@ -301,15 +313,49 @@
 .historyList {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
+  max-height: 520px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 6px;
   list-style: none;
+  scrollbar-color: color-mix(in srgb, var(--dojo-primary) 68%, transparent) transparent;
+  scrollbar-width: thin;
+}
+
+.historyList::-webkit-scrollbar {
+  width: 7px;
+}
+
+.historyList::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.historyList::-webkit-scrollbar-thumb {
+  border-radius: var(--dojo-radius-pill);
+  background: rgba(20, 184, 212, 0.32);
+}
+
+.historyList::-webkit-scrollbar-thumb:hover {
+  background: rgba(20, 184, 212, 0.52);
+}
+
+.historyEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--dojo-space-3);
+  padding: 16px;
+  border: 1px dashed rgba(20, 184, 212, 0.28);
+  border-radius: 14px;
+  background: rgba(20, 184, 212, 0.06);
 }
 
 .historyItem {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 12px 14px;
+  gap: 9px;
+  padding: 10px 12px;
   border: 1px solid rgba(20, 184, 212, 0.14);
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.4);
@@ -319,32 +365,49 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 8px;
 }
 
-.historyDate {
+.historyMeta {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+  color: var(--dojo-text-muted);
+  font-size: 0.8rem;
+  line-height: 1.25;
+}
+
+.historyMeta strong {
   color: var(--dojo-primary);
   font-family: var(--font-title);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 900;
   text-transform: uppercase;
 }
 
-.historyMode {
+.historyMeta em {
   color: var(--dojo-text-muted);
-  font-size: 0.82rem;
+  font-style: normal;
+  font-weight: 700;
 }
 
 .historyMetrics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
+  gap: 6px;
 }
 
 .historyMetrics span {
   display: flex;
   flex-direction: column;
   gap: 1px;
+  min-width: 0;
+  padding: 6px 8px;
+  border-radius: 9px;
+  background: rgba(20, 184, 212, 0.06);
 }
 
 .historyMetrics small {
@@ -358,7 +421,7 @@
 .historyMetrics strong {
   color: var(--dojo-text-strong);
   font-family: var(--font-title);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-variant-numeric: tabular-nums;
   font-weight: 800;
 }
@@ -435,6 +498,14 @@
   border-radius: 50%;
   background: linear-gradient(135deg, var(--dojo-primary), var(--dojo-secondary));
   box-shadow: 0 0 8px rgba(0, 168, 204, 0.4);
+}
+
+.futureDotMuted {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid rgba(20, 184, 212, 0.36);
+  background: rgba(20, 184, 212, 0.08);
 }
 
 /* ── Data actions ── */
@@ -654,12 +725,18 @@
 :global(.dark) .ctaSecondary,
 :global(.dark) .medal,
 :global(.dark) .historyItem,
+:global(.dark) .historyMetrics span,
 :global(.dark) .authPanel,
 :global(.dark) .authStatusGrid span,
 :global(.dark) .remoteProfileBox,
 :global(.dark) .authField input {
   border-color: rgba(114, 245, 255, 0.12);
   background: rgba(255, 255, 255, 0.05);
+}
+
+:global(.dark) .historyEmpty {
+  border-color: rgba(114, 245, 255, 0.18);
+  background: rgba(114, 245, 255, 0.05);
 }
 
 :global(.dark) .syncNotice {
@@ -699,6 +776,10 @@
 
   .importSummaryGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .historyList {
+    max-height: 420px;
   }
 }
 

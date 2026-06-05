@@ -151,8 +151,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .btn,
-  .btn::before {
+  :global(:root:not([data-motion-preference='user'])) .btn,
+  :global(:root:not([data-motion-preference='user'])) .btn::before {
     transition-duration: 0.001ms !important;
   }
 }

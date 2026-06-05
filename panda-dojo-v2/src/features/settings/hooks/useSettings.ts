@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   getArenaCursor,
   getAnimationsEnabled,
+  getMotionPreferenceTouched,
   getPracticeTime,
   getReducedEffects,
   getSoundsEnabled,
@@ -10,6 +11,7 @@ import {
   resetTheme as resetThemeInStore,
   setAnimationsEnabled as setAnimationsEnabledInStore,
   setArenaCursor,
+  setMotionPreferenceTouched,
   setPracticeTime,
   setReducedEffects as setReducedEffectsInStore,
   setSoundsEnabled as setSoundsEnabledInStore,
@@ -33,6 +35,7 @@ function applySettingsToDocument(settings: Settings) {
 
   root.dataset.theme = settings.theme;
   root.dataset.animations = settings.animationsEnabled ? 'on' : 'off';
+  root.dataset.motionPreference = settings.motionPreferenceTouched ? 'user' : 'system';
   root.dataset.reducedEffects = settings.reducedEffects ? 'true' : 'false';
 
   root.classList.toggle('dark', settings.theme === 'dark');
@@ -42,12 +45,14 @@ function applySettingsToDocument(settings: Settings) {
 export function useSettings() {
   const initialSettings = useMemo<Settings>(() => {
     const prefersReducedMotion = getPrefersReducedMotion();
+    const motionPreferenceTouched = getMotionPreferenceTouched();
     return {
       theme: getTheme(),
       defaultPracticeTime: getPracticeTime(),
       soundsEnabled: getSoundsEnabled(true),
-      animationsEnabled: getAnimationsEnabled(!prefersReducedMotion),
-      reducedEffects: getReducedEffects(prefersReducedMotion),
+      animationsEnabled: getAnimationsEnabled(motionPreferenceTouched ? true : !prefersReducedMotion),
+      reducedEffects: getReducedEffects(motionPreferenceTouched ? false : prefersReducedMotion),
+      motionPreferenceTouched,
       cursorMode: getArenaCursor(),
       keyboardVisible: getVirtualKeyboardEnabled(true),
     };
@@ -83,13 +88,29 @@ export function useSettings() {
   }, []);
 
   const setAnimationsEnabled = useCallback((value: boolean) => {
+    setMotionPreferenceTouched(true);
     setAnimationsEnabledInStore(value);
-    setSettings((prev) => ({ ...prev, animationsEnabled: value }));
+    if (value) {
+      setReducedEffectsInStore(false);
+    }
+    setSettings((prev) => ({
+      ...prev,
+      animationsEnabled: value,
+      reducedEffects: value ? false : prev.reducedEffects,
+      motionPreferenceTouched: true,
+    }));
   }, []);
 
   const setReducedEffects = useCallback((value: boolean) => {
+    setMotionPreferenceTouched(true);
     setReducedEffectsInStore(value);
-    setSettings((prev) => ({ ...prev, reducedEffects: value }));
+    setAnimationsEnabledInStore(!value);
+    setSettings((prev) => ({
+      ...prev,
+      animationsEnabled: !value,
+      reducedEffects: value,
+      motionPreferenceTouched: true,
+    }));
   }, []);
 
   const setCursorMode = useCallback((value: CursorMode) => {

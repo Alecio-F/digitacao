@@ -21,6 +21,7 @@ export const PERSISTENCE_KEYS = {
   soundsEnabled: STORAGE_KEYS.pandaSoundsEnabled,
   animationsEnabled: STORAGE_KEYS.pandaAnimationsEnabled,
   reducedEffects: STORAGE_KEYS.pandaReducedEffects,
+  motionPreferenceTouched: STORAGE_KEYS.pandaMotionPreferenceTouched,
 
   // Perfil / progresso
   xp: STORAGE_KEYS.pandaXp,
@@ -61,6 +62,8 @@ export const PERSISTENCE_KEYS = {
   // Sync com a nuvem: importação local -> nuvem e restauração nuvem -> local.
   cloudSyncImported: STORAGE_KEYS.pandaCloudSyncImported,
   cloudRestoreCompleted: STORAGE_KEYS.pandaCloudRestoreCompleted,
+  // Fila de itens que falharam ao enviar para a nuvem (reenvio posterior).
+  pendingSyncQueue: STORAGE_KEYS.pandaPendingSyncQueue,
 } as const;
 
 export type PersistenceKeyName = keyof typeof PERSISTENCE_KEYS;

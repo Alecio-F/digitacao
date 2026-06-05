@@ -106,8 +106,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .backdrop,
-  .drawer {
+  :global(:root:not([data-motion-preference='user'])) .backdrop,
+  :global(:root:not([data-motion-preference='user'])) .drawer {
     transition-duration: 0.001ms !important;
   }
 }

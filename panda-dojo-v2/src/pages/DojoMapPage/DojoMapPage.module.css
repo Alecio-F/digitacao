@@ -805,11 +805,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .practiceTextCard {
+  :global(:root:not([data-motion-preference='user'])) .practiceTextCard {
     transition: none;
   }
 
-  .practiceTextCard:hover {
+  :global(:root:not([data-motion-preference='user'])) .practiceTextCard:hover {
     transform: none;
   }
 }

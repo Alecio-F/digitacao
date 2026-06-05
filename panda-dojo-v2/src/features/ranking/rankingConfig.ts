@@ -1,0 +1,79 @@
+import type { RankingCategory, RankingCategoryConfig, RankingMetric } from './rankingTypes';
+
+export const RANKING_CATEGORY_CONFIG: Record<RankingCategory, RankingCategoryConfig> = {
+  general: {
+    id: 'general',
+    title: 'Geral',
+    description: 'Score competitivo combinando velocidade, precisão, combo e consistência.',
+    defaultMetric: 'ranking_score',
+    availableMetrics: ['ranking_score', 'ppm', 'accuracy', 'combo'],
+    requiresEligibleResult: true,
+    supportedModes: ['all', 'free', 'random_words', 'lesson', 'practice_text', 'daily_challenge'],
+    status: 'ready',
+  },
+  speed: {
+    id: 'speed',
+    title: 'Velocidade',
+    description: 'Melhores marcas por PPM ou CPM, exigindo precisão mínima.',
+    defaultMetric: 'ppm',
+    availableMetrics: ['ppm', 'cpm'],
+    requiresEligibleResult: true,
+    minimumAccuracy: 90,
+    supportedModes: ['all', 'free', 'random_words', 'lesson', 'practice_text', 'daily_challenge'],
+    status: 'ready',
+  },
+  accuracy: {
+    id: 'accuracy',
+    title: 'Precisão',
+    description: 'Resultados mais precisos com desempate por velocidade, erros e tempo.',
+    defaultMetric: 'accuracy',
+    availableMetrics: ['accuracy', 'ppm'],
+    requiresEligibleResult: true,
+    supportedModes: ['all', 'free', 'random_words', 'lesson', 'practice_text', 'daily_challenge'],
+    status: 'ready',
+  },
+  phases: {
+    id: 'phases',
+    title: 'Fases',
+    description: 'Ranking de treinos iniciados pelo Mapa do Dojo.',
+    defaultMetric: 'ranking_score',
+    availableMetrics: ['ranking_score', 'ppm', 'accuracy', 'lowest_time'],
+    requiresEligibleResult: true,
+    supportedModes: ['lesson'],
+    status: 'ready',
+  },
+  texts: {
+    id: 'texts',
+    title: 'Textos',
+    description: 'Ranking de textos praticados e treinos livres compatíveis.',
+    defaultMetric: 'ranking_score',
+    availableMetrics: ['ranking_score', 'ppm', 'accuracy', 'lowest_time'],
+    requiresEligibleResult: true,
+    supportedModes: ['free', 'practice_text'],
+    status: 'ready',
+  },
+  arcade: {
+    id: 'arcade',
+    title: 'Arcade',
+    description: 'Base preparada para Panda Keys e próximos minigames.',
+    defaultMetric: 'arcade_score',
+    availableMetrics: ['arcade_score', 'combo'],
+    requiresEligibleResult: false,
+    supportedModes: ['arcade'],
+    status: 'soon',
+  },
+  daily: {
+    id: 'daily',
+    title: 'Desafio Diário',
+    description: 'Preparado para resultados diários dedicados em fase futura.',
+    defaultMetric: 'ranking_score',
+    availableMetrics: ['ranking_score', 'ppm', 'accuracy'],
+    requiresEligibleResult: true,
+    supportedModes: ['daily_challenge'],
+    status: 'soon',
+  },
+};
+
+export const DEFAULT_RANKING_CATEGORY: RankingCategory = 'general';
+export const DEFAULT_RANKING_METRIC: RankingMetric = RANKING_CATEGORY_CONFIG.general.defaultMetric;
+export const DEFAULT_RANKING_LIMIT = 10;

@@ -115,9 +115,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .item,
-  .item::after,
-  .icon {
+  :global(:root:not([data-motion-preference='user'])) .item,
+  :global(:root:not([data-motion-preference='user'])) .item::after,
+  :global(:root:not([data-motion-preference='user'])) .icon {
     transition: none;
   }
 }

@@ -12,6 +12,8 @@ interface UseArenaShortcutsOptions {
   onFocusArena: () => void;
 }
 
+const TAB_CHORD_TIMEOUT_MS = 1200;
+
 function isEditableTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
 
@@ -26,15 +28,18 @@ function isEditableTarget(target: EventTarget | null): boolean {
   );
 }
 
-function isBlockingDialogOpen(): boolean {
-  return document.querySelector('[role="dialog"][aria-modal="true"]') !== null;
+function isArenaShortcutTarget(target: EventTarget | null): boolean {
+  return (
+    target instanceof HTMLElement &&
+    target.closest('[data-arena-root], [data-typing-area], [data-type-arena]') !== null
+  );
 }
 
-function isArenaTypingInput(target: EventTarget | null, insideArena: boolean): boolean {
+function isBlockingDialogOpen(): boolean {
   return (
-    insideArena &&
-    target instanceof HTMLInputElement &&
-    target.getAttribute('aria-label') === 'Entrada de digitação'
+    document.querySelector(
+      '[data-settings-drawer="open"], [role="dialog"][aria-modal="true"]:not([aria-hidden="true"])',
+    ) !== null
   );
 }
 
@@ -42,9 +47,16 @@ function isSystemModifierCombination(event: KeyboardEvent): boolean {
   return event.ctrlKey || event.metaKey;
 }
 
+function isArenaRoute(): boolean {
+  return window.location.pathname.includes('/arena');
+}
+
 export function useArenaShortcuts(options: UseArenaShortcutsOptions): void {
   const optionsRef = useRef(options);
+  const altDownRef = useRef(false);
   const tabChordActiveRef = useRef(false);
+  const tabChordStartedAtRef = useRef<number | null>(null);
+  const tabChordTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     optionsRef.current = options;
@@ -56,8 +68,21 @@ export function useArenaShortcuts(options: UseArenaShortcutsOptions): void {
       return Boolean(root && target instanceof Node && root.contains(target));
     }
 
-    function resetChord() {
+    function clearTabChordTimeout() {
+      if (tabChordTimeoutRef.current === null) return;
+      window.clearTimeout(tabChordTimeoutRef.current);
+      tabChordTimeoutRef.current = null;
+    }
+
+    function resetTabChord() {
+      clearTabChordTimeout();
       tabChordActiveRef.current = false;
+      tabChordStartedAtRef.current = null;
+    }
+
+    function resetShortcuts() {
+      resetTabChord();
+      altDownRef.current = false;
     }
 
     function hasActiveArenaContext(insideArena: boolean): boolean {
@@ -72,19 +97,18 @@ export function useArenaShortcuts(options: UseArenaShortcutsOptions): void {
       );
     }
 
-    function shouldIgnoreTarget(target: EventTarget | null, insideArena: boolean): boolean {
-      return isEditableTarget(target) && !isArenaTypingInput(target, insideArena);
+    function shouldIgnoreShortcut(target: EventTarget | null, insideArena: boolean): boolean {
+      return isEditableTarget(target) && !insideArena && !isArenaShortcutTarget(target);
     }
 
     function getShortcutAction(event: KeyboardEvent): (() => void) | null {
       const current = optionsRef.current;
-      const key = event.key.toLowerCase();
 
-      if (key === 'r') return current.onRestart;
-      if (key === 'p' && !current.isResultVisible) return current.onPauseToggle;
-      if (event.key === 'Enter') return current.onNextAction;
-      if (key === 'm') return current.onGoToMap;
-      if (key === 'a') return current.onFocusArena;
+      if (event.code === 'KeyR') return current.onRestart;
+      if (event.code === 'KeyP' && !current.isResultVisible) return current.onPauseToggle;
+      if (event.code === 'Enter') return current.onNextAction;
+      if (event.code === 'KeyM') return current.onGoToMap;
+      if (event.code === 'KeyA') return current.onFocusArena;
 
       return null;
     }
@@ -92,32 +116,53 @@ export function useArenaShortcuts(options: UseArenaShortcutsOptions): void {
     function runAction(event: KeyboardEvent, action: () => void) {
       event.preventDefault();
       event.stopPropagation();
-      resetChord();
+      resetTabChord();
       action();
+    }
+
+    function startTabChord(event: KeyboardEvent) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      clearTabChordTimeout();
+      tabChordActiveRef.current = true;
+      tabChordStartedAtRef.current = Date.now();
+      tabChordTimeoutRef.current = window.setTimeout(resetTabChord, TAB_CHORD_TIMEOUT_MS);
     }
 
     function handleKeyDown(event: KeyboardEvent) {
       const current = optionsRef.current;
       if (!current.enabled) return;
-      if (isSystemModifierCombination(event)) return;
 
       const target = event.target;
       const insideArena = isInsideArena(target);
-      if (shouldIgnoreTarget(target, insideArena) || isBlockingDialogOpen()) {
-        resetChord();
+
+      if (shouldIgnoreShortcut(target, insideArena) || isBlockingDialogOpen()) {
+        resetShortcuts();
         return;
       }
 
-      if (event.key === 'Escape') {
-        resetChord();
+      if (event.code === 'Escape') {
+        resetShortcuts();
         return;
       }
+
+      if (event.code === 'AltLeft' || event.code === 'AltRight') {
+        altDownRef.current = true;
+        if (isArenaRoute()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        return;
+      }
+
+      if (isSystemModifierCombination(event)) return;
 
       const activeArenaContext = hasActiveArenaContext(insideArena);
-      const isAltShortcut = event.altKey && !event.shiftKey;
+      const isAltShortcut = (event.altKey || altDownRef.current) && !event.shiftKey;
 
       if (isAltShortcut) {
-        if (!activeArenaContext) return;
+        if (!isArenaRoute()) return;
 
         const action = getShortcutAction(event);
         if (!action) return;
@@ -126,27 +171,24 @@ export function useArenaShortcuts(options: UseArenaShortcutsOptions): void {
         return;
       }
 
-      if (event.key === 'Tab') {
+      if (event.code === 'Tab') {
         if (event.shiftKey || event.altKey || !activeArenaContext) {
-          resetChord();
+          resetTabChord();
           return;
         }
 
-        tabChordActiveRef.current = true;
-        event.preventDefault();
+        startTabChord(event);
         return;
       }
 
       if (!tabChordActiveRef.current || event.repeat) return;
 
-      const action = getShortcutAction(event);
+      event.preventDefault();
+      event.stopPropagation();
 
+      const action = getShortcutAction(event);
       if (!action) {
-        if (activeArenaContext) {
-          event.preventDefault();
-          event.stopPropagation();
-          resetChord();
-        }
+        resetTabChord();
         return;
       }
 
@@ -154,23 +196,26 @@ export function useArenaShortcuts(options: UseArenaShortcutsOptions): void {
     }
 
     function handleKeyUp(event: KeyboardEvent) {
-      if (event.key === 'Tab') resetChord();
+      if (event.code === 'AltLeft' || event.code === 'AltRight') {
+        altDownRef.current = false;
+      }
     }
 
     function handleVisibilityChange() {
-      if (document.visibilityState === 'hidden') resetChord();
+      if (document.visibilityState === 'hidden') resetShortcuts();
     }
 
     window.addEventListener('keydown', handleKeyDown, true);
     window.addEventListener('keyup', handleKeyUp, true);
-    window.addEventListener('blur', resetChord);
+    window.addEventListener('blur', resetShortcuts);
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown, true);
       window.removeEventListener('keyup', handleKeyUp, true);
-      window.removeEventListener('blur', resetChord);
+      window.removeEventListener('blur', resetShortcuts);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      resetShortcuts();
     };
   }, []);
 }

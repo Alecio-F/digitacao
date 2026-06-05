@@ -2,7 +2,7 @@
 
 ## Fase Atual
 
-Fase 1C: Sync local para Supabase.
+Fase 1E: Pending Sync simples para falhas temporárias de envio ao Supabase.
 
 Base já existente da Fase 1B:
 
@@ -22,6 +22,15 @@ Entregas adicionadas na Fase 1C:
 - importação manual na Conta;
 - espelhamento remoto de novos resultados e recordes;
 - fallback local quando Supabase estiver indisponível.
+
+Entregas adicionadas na Fase 1E:
+
+- fila local `pandaPendingSyncQueue`;
+- `pendingSyncRepository`;
+- `pendingSyncService`;
+- flush automático ao carregar o app e quando o navegador volta online;
+- indicador e botão "Sincronizar agora" na Conta;
+- enfileiramento de falhas para Type Arena, Mapa, Arcade e conquistas.
 
 ## Schema
 
@@ -112,7 +121,6 @@ Ainda não há:
 
 - ranking global;
 - importação automática do progresso local;
-- fila offline de pending sync;
 - desafio diário online separado em `daily_challenge_results`;
 - resolução avançada de conflitos entre múltiplos dispositivos.
 
@@ -154,10 +162,75 @@ outro navegador/dispositivo.
 "Restaurar progresso" / "Agora não". Após sucesso, a tela é recarregada para
 refletir o progresso reconstruído.
 
-## Próximos Passos — Fase 1E
+## Fase 1E — Pending Sync
 
-1. Criar fila de pending sync para falhas de rede (offline-first).
-2. Sincronizar `daily_challenge_results` de forma dedicada.
-3. Criar ranking global com regras no banco/Edge Functions.
-4. Resolução avançada de conflitos entre múltiplos dispositivos (merge com timestamps).
-5. Adicionar testes automatizados dos mapeamentos local/remoto e da restauração.
+Implementada uma fila local simples para reenviar dados que já foram salvos no
+navegador, mas falharam ao espelhar no Supabase.
+
+### Arquivos
+
+- `src/features/backend-sync/pendingSyncTypes.ts`
+- `src/repositories/pendingSyncRepository.ts`
+- `src/features/backend-sync/pendingSyncService.ts`
+- `src/features/backend-sync/usePendingSync.ts`
+- `src/features/backend-sync/PendingSyncRunner.tsx`
+- `src/pages/AccountPage/components/PendingSyncCard.tsx`
+
+### Dados cobertos
+
+- Resultados da Type Arena (`typing_result`).
+- Progresso do Mapa (`lesson_progress`).
+- Recordes do Arcade (`arcade_score`).
+- Conquistas (`user_achievement`).
+
+### Comportamento
+
+- Falha remota não quebra o app e não apaga dados locais.
+- A fila usa `pandaPendingSyncQueue` no localStorage.
+- O flush automático roda com usuário logado e Supabase configurado.
+- O evento `online` dispara nova tentativa.
+- A Conta mostra quantos itens estão pendentes e permite sincronizar
+  manualmente.
+- Tentativas automáticas param em 5 falhas por item; a ação manual pode tentar
+  novamente.
+
+## Ranking Online Inicial
+
+Implementada a primeira leitura online do Ranking do Dojo usando Supabase sem
+remover o ranking local.
+
+### Arquivos
+
+- `src/repositories/remote/rankingRemoteRepository.ts`
+- `src/features/ranking/useRankingViewModel.ts`
+- `src/features/ranking/rankingMappers.ts`
+- `supabase/ranking_views.sql`
+- `docs/RANKING_SYSTEM.md`
+
+### Fonte de dados
+
+O front-end consulta `public.online_typing_ranking`, view criada por
+`supabase/ranking_views.sql`. A view usa:
+
+- `public.typing_results`;
+- `public.profiles`;
+- apenas resultados `valid_for_ranking = true`;
+- campos mínimos necessários para o mural online.
+
+### Comportamento
+
+- O escopo `Local` continua usando histórico do navegador.
+- O escopo `Online` busca resultados no Supabase.
+- Categorias Geral, Velocidade e Precisão usam ordenação remota inicial.
+- Fases e Textos ficam preparados usando filtros por `mode`.
+- Arcade e Desafio Diário seguem reservados para etapas futuras.
+- Se Supabase, RLS ou view não estiverem prontos, a UI mostra mensagem amigável
+  e o ranking local permanece funcional.
+
+## Próximos Passos
+
+1. Sincronizar `daily_challenge_results` de forma dedicada.
+2. Evoluir ranking global com RPC/materialized view se o volume crescer.
+3. Resolução avançada de conflitos entre múltiplos dispositivos (merge com timestamps).
+4. Adicionar testes automatizados dos mapeamentos local/remoto, restauração e
+   Pending Sync.

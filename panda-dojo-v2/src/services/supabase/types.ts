@@ -37,6 +37,27 @@ export interface RemoteTypingResult {
   completed_at: string;
 }
 
+export interface RemoteRankingEntry {
+  id: string;
+  user_id: string;
+  display_name: string | null;
+  username: string | null;
+  title: string | null;
+  mode: string;
+  lesson_id: string | null;
+  practice_text_id: string | null;
+  daily_challenge_id?: string | null;
+  duration_seconds: number;
+  ppm: number;
+  cpm: number;
+  accuracy: number;
+  errors: number;
+  max_combo: number;
+  ranking_score: number;
+  valid_for_ranking: boolean;
+  completed_at: string;
+}
+
 export interface RemoteLessonProgress {
   id: string;
   user_id: string;

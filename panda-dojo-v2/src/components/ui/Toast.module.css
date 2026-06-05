@@ -89,7 +89,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .toast {
+  :global(:root:not([data-motion-preference='user'])) .toast {
     transition-duration: 0.001ms !important;
   }
 }

@@ -250,7 +250,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :global(.float-score) {
+  :global(:root:not([data-motion-preference='user']) .float-score) {
     animation: floatFade 0.6s ease-out forwards;
   }
 }

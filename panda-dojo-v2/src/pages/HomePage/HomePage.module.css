@@ -691,7 +691,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dailyChallengeBannerAvailable {
+  :global(:root:not([data-motion-preference='user'])) .dailyChallengeBannerAvailable {
     animation: none;
   }
 }

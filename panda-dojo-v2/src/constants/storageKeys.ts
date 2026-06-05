@@ -32,8 +32,10 @@ export const STORAGE_KEYS = {
   pandaSoundsEnabled: 'pandaSoundsEnabled',
   pandaAnimationsEnabled: 'pandaAnimationsEnabled',
   pandaReducedEffects: 'pandaReducedEffects',
+  pandaMotionPreferenceTouched: 'pandaMotionPreferenceTouched',
   pandaCloudSyncImported: 'pandaCloudSyncImported',
   pandaCloudRestoreCompleted: 'pandaCloudRestoreCompleted',
+  pandaPendingSyncQueue: 'pandaPendingSyncQueue',
 } as const;
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];
@@ -72,6 +74,8 @@ export const KEYS = {
   soundsEnabled: STORAGE_KEYS.pandaSoundsEnabled,
   animationsEnabled: STORAGE_KEYS.pandaAnimationsEnabled,
   reducedEffects: STORAGE_KEYS.pandaReducedEffects,
+  motionPreferenceTouched: STORAGE_KEYS.pandaMotionPreferenceTouched,
   cloudSyncImported: STORAGE_KEYS.pandaCloudSyncImported,
   cloudRestoreCompleted: STORAGE_KEYS.pandaCloudRestoreCompleted,
+  pendingSyncQueue: STORAGE_KEYS.pandaPendingSyncQueue,
 } as const;

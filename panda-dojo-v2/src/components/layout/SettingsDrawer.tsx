@@ -95,7 +95,9 @@ export function SettingsDrawer({ open, onClose }: Props) {
       <aside
         className={drawerClassName}
         aria-labelledby={titleId}
-        aria-modal="true"
+        aria-hidden={!open}
+        aria-modal={open ? 'true' : undefined}
+        data-settings-drawer={open ? 'open' : 'closed'}
         role="dialog"
       >
         <div className={styles.drawerHeader}>
@@ -188,7 +190,7 @@ export function SettingsDrawer({ open, onClose }: Props) {
                   type="button"
                   className={[
                     styles.cursorChoice,
-                    styles.cursorChoiceUnderline,
+                    styles.cursorChoiceBlock,
                     settings.cursorMode === 'arcade' ? styles.cursorChoiceActive : '',
                   ]
                     .filter(Boolean)
@@ -197,7 +199,7 @@ export function SettingsDrawer({ open, onClose }: Props) {
                   onClick={() => setCursorMode('arcade')}
                 >
                   <span className={styles.cursorPreviewWord}>Panda</span>
-                  <span className={styles.cursorPreviewLabel}>Linha</span>
+                  <span className={styles.cursorPreviewLabel}>Haste</span>
                 </button>
                 <button
                   type="button"
@@ -212,7 +214,7 @@ export function SettingsDrawer({ open, onClose }: Props) {
                   onClick={() => setCursorMode('classic')}
                 >
                   <span className={styles.cursorPreviewWord}>Panda</span>
-                  <span className={styles.cursorPreviewLabel}>Haste</span>
+                  <span className={styles.cursorPreviewLabel}>Linha</span>
                 </button>
               </div>
             </div>
