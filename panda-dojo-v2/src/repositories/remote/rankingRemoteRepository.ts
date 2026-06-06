@@ -7,6 +7,8 @@ import {
   type RemoteRepositoryResult,
 } from './remoteRepositoryResult';
 
+const ONLINE_RANKING_VIEW = 'online_typing_ranking_best';
+
 export interface OnlineTypingRankingOptions {
   category: RankingCategory;
   metric: RankingMetric;
@@ -119,18 +121,42 @@ function mapFallbackRow(row: FallbackTypingResultRow): RemoteRankingEntry {
     ranking_score: row.ranking_score,
     valid_for_ranking: row.valid_for_ranking,
     completed_at: row.completed_at,
+    created_at: row.completed_at,
   };
 }
 
 function normalizeError(message: string | null): string | null {
   if (!message) return null;
-  if (message.includes('online_typing_ranking')) {
-    return 'A view online_typing_ranking ainda não foi aplicada no Supabase.';
+  if (message.includes(ONLINE_RANKING_VIEW) || message.includes('online_typing_ranking')) {
+    return `A view ${ONLINE_RANKING_VIEW} ainda nao foi aplicada no Supabase.`;
   }
   if (message.toLowerCase().includes('permission') || message.toLowerCase().includes('policy')) {
-    return 'O Dojo não tem permissão para ler o mural online ainda. Revise a view ou as policies de ranking.';
+    return 'O Dojo nao tem permissao para ler o mural online ainda. Revise a view ou as policies de ranking.';
   }
   return message;
+}
+
+function dedupeBestResultByUser(entries: RemoteRankingEntry[]): RemoteRankingEntry[] {
+  const bestByUser = new Map<string, RemoteRankingEntry>();
+
+  for (const entry of entries) {
+    const current = bestByUser.get(entry.user_id);
+    if (!current) {
+      bestByUser.set(entry.user_id, entry);
+      continue;
+    }
+
+    const currentScore = Number(current.ranking_score) || 0;
+    const entryScore = Number(entry.ranking_score) || 0;
+    const entryIsBetter =
+      entryScore > currentScore ||
+      (entryScore === currentScore && entry.ppm > current.ppm) ||
+      (entryScore === currentScore && entry.ppm === current.ppm && entry.accuracy > current.accuracy);
+
+    if (entryIsBetter) bestByUser.set(entry.user_id, entry);
+  }
+
+  return Array.from(bestByUser.values());
 }
 
 async function queryRankingView(
@@ -139,7 +165,7 @@ async function queryRankingView(
   if (!supabase) return disabledResult();
 
   let query = supabase
-    .from('online_typing_ranking')
+    .from(ONLINE_RANKING_VIEW)
     .select('*')
     .eq('valid_for_ranking', true);
 
@@ -215,7 +241,7 @@ async function queryTypingResultsFallback(
     .returns<FallbackTypingResultRow[]>();
 
   return {
-    data: data?.map(mapFallbackRow) ?? [],
+    data: dedupeBestResultByUser(data?.map(mapFallbackRow) ?? []),
     error: normalizeError(error?.message ?? null),
   };
 }

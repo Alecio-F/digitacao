@@ -42,6 +42,7 @@ export interface RemoteRankingEntry {
   user_id: string;
   display_name: string | null;
   username: string | null;
+  avatar_url?: string | null;
   title: string | null;
   mode: string;
   lesson_id: string | null;
@@ -56,6 +57,7 @@ export interface RemoteRankingEntry {
   ranking_score: number;
   valid_for_ranking: boolean;
   completed_at: string;
+  created_at?: string;
 }
 
 export interface RemoteLessonProgress {
