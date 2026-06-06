@@ -29,7 +29,7 @@ export function HomeHero({ profile }: Props) {
         </div>
       </div>
 
-      <aside className={styles.heroVisual} aria-label="Resumo do jogador">
+      <aside className={styles.heroVisual} aria-label="Mestre Panda e resumo do jogador">
         <div className={styles.pandaCard}>
           <div className={styles.pandaStatus}>
             <span className={styles.playerKicker}>Painel do jogador</span>
