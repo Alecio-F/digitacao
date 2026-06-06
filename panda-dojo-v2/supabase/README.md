@@ -6,6 +6,7 @@ Esta pasta contem a base SQL do Supabase para a V2.
 
 - `schema.sql`: tabelas principais, triggers, indices e RLS.
 - `seed.sql`: conquistas iniciais.
+- `ranking_eligibility.sql`: migracao idempotente para o motivo simples de inelegibilidade do ranking.
 - `ranking_views.sql`: views e policies para o Ranking Online.
 - `fix_profiles_null_names.sql`: correcao auxiliar para perfis antigos sem nome.
 - `security_fixes.sql`: ajustes de seguranca para funcoes e permissoes.
@@ -16,9 +17,10 @@ Esta pasta contem a base SQL do Supabase para a V2.
 2. Acesse SQL Editor.
 3. Execute `schema.sql`.
 4. Execute `seed.sql`.
-5. Execute `ranking_views.sql`.
-6. Execute `security_fixes.sql`.
-7. Execute scripts auxiliares somente se precisar corrigir dados antigos.
+5. Execute `ranking_eligibility.sql`.
+6. Execute `ranking_views.sql`.
+7. Execute `security_fixes.sql`.
+8. Execute scripts auxiliares somente se precisar corrigir dados antigos.
 
 ## Variaveis
 
@@ -52,6 +54,10 @@ especificas e limitadas para:
 - perfis que aparecem no mural online.
 
 ## Ranking Online
+
+`ranking_eligibility.sql` adiciona `ranking_invalid_reason` em bancos ja
+existentes e preenche o motivo principal de resultados invalidos quando houver
+dados antigos em `ranking_invalid_reasons`.
 
 `ranking_views.sql` cria quatro views de leitura:
 

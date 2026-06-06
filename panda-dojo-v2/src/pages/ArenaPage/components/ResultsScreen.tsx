@@ -56,7 +56,7 @@ const MEDAL_LABEL: Record<LessonMedal, string> = {
 };
 
 const RANKING_REASON_LABELS: Record<RankingInvalidReason, string> = {
-  accuracy_too_low: 'precisão abaixo de 85%',
+  accuracy_too_low: 'precisão abaixo de 90%',
   duration_too_short: 'treino muito curto',
   not_enough_correct_chars: 'poucos caracteres corretos',
   too_many_errors: 'muitos erros na rodada',

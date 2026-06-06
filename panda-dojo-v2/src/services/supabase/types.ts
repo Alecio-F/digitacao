@@ -32,6 +32,7 @@ export interface RemoteTypingResult {
   repeated_key_count: number;
   valid_for_ranking: boolean;
   ranking_score: number;
+  ranking_invalid_reason: string | null;
   suspicious_flags: Record<string, unknown>;
   ranking_invalid_reasons: string[];
   completed_at: string;

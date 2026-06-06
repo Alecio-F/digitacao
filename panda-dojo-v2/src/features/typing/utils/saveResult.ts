@@ -123,6 +123,7 @@ export function saveSessionResult(payload: SaveResultPayload): SaveResultOutput 
     suspiciousInputBursts,
     validForRanking: rankingEligibility.validForRanking,
     rankingScore: rankingEligibility.score,
+    rankingInvalidReason: rankingEligibility.invalidReason,
     rankingInvalidReasons: rankingEligibility.reasonCodes,
     suspiciousFlags: rankingEligibility.suspiciousFlags,
   };

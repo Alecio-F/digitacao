@@ -3,10 +3,11 @@
 Este documento descreve as regras locais usadas pela Type Arena para decidir se
 um treino entra no placar competitivo do PandaDigitações V2.
 
-O histórico continua salvando todos os treinos. O ranking local mostra apenas os
-resultados marcados como `validForRanking: true`.
+O histórico continua salvando todos os treinos. O ranking local e o ranking
+online mostram apenas resultados marcados como `validForRanking: true` ou
+`valid_for_ranking = true`.
 
-## Metricas competitivas
+## Métricas competitivas
 
 - PPM é calculado a partir de caracteres corretos: `(correctChars / 5) / minutos`.
 - CPM é calculado a partir de caracteres corretos: `correctChars / minutos`.
@@ -14,7 +15,7 @@ resultados marcados como `validForRanking: true`.
 - O score competitivo combina PPM, precisão e combo:
   `round(ppm * (accuracy / 100) + maxCombo * 0.15)`.
 
-## Campos salvos no historico
+## Campos salvos no histórico
 
 Cada resultado novo salvo em `historico` pode incluir:
 
@@ -27,6 +28,7 @@ Cada resultado novo salvo em `historico` pode incluir:
 - `suspiciousInputBursts`
 - `validForRanking`
 - `rankingScore`
+- `rankingInvalidReason`
 - `rankingInvalidReasons`
 - `suspiciousFlags`
 
@@ -38,15 +40,37 @@ existe, o sistema tenta estimar valores a partir de `ppm`, `cpm`, `tempo`,
 
 Um treino fica fora do ranking quando uma ou mais regras abaixo falham:
 
-- precisão menor que 85%;
+- precisão menor que 90%;
 - duração menor que 15 segundos;
 - menos de 50 caracteres corretos;
+- PPM ausente, zerado, negativo ou acima do limite conservador atual;
+- precisão ausente, negativa ou acima de 100%;
 - erros demais em relação aos acertos;
 - repetição automática de teclas acima do limite;
 - sequência longa de erros sem recuperação;
 - muitos bursts suspeitos de input.
 
-## Motivos tecnicos
+As regras são conservadoras. A intenção é remover rodadas claramente ruins ou
+suspeitas sem punir jogadores legítimos.
+
+## Motivo principal para Supabase
+
+No Supabase, cada resultado enviado para `typing_results` recebe:
+
+- `valid_for_ranking`: `true` quando o treino pode entrar no mural;
+- `ranking_invalid_reason`: motivo principal em texto simples;
+- `ranking_invalid_reasons`: lista detalhada usada pela UI e diagnóstico.
+
+Valores de `ranking_invalid_reason`:
+
+- `low_accuracy`: precisão abaixo de 90%;
+- `too_short`: duração abaixo de 15 segundos;
+- `too_few_chars`: poucos caracteres corretos;
+- `suspicious_repetition`: repetição excessiva de tecla;
+- `invalid_input_pattern`: padrão de input inconsistente ou erros demais;
+- `missing_required_data`: dados obrigatórios ausentes ou inválidos.
+
+## Motivos técnicos detalhados
 
 Os códigos gravados em `rankingInvalidReasons` são:
 
@@ -76,6 +100,7 @@ Os códigos gravados em `rankingInvalidReasons` são:
 
 ## Escopo atual
 
-As regras são locais e baseadas em `localStorage`. Elas não substituem validação
-de servidor em um ranking global futuro. Quando houver backend, o servidor deve
-recalcular os campos competitivos e validar o resultado recebido do cliente.
+As regras são client-side e baseadas também no histórico local. Elas não
+substituem validação de servidor em um ranking global mais rígido. Se o volume
+ou a competitividade crescer, o servidor deve recalcular os campos competitivos
+e validar o resultado recebido do cliente.

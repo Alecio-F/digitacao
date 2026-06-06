@@ -121,6 +121,7 @@ function toRemoteTypingInput(item: HistoryItem): typingResultRemoteRepository.Re
     repeatedKeyCount: safeNumber(normalized.repeatedKeyCount),
     validForRanking: normalized.validForRanking !== false,
     rankingScore: safeNumber(normalized.rankingScore),
+    rankingInvalidReason: normalized.rankingInvalidReason ?? null,
     suspiciousFlags: { ...(normalized.suspiciousFlags ?? {}) },
     rankingInvalidReasons: normalized.rankingInvalidReasons ?? [],
     completedAt: getHistoryCompletedAt(normalized),
@@ -144,6 +145,7 @@ function toDailyHistoryItem(result: DailyChallengeResult): HistoryItem {
     combo: result.maxCombo,
     validForRanking: result.validForRanking ?? true,
     rankingScore: result.rankingScore ?? 0,
+    rankingInvalidReason: null,
     rankingInvalidReasons: result.rankingInvalidReasons ?? [],
     suspiciousFlags: result.suspiciousFlags,
   };

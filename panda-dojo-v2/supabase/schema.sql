@@ -47,6 +47,7 @@ create table if not exists public.typing_results (
   repeated_key_count integer not null default 0 check (repeated_key_count >= 0),
   valid_for_ranking boolean not null default false,
   ranking_score numeric not null default 0,
+  ranking_invalid_reason text,
   suspicious_flags jsonb not null default '{}'::jsonb,
   ranking_invalid_reasons jsonb not null default '[]'::jsonb,
   completed_at timestamptz not null default now()

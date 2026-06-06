@@ -1,4 +1,8 @@
-import type { RankingInvalidReason, SuspiciousFlags } from '@/features/typing/types';
+import type {
+  RankingInvalidReason,
+  RankingInvalidReasonCode,
+  SuspiciousFlags,
+} from '@/features/typing/types';
 
 export interface Achievement {
   id: string;
@@ -32,6 +36,7 @@ export interface HistoryItem {
   suspiciousInputBursts?: number;
   validForRanking?: boolean;
   rankingScore?: number;
+  rankingInvalidReason?: RankingInvalidReasonCode | null;
   rankingInvalidReasons?: RankingInvalidReason[];
   suspiciousFlags?: SuspiciousFlags;
 }

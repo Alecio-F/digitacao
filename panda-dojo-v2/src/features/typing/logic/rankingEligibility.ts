@@ -1,5 +1,6 @@
 import type {
   RankingEligibility,
+  RankingInvalidReasonCode,
   RankingInvalidReason,
   SuspiciousFlags,
 } from '../types';
@@ -20,17 +21,22 @@ export interface RankingEligibilityInput {
 }
 
 export const RANKING_VALIDATION_LIMITS = {
-  minAccuracy: 85,
+  minAccuracy: 90,
   minDurationSeconds: 15,
   minCorrectChars: 50,
   maxRepeatedKeyRatio: 0.18,
   maxWrongToCorrectRatio: 1,
   maxLongWrongStreak: 20,
   maxBursts: 5,
+  maxPpm: 220,
 } as const;
 
+function isValidNumber(value: number | undefined): boolean {
+  return Number.isFinite(value);
+}
+
 function safeNumber(value: number | undefined, fallback = 0): number {
-  return Number.isFinite(value) ? Math.max(0, Number(value)) : fallback;
+  return isValidNumber(value) ? Math.max(0, Number(value)) : fallback;
 }
 
 function addReason(
@@ -53,7 +59,18 @@ export function calculatePpm(correctChars: number, elapsedSeconds: number): numb
 export function evaluateRankingEligibility(
   input: RankingEligibilityInput,
 ): RankingEligibility {
-  const accuracy = Math.min(100, safeNumber(input.accuracy));
+  const rawAccuracy = input.accuracy;
+  const missingRequiredData = (
+    !isValidNumber(input.accuracy) ||
+    !isValidNumber(input.durationSeconds) ||
+    !isValidNumber(input.correctChars) ||
+    !isValidNumber(input.wrongChars) ||
+    !isValidNumber(input.totalTyped) ||
+    !isValidNumber(input.rawKeyCount) ||
+    !isValidNumber(input.ppm) ||
+    !isValidNumber(input.cpm)
+  );
+  const accuracy = Math.min(100, safeNumber(rawAccuracy));
   const durationSeconds = safeNumber(input.durationSeconds);
   const correctChars = safeNumber(input.correctChars);
   const wrongChars = safeNumber(input.wrongChars);
@@ -68,6 +85,9 @@ export function evaluateRankingEligibility(
   const wrongToCorrectRatio = correctChars > 0 ? wrongChars / correctChars : wrongChars;
   const reasons: RankingInvalidReason[] = [];
 
+  if (missingRequiredData || Number(rawAccuracy) > 100) {
+    addReason(reasons, 'unknown');
+  }
   if (accuracy < RANKING_VALIDATION_LIMITS.minAccuracy) {
     addReason(reasons, 'accuracy_too_low');
   }
@@ -92,6 +112,9 @@ export function evaluateRankingEligibility(
   if (totalTyped > 0 && correctChars === 0 && wrongChars > 0) {
     addReason(reasons, 'random_typing_pattern');
   }
+  if (ppm <= 0 || ppm > RANKING_VALIDATION_LIMITS.maxPpm) {
+    addReason(reasons, 'unknown');
+  }
 
   const suspiciousFlags: SuspiciousFlags = {
     repeatedKeyAbuse: reasons.includes('repeated_key_abuse'),
@@ -101,11 +124,34 @@ export function evaluateRankingEligibility(
   };
 
   const score = Math.max(0, Math.round(ppm * (accuracy / 100) + maxCombo * 0.15));
+  const invalidReason = getPrimaryInvalidReason(reasons);
 
   return {
     validForRanking: reasons.length === 0,
+    invalidReason,
     reasonCodes: reasons,
     score: Number.isFinite(score) ? score : 0,
     suspiciousFlags,
   };
 }
+
+function getPrimaryInvalidReason(
+  reasons: RankingInvalidReason[],
+): RankingInvalidReasonCode | null {
+  if (reasons.length === 0) return null;
+  if (reasons.includes('accuracy_too_low')) return 'low_accuracy';
+  if (reasons.includes('duration_too_short')) return 'too_short';
+  if (reasons.includes('not_enough_correct_chars')) return 'too_few_chars';
+  if (reasons.includes('repeated_key_abuse')) return 'suspicious_repetition';
+  if (
+    reasons.includes('input_burst_suspicious') ||
+    reasons.includes('random_typing_pattern') ||
+    reasons.includes('too_many_errors') ||
+    reasons.includes('completed_too_fast')
+  ) {
+    return 'invalid_input_pattern';
+  }
+  return 'missing_required_data';
+}
+
+export const validateRankingEligibility = evaluateRankingEligibility;

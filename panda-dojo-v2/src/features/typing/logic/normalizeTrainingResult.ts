@@ -73,6 +73,7 @@ export function normalizeTrainingResult(item: HistoryItem): HistoryItem {
       ? item.validForRanking
       : eligibility.validForRanking,
     rankingScore: safeNumber(item.rankingScore, eligibility.score),
+    rankingInvalidReason: item.rankingInvalidReason ?? eligibility.invalidReason,
     rankingInvalidReasons: item.rankingInvalidReasons ?? eligibility.reasonCodes,
     suspiciousFlags: item.suspiciousFlags ?? eligibility.suspiciousFlags,
   };

@@ -24,6 +24,7 @@ export interface RemoteTypingResultInput {
   repeatedKeyCount: number;
   validForRanking: boolean;
   rankingScore: number;
+  rankingInvalidReason: string | null;
   suspiciousFlags: Record<string, unknown>;
   rankingInvalidReasons: string[];
   completedAt: string;
@@ -49,6 +50,7 @@ function toRow(userId: string, result: RemoteTypingResultInput) {
     repeated_key_count: Math.max(0, Math.round(result.repeatedKeyCount) || 0),
     valid_for_ranking: result.validForRanking,
     ranking_score: Math.max(0, Number(result.rankingScore) || 0),
+    ranking_invalid_reason: result.validForRanking ? null : result.rankingInvalidReason,
     suspicious_flags: result.suspiciousFlags,
     ranking_invalid_reasons: result.rankingInvalidReasons,
     completed_at: result.completedAt,

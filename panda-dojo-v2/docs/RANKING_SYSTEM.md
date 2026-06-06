@@ -2,11 +2,11 @@
 
 ## Objetivo
 
-O Ranking do Dojo combina dados locais e, na Parte 3, um ranking online inicial
-com Supabase. A UI usa o mesmo contrato `RankingEntry` para manter o Ranking
-Local funcionando mesmo quando o Supabase estiver indisponível.
+O Ranking do Dojo combina dados locais e ranking online com Supabase. A UI usa
+o mesmo contrato `RankingEntry` para manter o Ranking Local funcionando mesmo
+quando o Supabase estiver indisponível.
 
-## Arquivos Principais
+## Arquivos principais
 
 - `src/features/ranking/rankingTypes.ts`
 - `src/features/ranking/rankingConfig.ts`
@@ -17,21 +17,24 @@ Local funcionando mesmo quando o Supabase estiver indisponível.
 - `src/features/ranking/hooks/useLocalRanking.ts`
 - `src/features/ranking/useRankingViewModel.ts`
 - `src/repositories/remote/rankingRemoteRepository.ts`
+- `src/features/typing/logic/rankingEligibility.ts`
 - `src/pages/RankingPage/`
+- `supabase/ranking_views.sql`
+- `supabase/ranking_eligibility.sql`
 
 ## Categorias
 
 - **Geral:** usa `ranking_score` e exige resultado elegível.
-- **Velocidade:** usa `ppm` ou `cpm` e exige precisão mínima de 90%.
+- **Velocidade:** usa `ppm` ou `cpm` e exige precisão mínima.
 - **Precisão:** ordena por precisão, com desempate por PPM, erros e tempo.
 - **Fases:** usa resultados `lesson` e permite filtro futuro por `lessonId`.
 - **Textos:** usa resultados `practice_text` e `free`.
 - **Arcade:** espaço preparado para Panda Keys e próximos minigames.
 - **Desafio Diário:** espaço preparado para ranking diário dedicado futuro.
 
-## Fórmula Geral
+## Fórmula geral
 
-O score geral inicial é:
+O score geral local inicial é:
 
 ```text
 score = ppm * 1.4 + accuracy * 2 + maxCombo * 0.4 - errors * 1.5
@@ -40,20 +43,52 @@ score = ppm * 1.4 + accuracy * 2 + maxCombo * 0.4 - errors * 1.5
 Regras:
 
 - `validForRanking === false` retorna score competitivo `0`.
-- Precisão abaixo de 85% recebe penalidade forte.
-- A fórmula é centralizada em `calculateGeneralRankingScore`.
+- precisão abaixo do mínimo competitivo recebe penalidade forte.
+- a fórmula é centralizada em `calculateGeneralRankingScore`.
 
-## Elegibilidade
+## Elegibilidade e antifraude básica
 
-Resultados competitivos respeitam as regras já calculadas pela Type Arena:
+A Type Arena calcula a elegibilidade antes de salvar um resultado. O histórico
+continua registrando todos os treinos, mas rankings locais e online usam apenas
+rodadas elegíveis.
+
+Um treino competitivo precisa atender aos critérios mínimos:
+
+- precisão mínima de 90%;
+- duração mínima de 15 segundos;
+- pelo menos 50 caracteres corretos;
+- PPM, CPM, precisão e contagens obrigatórias válidas;
+- PPM dentro de um limite conservador;
+- sem repetição excessiva de tecla;
+- sem sequência de input claramente suspeita.
+
+Campos locais usados:
 
 - `validForRanking`;
 - `rankingScore`;
+- `rankingInvalidReason`;
 - `rankingInvalidReasons`;
 - `suspiciousFlags`.
 
-O Ranking não recalcula anti-abuso. Ele apenas filtra, mapeia e ordena dados já
-normalizados.
+Campos remotos em `public.typing_results`:
+
+- `valid_for_ranking`;
+- `ranking_score`;
+- `ranking_invalid_reason`;
+- `ranking_invalid_reasons`;
+- `suspicious_flags`.
+
+Motivos principais de `ranking_invalid_reason`:
+
+- `low_accuracy`;
+- `too_short`;
+- `too_few_chars`;
+- `suspicious_repetition`;
+- `invalid_input_pattern`;
+- `missing_required_data`.
+
+A validação é propositalmente conservadora. Ela remove rodadas muito curtas,
+imprecisas ou suspeitas sem tentar criar um sistema antifraude definitivo.
 
 ## Ranking Local
 
@@ -66,28 +101,32 @@ O histórico local é convertido para `RankingEntry` por
 
 O Ranking Local continua sendo o fallback principal e não depende do Supabase.
 
-## Ranking Online Inicial
+## Ranking Online
 
-A Parte 3 adiciona leitura online com Supabase usando:
+O Ranking Online usa:
 
 - `public.typing_results`;
 - `public.profiles`;
-- view recomendada: `public.online_typing_ranking`.
+- views definidas em `supabase/ranking_views.sql`.
 
-O front-end busca dados pelo repository
-`src/repositories/remote/rankingRemoteRepository.ts`. Componentes React não
-acessam Supabase diretamente.
+Views principais:
 
-### View Recomendada
+- `public.online_typing_ranking`;
+- `public.online_typing_ranking_best`;
+- `public.online_typing_ranking_best_speed`;
+- `public.online_typing_ranking_best_accuracy`.
 
-O arquivo `supabase/ranking_views.sql` cria `public.online_typing_ranking`.
+As views `best` usam `row_number()` com `partition by user_id` para exibir no
+máximo um resultado por usuário em cada mural. Todas filtram
+`valid_for_ranking = true`.
 
-A view expõe somente:
+### Campos expostos pelas views
 
 - id do resultado;
 - user_id;
 - display_name;
 - username;
+- avatar_url, quando disponível;
 - title;
 - mode;
 - lesson_id;
@@ -103,21 +142,21 @@ A view expõe somente:
 - valid_for_ranking;
 - completed_at.
 
-Ela filtra `valid_for_ranking = true` e não expõe dados sensíveis.
+As views não expõem texto digitado, texto alvo, e-mail ou dados sensíveis.
 
-### Fallback
+## Fallback
 
 Se a view ainda não existir, o repository tenta uma leitura direta em
 `typing_results` com `profiles`. Se RLS bloquear a leitura, a UI mostra erro
 amigável no escopo Online e mantém o Ranking Local intacto.
 
-## Ordenação Online
+## Ordenação online
 
 - **Geral:** `ranking_score desc`, `ppm desc`, `accuracy desc`.
 - **Velocidade:** precisão mínima de 90%, ordenando por `ppm` ou `cpm`.
 - **Precisão:** `accuracy desc`, `ppm desc`, `errors asc`.
-- **Fases:** `mode = lesson`, preparado para filtro por fase.
-- **Textos:** `mode in (practice_text, free)`.
+- **Fases:** preparado para `mode = lesson`.
+- **Textos:** preparado para `mode in (practice_text, free)`.
 
 Arcade e Desafio Diário continuam preparados para fases futuras.
 
@@ -139,7 +178,7 @@ No online, o período é aplicado com datas ISO calculadas no front-end:
 
 ## UI
 
-A Parte 2 redesenhou a página como Hall da Fama do Dojo:
+A página funciona como Hall da Fama do Dojo:
 
 - hero próprio;
 - filtros em chips;
@@ -149,16 +188,17 @@ A Parte 2 redesenhou a página como Hall da Fama do Dojo:
 - dica do Mestre Panda;
 - estados de loading, vazio e erro.
 
-## Limitações Atuais
+## Limitações atuais
 
-- Ranking Online depende da execução de `supabase/ranking_views.sql`.
+- Ranking Online depende da execução dos SQLs em `supabase/`.
+- Antifraude ainda é básico e client-side.
 - Não há ranking diário dedicado com `daily_challenge_results` nesta fase.
 - Não há ranking global avançado por temporada.
 - Não há perfil público completo.
-- Regras anti-abuso continuam sendo geradas na Type Arena e apenas respeitadas no Ranking.
 
-## Próximas Fases
+## Próximas fases
 
+- Recalcular elegibilidade no servidor, se o ranking ganhar competição real.
 - Ranking diário dedicado.
 - Ranking de Arcade com `arcade_scores`.
 - Filtros avançados por fase/texto específicos.

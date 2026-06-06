@@ -1,7 +1,10 @@
 import { getProgressionTitle } from '@/features/gamification/logic/xpCalculator';
 import type { HistoryItem } from '@/features/gamification/types';
 import type { LessonMedal, LessonProgress, LessonProgressMap } from '@/features/lessons/types';
-import type { RankingInvalidReason } from '@/features/typing/types';
+import type {
+  RankingInvalidReason,
+  RankingInvalidReasonCode,
+} from '@/features/typing/types';
 import type {
   RemoteArcadeScore,
   RemoteProfile,
@@ -71,6 +74,21 @@ function safeNumber(value: unknown): number {
   return Number.isFinite(numberValue) ? Math.max(0, numberValue) : 0;
 }
 
+const RANKING_INVALID_REASON_CODES = new Set<RankingInvalidReasonCode>([
+  'low_accuracy',
+  'too_short',
+  'too_few_chars',
+  'suspicious_repetition',
+  'invalid_input_pattern',
+  'missing_required_data',
+]);
+
+function normalizeRankingInvalidReason(value: unknown): RankingInvalidReasonCode | null {
+  return typeof value === 'string' && RANKING_INVALID_REASON_CODES.has(value as RankingInvalidReasonCode)
+    ? value as RankingInvalidReasonCode
+    : null;
+}
+
 const EMPTY_SUMMARY: RemoteProgressSummary = {
   hasRemoteProgress: false,
   profile: { level: 1, xp: 0, title: getProgressionTitle(1), dailyStreak: 0 },
@@ -115,6 +133,7 @@ function fromRemoteTypingResult(row: RemoteTypingResult): HistoryItem {
     repeatedKeyCount: safeNumber(row.repeated_key_count),
     validForRanking: row.valid_for_ranking !== false,
     rankingScore: safeNumber(row.ranking_score),
+    rankingInvalidReason: normalizeRankingInvalidReason(row.ranking_invalid_reason),
     rankingInvalidReasons: (row.ranking_invalid_reasons ?? []) as RankingInvalidReason[],
     // suspiciousFlags é informativo (share/diagnóstico); o ranking usa
     // validForRanking/rankingScore, que já são preservados acima.

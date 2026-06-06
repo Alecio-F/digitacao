@@ -12,6 +12,13 @@ export type RankingInvalidReason =
   | 'random_typing_pattern'
   | 'completed_too_fast'
   | 'unknown';
+export type RankingInvalidReasonCode =
+  | 'low_accuracy'
+  | 'too_short'
+  | 'too_few_chars'
+  | 'suspicious_repetition'
+  | 'invalid_input_pattern'
+  | 'missing_required_data';
 
 export interface SuspiciousFlags {
   repeatedKeyAbuse: boolean;
@@ -22,6 +29,7 @@ export interface SuspiciousFlags {
 
 export interface RankingEligibility {
   validForRanking: boolean;
+  invalidReason: RankingInvalidReasonCode | null;
   reasonCodes: RankingInvalidReason[];
   score: number;
   suspiciousFlags: SuspiciousFlags;

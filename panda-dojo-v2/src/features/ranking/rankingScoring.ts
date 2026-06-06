@@ -23,9 +23,9 @@ export function calculateGeneralRankingScore(result: RankingScoreInput): number 
   const errors = Math.max(0, safeNumber(result.errors));
 
   // Fórmula inicial ajustável: premia velocidade, precisão e combo, mas pune
-  // erro alto. Precisão abaixo de 85% derruba fortemente o resultado competitivo.
+  // erro alto. Precisão abaixo de 90% derruba fortemente o resultado competitivo.
   let score = ppm * 1.4 + accuracy * 2 + combo * 0.4 - errors * 1.5;
-  if (accuracy < 85) score *= 0.45;
+  if (accuracy < 90) score *= 0.45;
 
   return Math.max(0, Math.round(score));
 }
