@@ -27,6 +27,7 @@ quando o Supabase estiver indisponível.
 - **Geral:** usa `ranking_score` e exige resultado elegível.
 - **Velocidade:** usa `ppm` ou `cpm` e exige precisão mínima.
 - **Precisão:** ordena por precisão, com desempate por PPM, erros e tempo.
+- **Combo:** ordena pelo maior `max_combo` do usuário, com desempate por precisão e PPM. Exige precisão ≥ 90%, duração ≥ 15 s, PPM ≥ 20 e ≥ 50 caracteres corretos.
 - **Fases:** usa resultados `lesson` e permite filtro futuro por `lessonId`.
 - **Textos:** usa resultados `practice_text` e `free`.
 - **Arcade:** espaço preparado para Panda Keys e próximos minigames.
@@ -114,7 +115,8 @@ Views principais:
 - `public.online_typing_ranking`;
 - `public.online_typing_ranking_best`;
 - `public.online_typing_ranking_best_speed`;
-- `public.online_typing_ranking_best_accuracy`.
+- `public.online_typing_ranking_best_accuracy`;
+- `public.online_typing_ranking_best_combo`.
 
 As views `best` usam `row_number()` com `partition by user_id` para exibir no
 máximo um resultado por usuário em cada mural. Todas filtram
@@ -155,6 +157,7 @@ amigável no escopo Online e mantém o Ranking Local intacto.
 - **Geral:** `ranking_score desc`, `ppm desc`, `accuracy desc`.
 - **Velocidade:** precisão mínima de 90%, ordenando por `ppm` ou `cpm`.
 - **Precisão:** `accuracy desc`, `ppm desc`, `errors asc`.
+- **Combo:** `max_combo desc`, `accuracy desc`, `ppm desc`.
 - **Fases:** preparado para `mode = lesson`.
 - **Textos:** preparado para `mode in (practice_text, free)`.
 
@@ -187,6 +190,43 @@ A página funciona como Hall da Fama do Dojo:
 - resumo de estatísticas;
 - dica do Mestre Panda;
 - estados de loading, vazio e erro.
+
+## Ranking Online de Combo
+
+O Ranking Online de Combo exibe o melhor resultado de combo (`max_combo`) de cada
+usuário. Cada usuário aparece no máximo uma vez.
+
+**View:** `public.online_typing_ranking_best_combo`
+
+**Campo principal:** `max_combo` (integer na tabela `typing_results`). A view
+expõe esse valor como `ranking_score` para manter compatibilidade com o front-end.
+
+**Critérios mínimos de elegibilidade:**
+
+- `valid_for_ranking = true` (camada de antifraude já aplicada);
+- `accuracy >= 90`;
+- `duration_seconds >= 15`;
+- `ppm >= 20`;
+- `correct_chars >= 50` — evita sessões artificialmente curtas que inflariam o combo.
+
+**Desempate (dentro do mesmo usuário e entre usuários com combo igual):**
+
+```sql
+row_number() over (
+  partition by user_id
+  order by max_combo desc, accuracy desc, ppm desc, duration_seconds desc, completed_at asc
+)
+```
+
+**Mapeamento no front-end:**
+
+- Métrica `combo` → view `online_typing_ranking_best_combo`;
+- Ordenação remota por `max_combo desc`, `accuracy desc`, `ppm desc`.
+
+**Por que melhor resultado por usuário?** Mostrar todas as tentativas de um mesmo
+usuário tornaria o mural dominado por quem treina com mais frequência. A
+deduplicação por `row_number() PARTITION BY user_id` garante diversidade no
+ranking e representa o pico real de cada jogador.
 
 ## Limitações atuais
 

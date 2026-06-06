@@ -11,6 +11,7 @@ const ONLINE_RANKING_VIEWS = {
   general: 'online_typing_ranking_best',
   speed: 'online_typing_ranking_best_speed',
   accuracy: 'online_typing_ranking_best_accuracy',
+  combo: 'online_typing_ranking_best_combo',
 } as const;
 
 export interface OnlineTypingRankingOptions {
@@ -75,6 +76,14 @@ function getOrderColumns(category: RankingCategory, metric: RankingMetric) {
     ];
   }
 
+  if (metric === 'combo') {
+    return [
+      { column: 'max_combo', ascending: false },
+      { column: 'accuracy', ascending: false },
+      { column: 'ppm', ascending: false },
+    ];
+  }
+
   if (metric === 'lowest_time') {
     return [
       { column: 'duration_seconds', ascending: true },
@@ -107,6 +116,10 @@ function shouldSkipRemoteCategory(category: RankingCategory): boolean {
 }
 
 function getOnlineRankingViewName(options: OnlineTypingRankingOptions): string {
+  if (options.metric === 'combo') {
+    return ONLINE_RANKING_VIEWS.combo;
+  }
+
   if (options.category === 'speed' || options.metric === 'ppm' || options.metric === 'cpm') {
     return ONLINE_RANKING_VIEWS.speed;
   }

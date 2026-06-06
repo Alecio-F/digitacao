@@ -10,6 +10,7 @@ import {
   getSpeedRanking,
   getTextRanking,
 } from './rankingSelectors';
+import { getMetricValue } from './rankingScoring';
 import type { RankingCategory, RankingEntry, RankingMetric, RankingPeriod, RankingScope } from './rankingTypes';
 import { useLocalRanking } from './hooks/useLocalRanking';
 
@@ -206,7 +207,8 @@ export function useRankingViewModel() {
   }, [category, period, scope, selectedConfig.status, selectedMetric]);
 
   const shouldUseOnline = scope === 'online' && selectedConfig.status !== 'soon';
-  const entries = shouldUseOnline ? onlineEntries : localEntries;
+  const entries = (shouldUseOnline ? onlineEntries : localEntries)
+    .map((entry) => ({ ...entry, metricValue: getMetricValue(entry, selectedMetric) }));
   const podiumEntries = entries.slice(0, 3);
   const listEntries = entries.slice(3);
   const bestEntry = entries[0];
