@@ -12,6 +12,7 @@ const ONLINE_RANKING_VIEWS = {
   speed: 'online_typing_ranking_best_speed',
   accuracy: 'online_typing_ranking_best_accuracy',
   combo: 'online_typing_ranking_best_combo',
+  phases: 'online_typing_ranking_best_by_phase',
 } as const;
 
 export interface OnlineTypingRankingOptions {
@@ -116,6 +117,10 @@ function shouldSkipRemoteCategory(category: RankingCategory): boolean {
 }
 
 function getOnlineRankingViewName(options: OnlineTypingRankingOptions): string {
+  if (options.category === 'phases') {
+    return ONLINE_RANKING_VIEWS.phases;
+  }
+
   if (options.metric === 'combo') {
     return ONLINE_RANKING_VIEWS.combo;
   }
@@ -174,6 +179,16 @@ function dedupeOrderedResultsByUser(entries: RemoteRankingEntry[]): RemoteRankin
   }
 
   return Array.from(bestByUser.values());
+}
+
+function dedupeOrderedResultsByUserAndLesson(entries: RemoteRankingEntry[]): RemoteRankingEntry[] {
+  const seen = new Set<string>();
+  return entries.filter((entry) => {
+    const key = `${entry.user_id}:${entry.lesson_id ?? ''}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 async function queryRankingView(
@@ -258,8 +273,13 @@ async function queryTypingResultsFallback(
     .limit(Math.max(1, Math.min(100, Math.round(options.limit ?? 24))))
     .returns<FallbackTypingResultRow[]>();
 
+  const rows = data?.map(mapFallbackRow) ?? [];
+  const deduped = options.category === 'phases'
+    ? dedupeOrderedResultsByUserAndLesson(rows)
+    : dedupeOrderedResultsByUser(rows);
+
   return {
-    data: dedupeOrderedResultsByUser(data?.map(mapFallbackRow) ?? []),
+    data: deduped,
     error: normalizeError(error?.message ?? null),
   };
 }

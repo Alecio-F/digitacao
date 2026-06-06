@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getOnlineTypingRanking } from '@/repositories/remote/rankingRemoteRepository';
+import { LESSONS } from '@/features/lessons/data/lessons';
 import { RANKING_CATEGORY_CONFIG } from './rankingConfig';
 import { filterByPeriod } from './rankingFilters';
 import { mapRemoteRankingEntryToRankingEntry } from './rankingMappers';
@@ -13,6 +14,10 @@ import {
 import { getMetricValue } from './rankingScoring';
 import type { RankingCategory, RankingEntry, RankingMetric, RankingPeriod, RankingScope } from './rankingTypes';
 import { useLocalRanking } from './hooks/useLocalRanking';
+
+const LESSON_TITLE_MAP: Record<string, string> = Object.fromEntries(
+  LESSONS.map((l) => [l.id, l.title]),
+);
 
 export const RANKING_CATEGORY_OPTIONS: RankingCategory[] = [
   'general',
@@ -51,6 +56,10 @@ export function getMetricLabel(metric: RankingMetric): string {
 }
 
 export function getModeLabel(entry: RankingEntry): string {
+  if (entry.mode === 'lesson' && entry.lessonId) {
+    return LESSON_TITLE_MAP[entry.lessonId] ?? `Fase: ${entry.lessonId}`;
+  }
+
   const labels: Record<RankingEntry['mode'], string> = {
     all: 'Geral',
     free: 'Treino livre',

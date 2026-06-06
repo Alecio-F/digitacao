@@ -116,11 +116,15 @@ Views principais:
 - `public.online_typing_ranking_best`;
 - `public.online_typing_ranking_best_speed`;
 - `public.online_typing_ranking_best_accuracy`;
-- `public.online_typing_ranking_best_combo`.
+- `public.online_typing_ranking_best_combo`;
+- `public.online_typing_ranking_best_by_phase`.
 
 As views `best` usam `row_number()` com `partition by user_id` para exibir no
 máximo um resultado por usuário em cada mural. Todas filtram
 `valid_for_ranking = true`.
+
+A view `online_typing_ranking_best_by_phase` usa `partition by user_id, lesson_id`,
+permitindo que o mesmo usuário apareça uma vez por fase.
 
 ### Campos expostos pelas views
 
@@ -158,7 +162,7 @@ amigável no escopo Online e mantém o Ranking Local intacto.
 - **Velocidade:** precisão mínima de 90%, ordenando por `ppm` ou `cpm`.
 - **Precisão:** `accuracy desc`, `ppm desc`, `errors asc`.
 - **Combo:** `max_combo desc`, `accuracy desc`, `ppm desc`.
-- **Fases:** preparado para `mode = lesson`.
+- **Fases:** `ranking_score desc`, `ppm desc`, `accuracy desc`, `max_combo desc` por `(user_id, lesson_id)`.
 - **Textos:** preparado para `mode in (practice_text, free)`.
 
 Arcade e Desafio Diário continuam preparados para fases futuras.
@@ -227,6 +231,55 @@ row_number() over (
 usuário tornaria o mural dominado por quem treina com mais frequência. A
 deduplicação por `row_number() PARTITION BY user_id` garante diversidade no
 ranking e representa o pico real de cada jogador.
+
+## Ranking Online por Fases
+
+O Ranking Online por Fases exibe o melhor resultado de cada usuário em cada
+fase específica do Dojo. Um jogador pode aparecer múltiplas vezes no ranking —
+uma vez por fase que completou — mas nunca duas vezes na mesma fase.
+
+**View:** `public.online_typing_ranking_best_by_phase`
+
+**Campo de fase:** `lesson_id` (text, ex: `'base-keys'`, `'left-hand'`). O campo
+`mode = 'lesson'` identifica treinos de fase no Mapa do Dojo.
+
+**Critérios mínimos de elegibilidade:**
+
+- `valid_for_ranking = true` (camada de antifraude já aplicada);
+- `mode = 'lesson'` e `lesson_id is not null`;
+- `accuracy >= 90`;
+- `duration_seconds >= 15`.
+
+**Lógica de melhor resultado por usuário por fase:**
+
+```sql
+row_number() over (
+  partition by user_id, lesson_id
+  order by ranking_score desc, ppm desc, accuracy desc, max_combo desc, completed_at asc
+)
+```
+
+A partição por `(user_id, lesson_id)` garante que cada jogador aparece uma vez
+por fase, mostrando sempre o seu melhor desempenho naquela fase específica.
+
+**ranking_score usado:** campo calculado pelo cliente ao salvar o resultado,
+que já considera velocidade, precisão e combo. Se um resultado antigo tiver
+`ranking_score = 0`, ele ranqueará abaixo dos demais, o que é comportamento correto.
+
+**Mapeamento no front-end:**
+
+- Categoria `phases` → view `online_typing_ranking_best_by_phase`;
+- `getModeLabel` usa `lesson_id` para exibir o nome real da fase (ex: "Fase 01 — Teclas Base");
+- Filtro por `lessonId` disponível no repositório para filtrar fase específica;
+- Fallback deduplica por `(user_id, lesson_id)` para manter consistência.
+
+**Limitações atuais do Ranking por Fases:**
+
+- Não há seletor de fase na UI nesta versão — o ranking exibe todas as fases
+  combinadas, com até um resultado por usuário por fase;
+- Um futuro seletor pode filtrar pela `lesson_id` usando a opção `lessonId` já
+  disponível no `getOnlineTypingRanking`;
+- `ranking_score` é client-side; resultados com score zerado aparecem no fim.
 
 ## Limitações atuais
 
