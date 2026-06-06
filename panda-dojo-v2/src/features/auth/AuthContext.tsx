@@ -7,6 +7,7 @@ import {
 } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import {
+  getCurrentUser,
   getSession,
   onAuthStateChange,
   signInWithEmail,
@@ -54,8 +55,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const result = await getSession();
       if (!active) return;
 
-      const nextSession = result.data;
-      const nextUser = nextSession?.user ?? null;
+      let nextSession = result.data;
+      let nextUser = nextSession?.user ?? null;
+      if (nextSession) {
+        const userResult = await getCurrentUser();
+        nextUser = userResult.data;
+        if (userResult.error || !nextUser) {
+          nextSession = null;
+        }
+      }
       setSession(nextSession);
       setUser(nextUser);
       await loadProfile(nextUser);
@@ -65,10 +73,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void bootstrap();
 
     const subscription = onAuthStateChange((_event, nextSession) => {
-      const nextUser = nextSession?.user ?? null;
-      setSession(nextSession);
-      setUser(nextUser);
-      void loadProfile(nextUser);
+      if (!nextSession) {
+        setSession(null);
+        setUser(null);
+        void loadProfile(null);
+        return;
+      }
+
+      void (async () => {
+        const userResult = await getCurrentUser();
+        const nextUser = userResult.data;
+        if (userResult.error || !nextUser) {
+          setSession(null);
+          setUser(null);
+          void loadProfile(null);
+          return;
+        }
+
+        setSession(nextSession);
+        setUser(nextUser);
+        void loadProfile(nextUser);
+      })();
     });
 
     return () => {

@@ -2,7 +2,7 @@ import { getProgressionTitle } from '@/features/gamification/logic/xpCalculator'
 import type { HistoryItem } from '@/features/gamification/types';
 import type { DailyChallengeResult } from '@/features/dailyChallenge/types';
 import { normalizeTrainingResult } from '@/features/typing/logic/normalizeTrainingResult';
-import { getCurrentUser } from '@/services/supabase/authService';
+import { getCurrentUser, getVerifiedUser } from '@/services/supabase/authService';
 import { persistence } from '@/services/persistence/types';
 import { PERSISTENCE_KEYS } from '@/services/persistence/persistenceKeys';
 import * as arcadeScoreRepository from '@/repositories/arcadeScoreRepository';
@@ -244,8 +244,18 @@ export async function importLocalProgressToSupabase(
     return emptyImportResult(summary);
   }
 
+  const authResult = await getVerifiedUser(userId);
+  if (authResult.error || !authResult.data) {
+    return failedImportResult(
+      summary,
+      authResult.error ?? 'Entre novamente para importar seu progresso local.',
+      imported,
+    );
+  }
+  const verifiedUserId = authResult.data.id;
+
   const profile = profileProgressRepository.getProfileProgress();
-  const profileResult = await profileRemoteRepository.mergeProfileProgress(userId, {
+  const profileResult = await profileRemoteRepository.mergeProfileProgress(verifiedUserId, {
     xp: profile.xp,
     level: profile.level,
     title: getProgressionTitle(profile.level),
@@ -260,7 +270,7 @@ export async function importLocalProgressToSupabase(
   const history = typingResultRepository.getHistory().map(normalizeTrainingResult).reverse();
   for (const item of history) {
     const result = await typingResultRemoteRepository.saveTypingResult(
-      userId,
+      verifiedUserId,
       toRemoteTypingInput(item),
     );
     if (result.error) return failedImportResult(summary, result.error, imported);
@@ -273,7 +283,7 @@ export async function importLocalProgressToSupabase(
     : true;
   if (dailyResult && !dailyAlreadyInHistory) {
     const result = await typingResultRemoteRepository.saveTypingResult(
-      userId,
+      verifiedUserId,
       toRemoteTypingInput(toDailyHistoryItem(dailyResult)),
     );
     if (result.error) return failedImportResult(summary, result.error, imported);
@@ -283,7 +293,7 @@ export async function importLocalProgressToSupabase(
   const lessonProgress = lessonProgressRepository.getLessonProgress();
   for (const [lessonId, progress] of Object.entries(lessonProgress)) {
     const result = await lessonProgressRemoteRepository.upsertLessonProgress(
-      userId,
+      verifiedUserId,
       lessonId,
       progress,
     );
@@ -294,7 +304,7 @@ export async function importLocalProgressToSupabase(
   const pandaKeysScore = arcadeScoreRepository.getPandaKeysBestScore();
   if (pandaKeysScore > 0) {
     const result = await arcadeScoreRemoteRepository.saveArcadeScore(
-      userId,
+      verifiedUserId,
       REMOTE_GAME_ID['panda-keys'],
       pandaKeysScore,
     );
@@ -305,7 +315,7 @@ export async function importLocalProgressToSupabase(
   const sealScore = arcadeScoreRepository.getSealBestScore();
   if (sealScore > 0) {
     const result = await arcadeScoreRemoteRepository.saveArcadeScore(
-      userId,
+      verifiedUserId,
       REMOTE_GAME_ID.seal,
       sealScore,
     );
@@ -314,7 +324,10 @@ export async function importLocalProgressToSupabase(
   }
 
   for (const achievementId of profileProgressRepository.getAchievements()) {
-    const result = await userAchievementRemoteRepository.unlockAchievement(userId, achievementId);
+    const result = await userAchievementRemoteRepository.unlockAchievement(
+      verifiedUserId,
+      achievementId,
+    );
     if (result.error) return failedImportResult(summary, result.error, imported);
     imported.achievements += 1;
   }

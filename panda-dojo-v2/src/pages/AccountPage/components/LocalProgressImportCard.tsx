@@ -28,6 +28,20 @@ function getSummarySnapshot(): LocalProgressSummary {
   return getLocalProgressSummary();
 }
 
+function getImportErrorFeedback(error: string | null): string {
+  const normalized = error?.toLowerCase() ?? '';
+  if (
+    normalized.includes('sess') ||
+    normalized.includes('jwt') ||
+    normalized.includes('auth') ||
+    normalized.includes('401')
+  ) {
+    return 'Sua sessão online expirou. Entre novamente e tente importar o progresso local.';
+  }
+
+  return 'Não foi possível importar agora. Seu progresso local continua salvo.';
+}
+
 export function LocalProgressImportCard({ userId, onImported }: Props) {
   const [summary, setSummary] = useState<LocalProgressSummary>(() => getSummarySnapshot());
   const [alreadyImported, setAlreadyImported] = useState(() => hasImportedLocalProgress());
@@ -52,7 +66,7 @@ export function LocalProgressImportCard({ userId, onImported }: Props) {
 
     if (!result.ok) {
       setStatus('error');
-      setFeedback('Não foi possível importar agora. Seu progresso local continua salvo.');
+      setFeedback(getImportErrorFeedback(result.error));
       return;
     }
 

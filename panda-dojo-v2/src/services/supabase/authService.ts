@@ -10,6 +10,7 @@ export interface AuthServiceResult<T> {
 export type AuthStateCallback = (event: AuthChangeEvent, session: Session | null) => void;
 
 const NOT_CONFIGURED_MESSAGE = 'Supabase não está configurado. Use o modo local ou configure as variáveis de ambiente.';
+const AUTH_EXPIRED_MESSAGE = 'Sua sessão online expirou. Entre novamente para sincronizar o progresso.';
 
 function disabledResult<T>(): AuthServiceResult<T> {
   return { data: null, error: NOT_CONFIGURED_MESSAGE };
@@ -85,6 +86,29 @@ export async function getCurrentUser(): Promise<AuthServiceResult<User>> {
 
   const { data, error } = await client.auth.getUser();
   return { data: data.user, error: error?.message ?? null };
+}
+
+export async function getVerifiedUser(
+  expectedUserId?: string | null,
+): Promise<AuthServiceResult<User>> {
+  const client = getAuthClient();
+  if (!client) return disabledResult();
+
+  const { data: sessionData, error: sessionError } = await client.auth.getSession();
+  if (sessionError) return { data: null, error: sessionError.message };
+  if (!sessionData.session) return { data: null, error: AUTH_EXPIRED_MESSAGE };
+
+  const { data, error } = await client.auth.getUser();
+  const user = data.user;
+  if (error || !user) return { data: null, error: AUTH_EXPIRED_MESSAGE };
+  if (expectedUserId && user.id !== expectedUserId) {
+    return {
+      data: null,
+      error: 'A sessão online atual não corresponde a esta conta. Saia e entre novamente.',
+    };
+  }
+
+  return { data: user, error: null };
 }
 
 export function onAuthStateChange(callback: AuthStateCallback): { unsubscribe: () => void } {
