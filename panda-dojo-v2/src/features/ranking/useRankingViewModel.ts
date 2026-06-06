@@ -31,8 +31,8 @@ export const RANKING_PERIOD_OPTIONS: Array<{ value: RankingPeriod; label: string
 ];
 
 export const RANKING_SCOPE_OPTIONS: Array<{ value: RankingScope; label: string; disabled?: boolean }> = [
-  { value: 'local', label: 'Local' },
   { value: 'online', label: 'Online' },
+  { value: 'local', label: 'Local' },
 ];
 
 export function getMetricLabel(metric: RankingMetric): string {
@@ -148,7 +148,7 @@ export function useRankingViewModel() {
   const ranking = useLocalRanking();
   const [category, setCategory] = useState<RankingCategory>('general');
   const [period, setPeriod] = useState<RankingPeriod>('all');
-  const [scope, setScope] = useState<RankingScope>('local');
+  const [scope, setScope] = useState<RankingScope>('online');
   const [metric, setMetric] = useState<RankingMetric>(RANKING_CATEGORY_CONFIG.general.defaultMetric);
   const [onlineEntries, setOnlineEntries] = useState<RankingEntry[]>([]);
   const [onlineError, setOnlineError] = useState<string | null>(null);

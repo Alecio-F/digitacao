@@ -1,3 +1,4 @@
+import type { RankingScope } from '@/features/ranking/rankingTypes';
 import styles from '../RankingPage.module.css';
 
 interface StatItem {
@@ -7,14 +8,18 @@ interface StatItem {
 
 interface Props {
   stats: StatItem[];
+  scope: RankingScope;
 }
 
-export function RankingStatsSummary({ stats }: Props) {
+export function RankingStatsSummary({ stats, scope }: Props) {
+  const title = scope === 'online' ? 'Resumo do mural selecionado' : 'Seu desempenho no Dojo';
+  const eyebrow = scope === 'online' ? 'Leitura secundária' : 'Resumo pessoal';
+
   return (
     <section className={styles.statsSection} aria-labelledby="ranking-stats-title">
       <div className={styles.sectionHeader}>
-        <span className={styles.eyebrow}>Resumo competitivo</span>
-        <h2 id="ranking-stats-title">Seus números no Dojo</h2>
+        <span className={styles.eyebrow}>{eyebrow}</span>
+        <h2 id="ranking-stats-title">{title}</h2>
       </div>
 
       <div className={styles.statsGrid}>

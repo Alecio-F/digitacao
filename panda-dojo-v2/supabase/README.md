@@ -53,11 +53,16 @@ especificas e limitadas para:
 
 ## Ranking Online
 
-`ranking_views.sql` cria duas views de leitura:
+`ranking_views.sql` cria quatro views de leitura:
 
 - `public.online_typing_ranking`: view inicial mantida para compatibilidade.
 - `public.online_typing_ranking_best`: view usada pelo front-end no Ranking
   Online Geral. Ela retorna apenas o melhor resultado elegivel por usuario.
+- `public.online_typing_ranking_best_speed`: view usada pelo Ranking Online de
+  Velocidade. Ela retorna apenas o melhor resultado por usuario focado em PPM.
+- `public.online_typing_ranking_best_accuracy`: view usada pelo Ranking Online
+  de Precisao. Ela retorna apenas o melhor resultado por usuario focado em
+  accuracy.
 
 A view `online_typing_ranking_best` usa `security_invoker = true`, le dados de
 `typing_results` + `profiles`, filtra somente resultados elegiveis e calcula:
@@ -66,8 +71,9 @@ A view `online_typing_ranking_best` usa `security_invoker = true`, le dados de
 ranking_score = (ppm * 0.7) + (accuracy * 0.3)
 ```
 
-Ela usa `row_number() over (partition by user_id ...)` para manter somente o
-melhor resultado de cada usuario.
+As views `best`, `best_speed` e `best_accuracy` usam `security_invoker = true`
+e `row_number() over (partition by user_id ...)` para manter somente o melhor
+resultado de cada usuario no ranking selecionado.
 
 O front-end usa a publishable key e nunca usa `service_role`. Se a view ainda
 nao tiver sido executada, a pagina `/ranking` mostra um erro amigavel no escopo

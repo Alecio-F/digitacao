@@ -7,7 +7,11 @@ import {
   type RemoteRepositoryResult,
 } from './remoteRepositoryResult';
 
-const ONLINE_RANKING_VIEW = 'online_typing_ranking_best';
+const ONLINE_RANKING_VIEWS = {
+  general: 'online_typing_ranking_best',
+  speed: 'online_typing_ranking_best_speed',
+  accuracy: 'online_typing_ranking_best_accuracy',
+} as const;
 
 export interface OnlineTypingRankingOptions {
   category: RankingCategory;
@@ -94,11 +98,24 @@ function getOrderColumns(category: RankingCategory, metric: RankingMetric) {
 
 function getCategoryMinimumAccuracy(options: OnlineTypingRankingOptions): number | null {
   if (typeof options.minimumAccuracy === 'number') return options.minimumAccuracy;
+  if (options.category === 'accuracy' || options.metric === 'accuracy') return 95;
   return options.category === 'speed' ? 90 : null;
 }
 
 function shouldSkipRemoteCategory(category: RankingCategory): boolean {
   return category === 'arcade' || category === 'daily';
+}
+
+function getOnlineRankingViewName(options: OnlineTypingRankingOptions): string {
+  if (options.category === 'speed' || options.metric === 'ppm' || options.metric === 'cpm') {
+    return ONLINE_RANKING_VIEWS.speed;
+  }
+
+  if (options.category === 'accuracy' || options.metric === 'accuracy') {
+    return ONLINE_RANKING_VIEWS.accuracy;
+  }
+
+  return ONLINE_RANKING_VIEWS.general;
 }
 
 function mapFallbackRow(row: FallbackTypingResultRow): RemoteRankingEntry {
@@ -127,8 +144,8 @@ function mapFallbackRow(row: FallbackTypingResultRow): RemoteRankingEntry {
 
 function normalizeError(message: string | null): string | null {
   if (!message) return null;
-  if (message.includes(ONLINE_RANKING_VIEW) || message.includes('online_typing_ranking')) {
-    return `A view ${ONLINE_RANKING_VIEW} ainda nao foi aplicada no Supabase.`;
+  if (message.includes('online_typing_ranking')) {
+    return 'A view online do ranking selecionado ainda nao foi aplicada no Supabase.';
   }
   if (message.toLowerCase().includes('permission') || message.toLowerCase().includes('policy')) {
     return 'O Dojo nao tem permissao para ler o mural online ainda. Revise a view ou as policies de ranking.';
@@ -136,24 +153,11 @@ function normalizeError(message: string | null): string | null {
   return message;
 }
 
-function dedupeBestResultByUser(entries: RemoteRankingEntry[]): RemoteRankingEntry[] {
+function dedupeOrderedResultsByUser(entries: RemoteRankingEntry[]): RemoteRankingEntry[] {
   const bestByUser = new Map<string, RemoteRankingEntry>();
 
   for (const entry of entries) {
-    const current = bestByUser.get(entry.user_id);
-    if (!current) {
-      bestByUser.set(entry.user_id, entry);
-      continue;
-    }
-
-    const currentScore = Number(current.ranking_score) || 0;
-    const entryScore = Number(entry.ranking_score) || 0;
-    const entryIsBetter =
-      entryScore > currentScore ||
-      (entryScore === currentScore && entry.ppm > current.ppm) ||
-      (entryScore === currentScore && entry.ppm === current.ppm && entry.accuracy > current.accuracy);
-
-    if (entryIsBetter) bestByUser.set(entry.user_id, entry);
+    if (!bestByUser.has(entry.user_id)) bestByUser.set(entry.user_id, entry);
   }
 
   return Array.from(bestByUser.values());
@@ -163,9 +167,10 @@ async function queryRankingView(
   options: OnlineTypingRankingOptions,
 ): Promise<RemoteRepositoryResult<RemoteRankingEntry[]>> {
   if (!supabase) return disabledResult();
+  const viewName = getOnlineRankingViewName(options);
 
   let query = supabase
-    .from(ONLINE_RANKING_VIEW)
+    .from(viewName)
     .select('*')
     .eq('valid_for_ranking', true);
 
@@ -241,7 +246,7 @@ async function queryTypingResultsFallback(
     .returns<FallbackTypingResultRow[]>();
 
   return {
-    data: dedupeBestResultByUser(data?.map(mapFallbackRow) ?? []),
+    data: dedupeOrderedResultsByUser(data?.map(mapFallbackRow) ?? []),
     error: normalizeError(error?.message ?? null),
   };
 }

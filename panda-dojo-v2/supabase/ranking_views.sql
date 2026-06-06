@@ -177,3 +177,152 @@ where valid_for_ranking = true;
 
 comment on view public.online_typing_ranking_best is
   'Ranking Online Geral com apenas o melhor resultado elegivel por usuario, calculado por score = PPM 70% + precisao 30%.';
+
+-- Ranking Online de Velocidade - melhor resultado por usuario focado em PPM.
+
+create or replace view public.online_typing_ranking_best_speed
+with (security_invoker = true)
+as
+with ranked as (
+  select
+    tr.id,
+    tr.user_id,
+    coalesce(nullif(p.username, ''), 'panda_user') as username,
+    coalesce(nullif(p.display_name, ''), nullif(p.username, ''), 'Aprendiz do Dojo') as display_name,
+    p.avatar_url,
+    coalesce(nullif(p.title, ''), 'Filhote de Panda') as title,
+    tr.mode,
+    tr.lesson_id,
+    tr.practice_text_id,
+    tr.daily_challenge_id,
+    tr.duration_seconds,
+    tr.ppm,
+    tr.cpm,
+    tr.accuracy,
+    tr.errors,
+    tr.max_combo,
+    tr.ppm::numeric as ranking_score,
+    tr.valid_for_ranking,
+    tr.completed_at,
+    tr.completed_at as created_at,
+    row_number() over (
+      partition by tr.user_id
+      order by
+        tr.ppm desc,
+        tr.accuracy desc,
+        tr.cpm desc,
+        tr.completed_at asc
+    ) as rn
+  from public.typing_results tr
+  join public.profiles p on p.id = tr.user_id
+  where tr.valid_for_ranking = true
+    and tr.user_id is not null
+    and tr.ppm is not null
+    and tr.accuracy is not null
+    and tr.accuracy >= 90
+    and tr.duration_seconds >= 15
+)
+select
+  id,
+  user_id,
+  username,
+  display_name,
+  avatar_url,
+  title,
+  mode,
+  lesson_id,
+  practice_text_id,
+  daily_challenge_id,
+  ppm,
+  cpm,
+  accuracy,
+  errors,
+  max_combo,
+  duration_seconds,
+  ranking_score,
+  valid_for_ranking,
+  completed_at,
+  created_at
+from ranked
+where rn = 1;
+
+grant select on public.online_typing_ranking_best_speed to anon;
+grant select on public.online_typing_ranking_best_speed to authenticated;
+
+comment on view public.online_typing_ranking_best_speed is
+  'Ranking Online de Velocidade com apenas o melhor resultado por usuario, priorizando PPM e usando precisao/CPM como desempate.';
+
+-- Ranking Online de Precisao - melhor resultado por usuario focado em accuracy.
+
+create or replace view public.online_typing_ranking_best_accuracy
+with (security_invoker = true)
+as
+with ranked as (
+  select
+    tr.id,
+    tr.user_id,
+    coalesce(nullif(p.username, ''), 'panda_user') as username,
+    coalesce(nullif(p.display_name, ''), nullif(p.username, ''), 'Aprendiz do Dojo') as display_name,
+    p.avatar_url,
+    coalesce(nullif(p.title, ''), 'Filhote de Panda') as title,
+    tr.mode,
+    tr.lesson_id,
+    tr.practice_text_id,
+    tr.daily_challenge_id,
+    tr.duration_seconds,
+    tr.ppm,
+    tr.cpm,
+    tr.accuracy,
+    tr.errors,
+    tr.max_combo,
+    tr.accuracy as ranking_score,
+    tr.valid_for_ranking,
+    tr.completed_at,
+    tr.completed_at as created_at,
+    row_number() over (
+      partition by tr.user_id
+      order by
+        tr.accuracy desc,
+        tr.ppm desc,
+        tr.cpm desc,
+        tr.errors asc,
+        tr.completed_at asc
+    ) as rn
+  from public.typing_results tr
+  join public.profiles p on p.id = tr.user_id
+  where tr.valid_for_ranking = true
+    and tr.user_id is not null
+    and tr.ppm is not null
+    and tr.accuracy is not null
+    and tr.accuracy >= 95
+    and tr.duration_seconds >= 15
+)
+select
+  id,
+  user_id,
+  username,
+  display_name,
+  avatar_url,
+  title,
+  mode,
+  lesson_id,
+  practice_text_id,
+  daily_challenge_id,
+  ppm,
+  cpm,
+  accuracy,
+  errors,
+  max_combo,
+  duration_seconds,
+  ranking_score,
+  valid_for_ranking,
+  completed_at,
+  created_at
+from ranked
+where rn = 1;
+
+grant select on public.online_typing_ranking_best_accuracy to anon;
+grant select on public.online_typing_ranking_best_accuracy to authenticated;
+
+comment on view public.online_typing_ranking_best_accuracy is
+  'Ranking Online de Precisao com apenas o melhor resultado por usuario, priorizando accuracy e usando PPM/CPM/erros como desempate.';

@@ -6,8 +6,18 @@ interface Props {
   viewModel: RankingViewModel;
 }
 
+const PERIOD_LABELS = {
+  today: 'Hoje',
+  week: 'Semana',
+  month: 'Mês',
+  all: 'Sempre',
+} as const;
+
 export function RankingHero({ viewModel }: Props) {
-  const { ranking, selectedConfig, currentMetricLabel, currentMetricValue } = viewModel;
+  const { bestEntry, entries, period, scope, selectedConfig } = viewModel;
+  const scopeLabel = scope === 'online' ? 'Online' : 'Local';
+  const periodLabel = PERIOD_LABELS[period];
+  const leaderPpm = bestEntry?.ppm ? Math.round(bestEntry.ppm) : '--';
 
   return (
     <section className={styles.hero} aria-labelledby="ranking-title">
@@ -20,8 +30,8 @@ export function RankingHero({ viewModel }: Props) {
           Velocidade impressiona, mas precisão conquista respeito.
         </p>
         <p className={styles.heroText}>
-          Compare seus melhores resultados, descubra sua posição e suba no mural dos
-          digitadores mais afiados.
+          Veja o mural competitivo do Dojo, compare os melhores resultados e dispute
+          posição com os digitadores mais afiados.
         </p>
 
         <div className={styles.heroActions}>
@@ -36,24 +46,24 @@ export function RankingHero({ viewModel }: Props) {
 
       <div className={styles.heroMetrics} aria-label="Resumo do ranking selecionado">
         <article className={styles.heroMetricCard}>
-          <span>{currentMetricLabel}</span>
-          <strong>{currentMetricValue}</strong>
-          <small>métrica atual</small>
+          <span>PPM</span>
+          <strong>{leaderPpm}</strong>
+          <small>líder do mural</small>
         </article>
         <article className={styles.heroMetricCard}>
-          <span>Sua melhor marca</span>
-          <strong>{ranking.bestPpm || '--'}</strong>
-          <small>PPM local</small>
+          <span>Escopo atual</span>
+          <strong>{scopeLabel}</strong>
+          <small>mural selecionado</small>
         </article>
         <article className={styles.heroMetricCard}>
-          <span>Treinos elegíveis</span>
-          <strong>{ranking.eligibleTrainings}</strong>
-          <small>de {ranking.totalTrainings} treinos</small>
+          <span>Resultados</span>
+          <strong>{entries.length || '--'}</strong>
+          <small>participantes filtrados</small>
         </article>
         <article className={styles.heroMetricCard}>
-          <span>Categoria atual</span>
+          <span>{periodLabel}</span>
           <strong>{selectedConfig.title}</strong>
-          <small>{selectedConfig.status === 'soon' ? 'em preparação' : 'ativa'}</small>
+          <small>{selectedConfig.status === 'soon' ? 'em preparação' : 'categoria ativa'}</small>
         </article>
       </div>
     </section>

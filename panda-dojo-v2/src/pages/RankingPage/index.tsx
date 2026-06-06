@@ -18,7 +18,6 @@ export function RankingPage() {
       <main className={styles.page}>
         <RankingHero viewModel={viewModel} />
         <RankingControls viewModel={viewModel} />
-        <RankingStatsSummary stats={viewModel.stats} />
 
         {shouldShowEmpty ? (
           <RankingEmptyState
@@ -44,6 +43,7 @@ export function RankingPage() {
           </>
         )}
 
+        <RankingStatsSummary stats={viewModel.stats} scope={viewModel.scope} />
         <RankingInsightCard insight={viewModel.insight} />
       </main>
     </PageShell>
