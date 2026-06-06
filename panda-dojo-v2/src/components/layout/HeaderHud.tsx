@@ -3,6 +3,7 @@ import { Link, NavLink } from 'react-router';
 import { IconButton } from '@/components/ui';
 import { useAuth } from '@/features/auth/useAuth';
 import { PlayerStatus } from '@/features/gamification/components/PlayerStatus';
+import { UserAvatar } from '@/components/user/UserAvatar';
 import styles from './HeaderHud.module.css';
 
 const NAV_ITEMS = [
@@ -89,6 +90,14 @@ export function HeaderHud({ onSettingsOpen, isSettingsOpen = false }: Props) {
             }
             to="/conta"
           >
+            {isAuthenticated && (
+              <UserAvatar
+                avatarUrl={profile?.avatar_url}
+                displayName={profile?.display_name}
+                username={profile?.username}
+                size="sm"
+              />
+            )}
             {accountLabel}
           </NavLink>
 

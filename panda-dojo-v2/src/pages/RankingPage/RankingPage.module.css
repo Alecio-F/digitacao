@@ -550,7 +550,15 @@
 }
 
 .listMain {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   min-width: 0;
+}
+
+.listMainText {
+  min-width: 0;
+  overflow: hidden;
 }
 
 .listMain h3,

@@ -280,6 +280,7 @@
 }
 
 .loginLink {
+  gap: 7px;
   padding: 0 12px;
   border: 1px solid rgba(8, 124, 167, 0.16);
   background: rgba(255, 255, 255, 0.36);

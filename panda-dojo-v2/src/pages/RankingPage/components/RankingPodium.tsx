@@ -1,5 +1,6 @@
 import { getModeLabel } from '@/features/ranking/useRankingViewModel';
 import type { RankingEntry, RankingMetric } from '@/features/ranking/rankingTypes';
+import { UserAvatar } from '@/components/user/UserAvatar';
 import { formatDate } from '@/utils/format';
 import styles from '../RankingPage.module.css';
 
@@ -43,7 +44,13 @@ export function RankingPodium({ entries, metric, metricLabel }: Props) {
             aria-label={`${entry.position}º lugar, ${entry.displayName}`}
           >
             <span className={styles.podiumPosition}>{entry.position}º</span>
-            <div className={styles.podiumMedal} aria-hidden="true" />
+            <UserAvatar
+              avatarUrl={entry.avatarUrl}
+              displayName={entry.displayName}
+              username={entry.username}
+              size="lg"
+              rank={entry.position}
+            />
             <h3>{entry.displayName}</h3>
             <p>{entry.position === 1 ? 'Mestre do Dojo' : getModeLabel(entry)}</p>
             <strong>{formatMetric(entry, metric)}</strong>

@@ -1,5 +1,6 @@
 import { getModeLabel } from '@/features/ranking/useRankingViewModel';
 import type { RankingEntry, RankingMetric } from '@/features/ranking/rankingTypes';
+import { UserAvatar } from '@/components/user/UserAvatar';
 import { formatDate } from '@/utils/format';
 import styles from '../RankingPage.module.css';
 
@@ -24,10 +25,18 @@ export function RankingListItem({ entry, metric, metricLabel }: Props) {
       </div>
 
       <div className={styles.listMain}>
-        <h3>{entry.displayName}</h3>
-        <p>
-          {getModeLabel(entry)} · <time dateTime={entry.completedAt}>{formatDate(entry.completedAt)}</time>
-        </p>
+        <UserAvatar
+          avatarUrl={entry.avatarUrl}
+          displayName={entry.displayName}
+          username={entry.username}
+          size="sm"
+        />
+        <div className={styles.listMainText}>
+          <h3>{entry.displayName}</h3>
+          <p>
+            {getModeLabel(entry)} · <time dateTime={entry.completedAt}>{formatDate(entry.completedAt)}</time>
+          </p>
+        </div>
       </div>
 
       <div className={styles.listMetric}>

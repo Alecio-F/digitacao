@@ -127,6 +127,7 @@ export function mapRemoteRankingEntryToRankingEntry(
     userId: result.user_id,
     username: result.username ?? 'panda_user',
     displayName: result.display_name ?? result.username ?? 'Aprendiz do Dojo',
+    avatarUrl: result.avatar_url ?? null,
     position: index + 1,
     mode: mapRemoteMode(result.mode),
     lessonId: result.lesson_id ?? null,

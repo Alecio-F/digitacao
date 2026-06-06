@@ -33,6 +33,7 @@ export interface RankingEntry {
   userId?: string;
   username: string;
   displayName: string;
+  avatarUrl?: string | null;
   position: number;
   mode: RankingMode;
   lessonId?: string | null;

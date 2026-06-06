@@ -119,13 +119,12 @@
   flex: 0 0 auto;
 }
 
-.heroAvatar img {
-  display: block;
-  width: clamp(84px, 11vw, 108px);
-  height: auto;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
+.heroAvatar > * {
   box-shadow: 0 12px 28px rgba(11, 57, 84, 0.18);
+}
+
+.heroAvatar img {
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .heroLevelBadge {

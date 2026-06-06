@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 import { ProgressBar } from '@/components/ui';
 import type { LocalProfile } from '@/features/profile/hooks/useLocalProfile';
+import { UserAvatar } from '@/components/user/UserAvatar';
 import styles from '../AccountPage.module.css';
 
 interface Props {
@@ -12,7 +13,11 @@ export function ProfileHero({ profile }: Props) {
     <section className={`dojo-section ${styles.hero}`}>
       <div className={styles.heroCard}>
         <div className={styles.heroAvatar}>
-          <img src="/mentor-panda.png" alt="" width={108} height={108} />
+          <UserAvatar
+            avatarUrl={null}
+            displayName={profile.title}
+            size="xl"
+          />
           <span className={styles.heroLevelBadge}>Nv {profile.level}</span>
         </div>
 
