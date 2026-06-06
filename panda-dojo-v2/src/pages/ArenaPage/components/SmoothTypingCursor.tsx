@@ -38,14 +38,15 @@ function getVisualBox(position: CursorPosition, variant: SmoothTypingCursorVaria
   const fontSize = position.fontSize > 0 ? position.fontSize : position.height;
 
   if (variant === 'line') {
-    // Caret fino clássico: largura fixa (não acompanha a do caractere), altura
-    // levemente maior que o glifo e centralizada no caractere atual.
-    const height = Math.min(position.height, fontSize * 1.3);
-    const y = position.y + (position.height - height) / 2;
+    // Panda Linha: underline real abaixo do caractere ou da âncora pós-extra.
+    const height = 3;
+    const width = Math.round(Math.max(12, Math.min(fontSize * 0.55, 24)));
+    const x = position.x + position.width / 2 - width / 2;
+    const y = position.y + position.height + 3;
     return {
-      x: position.x - 1,
+      x,
       y,
-      width: 3,
+      width,
       height,
     };
   }
@@ -54,10 +55,12 @@ function getVisualBox(position: CursorPosition, variant: SmoothTypingCursorVaria
   // fonte (≈1.15x) e centralizada verticalmente — não ocupa a linha inteira.
   const height = Math.min(position.height, fontSize * 1.15);
   const y = position.y + (position.height - height) / 2;
+  const width = 2;
+  const hasteOffsetX = width + 2;
   return {
-    x: position.x - 3,
+    x: position.x - hasteOffsetX,
     y,
-    width: Math.max(16, position.width + 6),
+    width,
     height,
   };
 }

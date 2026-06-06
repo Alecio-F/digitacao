@@ -17,6 +17,7 @@ export const PERSISTENCE_KEYS = {
   theme: STORAGE_KEYS.ativo,
   practiceTime: STORAGE_KEYS.tempoPratica,
   arenaCursor: STORAGE_KEYS.pandaCursorMode,
+  arenaFontSize: STORAGE_KEYS.pandaArenaFontSize,
   virtualKeyboardEnabled: STORAGE_KEYS.pandaKeyboardVisible,
   soundsEnabled: STORAGE_KEYS.pandaSoundsEnabled,
   animationsEnabled: STORAGE_KEYS.pandaAnimationsEnabled,

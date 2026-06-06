@@ -1,157 +1,200 @@
-# PandaDigitações
+# PandaDigitações V2 — Panda Dojo Arcade
 
-PandaDigitações é uma aplicação web estática para treino de digitação em português. A versão atual consolida a identidade **Panda Dojo Arcade** com Type Arena, Mapa do Dojo, Arcade, progressão local e recursos de treino inteligente usando apenas HTML, CSS, JavaScript com ES Modules, Canvas API e localStorage.
+PandaDigitações V2 é uma aplicação web gamificada para treino de digitação em português. A experiência atual combina Type Arena, Mapa do Dojo, Arcade, Ranking, Conta, progresso local e integração inicial com Supabase, mantendo a identidade visual **Panda Dojo Arcade**.
 
-Não há backend, framework, etapa de build, React, Vue, Vite ou Next.
+O projeto principal fica em [`panda-dojo-v2`](./panda-dojo-v2).
 
-## Versão atual — Panda Dojo Arcade Local v1
+## Estado Atual
 
-Esta versão é uma edição local estável e pronta para compartilhamento. Ela mantém todo o progresso no navegador do usuário e organiza a experiência em páginas estáticas com caminhos relativos, adequadas para execução por servidor local simples ou publicação via GitHub Pages.
+A V2 está em fase funcional avançada:
 
-## Recursos prontos na v1
+- React + TypeScript + Vite.
+- Design system próprio com CSS Modules e tokens globais.
+- Type Arena com cursor configurável, teclado virtual, métricas e tela de resultado.
+- Mapa do Dojo com fases e progresso.
+- Arcade com Panda Keys e protótipos de minigames.
+- Conta com autenticação Supabase e fallback local.
+- Sync local-first para progresso, histórico, conquistas e recordes.
+- Pending Sync para reenviar dados quando o Supabase falhar temporariamente.
+- Ranking Local e Ranking Online inicial com Supabase.
+- Tema claro/escuro, reduced motion e configurações persistidas.
 
-- Home com atalhos, progresso local, ranking visual e recomendações.
-- Type Arena com treino cronometrado, PPM, CPM, precisão, erros, combo, histórico e tela final.
-- Aprenda com módulos educativos, checklist e CTAs para prática.
-- Mapa do Dojo com fases, bloqueios, medalhas, XP e integração com a Type Arena.
-- Arcade do Panda com Panda Keys em Canvas.
-- Protótipo jogável de Selos do Teclado.
-- Conta visual para login/cadastro futuro.
-- XP, níveis, títulos e conquistas locais.
-- Missões diárias e recomendações inteligentes locais.
-- Tema claro/escuro persistido.
-- Drawer de configurações.
-- Teclado virtual da Type Arena.
-- Histórico local e recordes locais.
-- Layout responsivo para desktop, notebook, tablet e celular.
-- Animações com fallback e respeito a `prefers-reduced-motion`.
+## Stack
 
-## Recursos locais
+- React 19.
+- TypeScript.
+- Vite.
+- React Router 7.
+- Supabase Auth + PostgreSQL.
+- CSS Modules.
+- localStorage para modo local-first.
 
-A aplicação usa `localStorage` para salvar preferências e progresso. Principais chaves:
+Não há Next, Vue, build server próprio ou backend customizado fora do Supabase.
 
-- `ativo`: preferência de tema.
-- `tempoPratica`: tempo padrão de treino.
-- `historico`: resultados recentes da Type Arena.
-- `pandaXp`: XP local.
-- `pandaLevel`: nível local.
-- `pandaAchievements`: conquistas desbloqueadas.
-- `pandaDailyStreak`: sequência diária.
-- `pandaLastTrainingDate`: data do último treino.
-- `pandaLastMistakes`: teclas mais erradas recentes.
-- `pandaKeysBestScore`: melhor pontuação do Panda Keys.
-- `pandaDailyMissions`: missões diárias locais.
-- `pandaMissionDate`: data das missões atuais.
-- `pandaLessonProgress`: progresso das fases do Mapa.
-- `pandaTrainingRecommendations`: recomendações recentes.
-
-Os dados não saem do navegador e podem ser limpos nas ferramentas de desenvolvedor.
-
-## Recursos ainda protótipos
-
-- Conta ainda é visual, sem autenticação real.
-- Ranking é local/visual, sem placar global.
-- Selos do Teclado está em MVP.
-- Algumas fases do Mapa usam conjuntos de textos simples e podem evoluir.
-- Recomendações são heurísticas locais, não personalização por backend.
-
-## Como executar localmente
-
-Como o projeto usa ES Modules, execute por um servidor estático:
+## Como Rodar Localmente
 
 ```bash
-cd assets
-python -m http.server 5500
+cd panda-dojo-v2
+npm install
+npm run dev
 ```
 
-URLs principais:
+O Vite abre por padrão em:
 
 ```text
-http://localhost:5500
-http://localhost:5500/page/digitando.html
-http://localhost:5500/page/aprenda.html
-http://localhost:5500/page/pratique.html
-http://localhost:5500/page/game.html
-http://localhost:5500/page/entrarCriarConta.html
+http://localhost:5173
 ```
+
+## Scripts
+
+```bash
+npm run dev      # servidor de desenvolvimento
+npm run lint     # ESLint
+npm run build    # TypeScript + build Vite
+npm run preview  # preview da build em dist
+```
+
+## Rotas Principais
+
+| Rota | Página |
+| --- | --- |
+| `/` | Home |
+| `/arena` | Type Arena |
+| `/aprenda` | Aprenda |
+| `/mapa` | Mapa do Dojo |
+| `/arcade` | Arcade |
+| `/conta` | Conta |
+| `/ranking` | Ranking |
+
+Rotas desconhecidas caem na Home.
+
+## Supabase
+
+O app funciona sem Supabase, mantendo dados locais no navegador. Para ativar conta, sync e ranking online:
+
+1. Crie um projeto no Supabase.
+2. Copie `.env.example` para `.env.local` dentro de `panda-dojo-v2`.
+3. Preencha:
+
+```env
+VITE_SUPABASE_URL=
+VITE_SUPABASE_PUBLISHABLE_KEY=
+```
+
+4. Execute os SQLs no Supabase SQL Editor:
+
+```text
+panda-dojo-v2/supabase/schema.sql
+panda-dojo-v2/supabase/seed.sql
+panda-dojo-v2/supabase/ranking_views.sql
+panda-dojo-v2/supabase/security_fixes.sql
+```
+
+O script `fix_profiles_null_names.sql` é auxiliar e só deve ser usado para corrigir perfis antigos sem nome.
+
+Nunca use `service_role` no front-end.
+
+## Dados e Persistência
+
+O projeto é local-first:
+
+- dados locais continuam funcionando sem internet/Supabase;
+- login online sincroniza progresso quando possível;
+- falhas remotas entram na fila de Pending Sync;
+- ranking local continua disponível mesmo se o ranking online falhar.
+
+Principais áreas de persistência:
+
+- `src/repositories/`
+- `src/services/persistence/`
+- `src/repositories/remote/`
+- `src/features/backend-sync/`
+
+## Ranking
+
+O Ranking possui dois escopos:
+
+- **Local:** usa histórico salvo no navegador.
+- **Online:** usa Supabase via `public.online_typing_ranking`.
+
+Documentação técnica:
+
+- [`panda-dojo-v2/docs/RANKING_SYSTEM.md`](./panda-dojo-v2/docs/RANKING_SYSTEM.md)
+- [`panda-dojo-v2/supabase/ranking_views.sql`](./panda-dojo-v2/supabase/ranking_views.sql)
 
 ## Estrutura
 
 ```text
 .
-|-- README.md
-|-- QA_CHECKLIST.md
-|-- RELEASE_NOTES.md
-|-- LICENSE
-`-- assets
-    |-- index.html
-    |-- css
-    |   |-- style.css
-    |   |-- mediaquery.css
-    |   |-- dojo.css
-    |   |-- animations.css
-    |   `-- game.css
-    |-- js
-    |   |-- constants.mjs
-    |   |-- config.mjs
-    |   |-- typing.mjs
-    |   |-- tempo.mjs
-    |   |-- historico.mjs
-    |   |-- gamification.mjs
-    |   |-- trainingRecommendations.mjs
-    |   |-- dojoLessons.mjs
-    |   |-- dailyMissions.mjs
-    |   |-- utils
-    |   `-- game
-    `-- page
-        |-- digitando.html
-        |-- aprenda.html
-        |-- pratique.html
-        |-- game.html
-        `-- entrarCriarConta.html
+├── README.md
+├── LICENSE
+├── assets/                  # V1/legado estático
+└── panda-dojo-v2/            # aplicação atual
+    ├── src/
+    │   ├── app/
+    │   ├── components/
+    │   ├── features/
+    │   ├── pages/
+    │   ├── repositories/
+    │   ├── services/
+    │   └── styles/
+    ├── docs/
+    ├── supabase/
+    ├── public/
+    ├── package.json
+    └── vite.config.ts
 ```
 
-## Publicação via GitHub Pages
+## Deploy
 
-Se o conteúdo publicado for a pasta `assets`, uma opção é enviar essa pasta para a branch `gh-pages`:
+### Vercel
+
+Recomendado para a V2.
+
+Configuração:
+
+- Root Directory: `panda-dojo-v2`
+- Build Command: `npm run build`
+- Output Directory: `dist`
+
+O arquivo [`panda-dojo-v2/vercel.json`](./panda-dojo-v2/vercel.json) já inclui rewrite para SPA.
+
+### GitHub Pages
+
+Possível, mas exige cuidado com SPA e subpath. Para a V2, Vercel é a opção mais simples.
+
+## Documentação Útil
+
+- [`panda-dojo-v2/docs/PROJECT_QA_CHECKLIST.md`](./panda-dojo-v2/docs/PROJECT_QA_CHECKLIST.md)
+- [`panda-dojo-v2/docs/PROJECT_TERMS.md`](./panda-dojo-v2/docs/PROJECT_TERMS.md)
+- [`panda-dojo-v2/docs/PERSISTENCE_ARCHITECTURE.md`](./panda-dojo-v2/docs/PERSISTENCE_ARCHITECTURE.md)
+- [`panda-dojo-v2/docs/SUPABASE_BACKEND_PLAN.md`](./panda-dojo-v2/docs/SUPABASE_BACKEND_PLAN.md)
+- [`panda-dojo-v2/docs/SUPABASE_SYNC_RULES.md`](./panda-dojo-v2/docs/SUPABASE_SYNC_RULES.md)
+
+## Limitações Atuais
+
+- Ranking online ainda é inicial.
+- Desafio Diário online dedicado ainda não foi separado em tabela própria de ranking diário.
+- Perfil público completo ainda não existe.
+- O projeto ainda mantém `assets/` como legado da V1.
+- Alguns minigames do Arcade ainda são protótipos.
+
+## Manutenção
+
+Antes de concluir mudanças relevantes:
 
 ```bash
-git subtree push --prefix assets origin gh-pages
+cd panda-dojo-v2
+npm run lint
+npm run build
 ```
 
-Se for necessário sobrescrever a branch publicada:
-
-```bash
-git push origin `git subtree split --prefix assets main`:gh-pages --force
-```
-
-No GitHub Pages, configure a publicação para:
+Checklist permanente:
 
 ```text
-Branch: gh-pages
-Folder: / (root)
+panda-dojo-v2/docs/PROJECT_QA_CHECKLIST.md
 ```
-
-Não há etapa de build. Os caminhos do projeto foram mantidos relativos para funcionar tanto localmente quanto no GitHub Pages.
-
-## Limitações conhecidas
-
-- Progresso ainda é local por navegador.
-- Não há login real.
-- Não há ranking global real.
-- Não há backend.
-- Alguns minigames ainda são protótipos.
-- A conta ainda é uma tela visual.
-- CDNs externos precisam estar disponíveis no primeiro carregamento para jQuery, GSAP e ícones.
-
-## Boas práticas para manutenção
-
-- Não adicionar backend ou framework sem uma decisão explícita de arquitetura.
-- Preservar ES Modules e caminhos relativos.
-- Não remover IDs usados pelo JavaScript.
-- Testar com localStorage limpo e com dados antigos.
-- Validar console, responsividade e ausência de scroll horizontal após cada alteração visual.
 
 ## Licença
 
-Este projeto está licenciado sob os termos da licença MIT. Consulte [LICENSE](LICENSE).
+MIT. Consulte [`LICENSE`](./LICENSE).

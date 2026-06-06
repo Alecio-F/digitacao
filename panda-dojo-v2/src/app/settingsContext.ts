@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import type { CursorMode, Settings, Theme } from '@/features/settings/types';
+import type { ArenaFontSize, CursorMode, Settings, Theme } from '@/features/settings/types';
 
 export interface SettingsContextValue {
   settings: Settings;
@@ -9,6 +9,7 @@ export interface SettingsContextValue {
   animationsEnabled: boolean;
   reducedEffects: boolean;
   cursorMode: CursorMode;
+  arenaFontSize: ArenaFontSize;
   keyboardVisible: boolean;
   setTheme: (v: Theme) => void;
   toggleTheme: () => void;
@@ -18,6 +19,7 @@ export interface SettingsContextValue {
   setAnimationsEnabled: (v: boolean) => void;
   setReducedEffects: (v: boolean) => void;
   setCursorMode: (v: CursorMode) => void;
+  setArenaFontSize: (v: ArenaFontSize) => void;
   setKeyboardVisible: (v: boolean) => void;
 }
 

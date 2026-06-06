@@ -619,6 +619,7 @@ export function ArenaPage() {
                 feedback={state.feedback}
                 disabled={timer.phase === 'finished'}
                 cursorMode={settings.cursorMode}
+                arenaFontSize={settings.arenaFontSize}
                 keyboardVisible={settings.keyboardVisible}
                 showStartOverlay={timer.phase === 'idle' && !isArenaFocused}
                 showSmoothCursor={

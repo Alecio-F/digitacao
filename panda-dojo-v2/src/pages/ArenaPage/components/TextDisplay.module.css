@@ -1,5 +1,8 @@
 .wrapper {
   position: relative;
+  --arena-text-font-size: clamp(2.05rem, 2.55vw, 3.15rem);
+  --arena-line-height: 1.56;
+  --arena-letter-spacing: 0.035em;
   min-height: clamp(258px, 34vh, 360px);
   height: clamp(258px, 34vh, 360px);
   overflow: hidden;
@@ -13,6 +16,24 @@
     0 12px 28px rgba(11, 57, 84, 0.07);
   padding: clamp(22px, 3vw, 38px) clamp(38px, 4.8vw, 68px);
   cursor: text;
+}
+
+.wrapper[data-arena-font-size='compact'] {
+  --arena-text-font-size: clamp(1.55rem, 2.05vw, 2.15rem);
+  --arena-line-height: 1.52;
+  --arena-letter-spacing: 0.025em;
+}
+
+.wrapper[data-arena-font-size='default'] {
+  --arena-text-font-size: clamp(1.8rem, 2.3vw, 2.65rem);
+  --arena-line-height: 1.54;
+  --arena-letter-spacing: 0.03em;
+}
+
+.wrapper[data-arena-font-size='large'] {
+  --arena-text-font-size: clamp(2.05rem, 2.55vw, 3.15rem);
+  --arena-line-height: 1.56;
+  --arena-letter-spacing: 0.035em;
 }
 
 .keyboardDisabled {
@@ -95,10 +116,10 @@
   margin-inline: 0.024em;
   color: var(--dojo-text);
   font-family: var(--font-body), monospace;
-  font-size: clamp(2.05rem, 2.55vw, 3.15rem);
+  font-size: var(--arena-text-font-size);
   font-weight: 500;
-  letter-spacing: 0.035em;
-  line-height: 1.56;
+  letter-spacing: var(--arena-letter-spacing);
+  line-height: var(--arena-line-height);
   transition:
     color var(--dojo-duration-fast) var(--dojo-ease),
     background var(--dojo-duration-fast) var(--dojo-ease),
@@ -128,16 +149,17 @@
 /* Bloco/haste (arcade): realce leve no caractere sob o cursor bloco. */
 .cursorArcade .letterCurrent {
   color: var(--dojo-text-strong);
-  background: rgba(20, 184, 212, 0.12);
-  text-shadow: 0 0 14px rgba(0, 168, 204, 0.2);
+  background: transparent;
+  box-shadow: none;
+  text-shadow: none;
 }
 
 :global(.dark) .cursorArcade .letterCurrent {
-  background: rgba(114, 245, 255, 0.14);
+  background: transparent;
 }
 
-/* Linha fina (classic): sem realce de fundo — o cursor é a linha vertical, sem
-   "borrão" no caractere atual. */
+/* Linha fina (classic): sem realce de fundo; o cursor visível é o underline do
+   SmoothTypingCursor, sem borrão no caractere atual. */
 
 .cursorClassic .letterCurrent {
   background: transparent;
@@ -275,9 +297,30 @@
 
 @media (max-width: 760px) {
   .wrapper {
+    --arena-text-font-size: clamp(1.35rem, 6vw, 2rem);
+    --arena-line-height: 1.5;
+    --arena-letter-spacing: 0.025em;
     min-height: 250px;
     height: 250px;
     padding: 18px 18px;
+  }
+
+  .wrapper[data-arena-font-size='compact'] {
+    --arena-text-font-size: clamp(1.12rem, 4.9vw, 1.55rem);
+    --arena-line-height: 1.48;
+    --arena-letter-spacing: 0.018em;
+  }
+
+  .wrapper[data-arena-font-size='default'] {
+    --arena-text-font-size: clamp(1.24rem, 5.5vw, 1.78rem);
+    --arena-line-height: 1.5;
+    --arena-letter-spacing: 0.022em;
+  }
+
+  .wrapper[data-arena-font-size='large'] {
+    --arena-text-font-size: clamp(1.35rem, 6vw, 2rem);
+    --arena-line-height: 1.5;
+    --arena-letter-spacing: 0.025em;
   }
 
   .keyboardDisabled {
@@ -292,9 +335,6 @@
 
   .letter {
     margin-inline: 0.012em;
-    font-size: clamp(1.35rem, 6vw, 2rem);
-    letter-spacing: 0.025em;
-    line-height: 1.5;
   }
 
   .desktopCopy {

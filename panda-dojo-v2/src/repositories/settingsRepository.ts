@@ -1,6 +1,6 @@
 import { persistence } from '@/services/persistence/types';
 import { PERSISTENCE_KEYS } from '@/services/persistence/persistenceKeys';
-import type { CursorMode, Theme } from '@/features/settings/types';
+import type { ArenaFontSize, CursorMode, Theme } from '@/features/settings/types';
 
 /**
  * Repositório de configurações locais (tema, tempo de treino, cursor, teclado
@@ -55,6 +55,16 @@ export function getArenaCursor(): CursorMode {
 
 export function setArenaCursor(cursor: CursorMode): void {
   persistence.setItem(PERSISTENCE_KEYS.arenaCursor, cursor);
+}
+
+export function getArenaFontSize(): ArenaFontSize {
+  const value = persistence.getItem<string>(PERSISTENCE_KEYS.arenaFontSize, 'large');
+  if (value === 'compact' || value === 'default' || value === 'large') return value;
+  return 'large';
+}
+
+export function setArenaFontSize(fontSize: ArenaFontSize): void {
+  persistence.setItem(PERSISTENCE_KEYS.arenaFontSize, fontSize);
 }
 
 // ── Teclado virtual ───────────────────────────────────────────────────────

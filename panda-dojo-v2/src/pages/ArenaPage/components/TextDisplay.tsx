@@ -1,5 +1,5 @@
 ﻿import { useEffect, useRef } from 'react';
-import type { CursorMode } from '@/features/settings/types';
+import type { ArenaFontSize, CursorMode } from '@/features/settings/types';
 import type { Feedback, WordData } from '@/features/typing/types';
 import { SmoothTypingCursor } from './SmoothTypingCursor';
 import styles from './TextDisplay.module.css';
@@ -11,6 +11,7 @@ interface TextDisplayProps {
   feedback: Feedback;
   disabled?: boolean;
   cursorMode: CursorMode;
+  arenaFontSize: ArenaFontSize;
   keyboardVisible: boolean;
   showStartOverlay: boolean;
   showSmoothCursor: boolean;
@@ -42,6 +43,7 @@ export function TextDisplay({
   feedback,
   disabled,
   cursorMode,
+  arenaFontSize,
   keyboardVisible,
   showStartOverlay,
   showSmoothCursor,
@@ -150,11 +152,20 @@ export function TextDisplay({
     danger: styles.feedbackDanger,
   }[feedback.tone];
   const cursorVariant = cursorMode === 'classic' ? 'line' : 'block';
+  const currentWordSignature = safeWords[currentWordIndex]?.letters
+    .map((letter) => [
+      letter?.char ?? '',
+      letter?.status ?? 'pending',
+      letter?.isExtra ? 'extra' : 'base',
+    ].join(','))
+    .join('|') ?? 'no-word';
   const cursorUpdateKey = [
     currentWordIndex,
     currentLetterIndex,
     safeWords.length,
+    currentWordSignature,
     cursorMode,
+    arenaFontSize,
     keyboardVisible ? 'keyboard-on' : 'keyboard-off',
     showSmoothCursor ? 'cursor-on' : 'cursor-off',
     showStartOverlay ? 'overlay-on' : 'overlay-off',
@@ -165,6 +176,7 @@ export function TextDisplay({
       <div
         ref={wrapperRef}
         data-typing-area
+        data-arena-font-size={arenaFontSize}
         className={[
           styles.wrapper,
           cursorMode === 'classic' ? styles.cursorClassic : styles.cursorArcade,

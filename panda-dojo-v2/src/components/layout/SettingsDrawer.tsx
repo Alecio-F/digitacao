@@ -1,6 +1,6 @@
 import { useEffect, useId } from 'react';
 import { useSettingsContext } from '@/app/settingsContext';
-import type { Theme } from '@/features/settings/types';
+import type { ArenaFontSize, Theme } from '@/features/settings/types';
 import styles from './SettingsDrawer.module.css';
 
 interface Props {
@@ -16,6 +16,12 @@ const PRACTICE_TIME_OPTIONS = [
   { value: 5, label: '5 minutos' },
   { value: 10, label: '10 minutos' },
   { value: 15, label: '15 minutos' },
+];
+
+const ARENA_FONT_SIZE_OPTIONS: Array<{ value: ArenaFontSize; label: string }> = [
+  { value: 'compact', label: 'Compacto' },
+  { value: 'default', label: 'Padrão' },
+  { value: 'large', label: 'Grande' },
 ];
 
 function SwitchControl({
@@ -53,6 +59,7 @@ export function SettingsDrawer({ open, onClose }: Props) {
     setAnimationsEnabled,
     setReducedEffects,
     setCursorMode,
+    setArenaFontSize,
     setKeyboardVisible,
   } = useSettingsContext();
 
@@ -216,6 +223,31 @@ export function SettingsDrawer({ open, onClose }: Props) {
                   <span className={styles.cursorPreviewWord}>Panda</span>
                   <span className={styles.cursorPreviewLabel}>Linha</span>
                 </button>
+              </div>
+            </div>
+
+            <div className={styles.option}>
+              <div className={styles.optionText}>
+                <strong>Tamanho do texto da Arena</strong>
+                <span>Ajuste o tamanho das letras durante o treino.</span>
+              </div>
+              <div className={styles.segmented} role="group" aria-label="Tamanho do texto da Arena">
+                {ARENA_FONT_SIZE_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    className={[
+                      styles.segmentedButton,
+                      settings.arenaFontSize === option.value ? styles.segmentedButtonActive : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    aria-pressed={settings.arenaFontSize === option.value}
+                    onClick={() => setArenaFontSize(option.value)}
+                  >
+                    {option.label}
+                  </button>
+                ))}
               </div>
             </div>
 

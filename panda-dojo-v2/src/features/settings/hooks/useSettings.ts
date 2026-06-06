@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   getArenaCursor,
+  getArenaFontSize,
   getAnimationsEnabled,
   getMotionPreferenceTouched,
   getPracticeTime,
@@ -11,6 +12,7 @@ import {
   resetTheme as resetThemeInStore,
   setAnimationsEnabled as setAnimationsEnabledInStore,
   setArenaCursor,
+  setArenaFontSize as setArenaFontSizeInStore,
   setMotionPreferenceTouched,
   setPracticeTime,
   setReducedEffects as setReducedEffectsInStore,
@@ -18,7 +20,7 @@ import {
   setTheme as setThemeInStore,
   setVirtualKeyboardEnabled,
 } from '@/repositories/settingsRepository';
-import type { CursorMode, Settings, Theme } from '../types';
+import type { ArenaFontSize, CursorMode, Settings, Theme } from '../types';
 
 function canUseBrowserApis() {
   return typeof window !== 'undefined' && typeof document !== 'undefined';
@@ -54,6 +56,7 @@ export function useSettings() {
       reducedEffects: getReducedEffects(motionPreferenceTouched ? false : prefersReducedMotion),
       motionPreferenceTouched,
       cursorMode: getArenaCursor(),
+      arenaFontSize: getArenaFontSize(),
       keyboardVisible: getVirtualKeyboardEnabled(true),
     };
   }, []);
@@ -118,6 +121,11 @@ export function useSettings() {
     setSettings((prev) => ({ ...prev, cursorMode: value }));
   }, []);
 
+  const setArenaFontSize = useCallback((value: ArenaFontSize) => {
+    setArenaFontSizeInStore(value);
+    setSettings((prev) => ({ ...prev, arenaFontSize: value }));
+  }, []);
+
   const setKeyboardVisible = useCallback((value: boolean) => {
     setVirtualKeyboardEnabled(value);
     setSettings((prev) => ({ ...prev, keyboardVisible: value }));
@@ -136,6 +144,7 @@ export function useSettings() {
     animationsEnabled: settings.animationsEnabled,
     reducedEffects: settings.reducedEffects,
     cursorMode: settings.cursorMode,
+    arenaFontSize: settings.arenaFontSize,
     keyboardVisible: settings.keyboardVisible,
     setTheme,
     toggleTheme,
@@ -145,6 +154,7 @@ export function useSettings() {
     setAnimationsEnabled,
     setReducedEffects,
     setCursorMode,
+    setArenaFontSize,
     setKeyboardVisible,
   };
 }
