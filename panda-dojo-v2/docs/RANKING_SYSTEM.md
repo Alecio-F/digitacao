@@ -30,8 +30,8 @@ quando o Supabase estiver indisponível.
 - **Combo:** ordena pelo maior `max_combo` do usuário, com desempate por precisão e PPM. Exige precisão ≥ 90%, duração ≥ 15 s, PPM ≥ 20 e ≥ 50 caracteres corretos.
 - **Fases:** usa resultados `lesson` e permite filtro futuro por `lessonId`.
 - **Textos:** usa resultados `practice_text` e `free`.
+- **Desafio Diário:** ranking diário dedicado com tabela própria (`daily_challenge_results`), um resultado por usuário por dia, padrão "Hoje".
 - **Arcade:** espaço preparado para Panda Keys e próximos minigames.
-- **Desafio Diário:** espaço preparado para ranking diário dedicado futuro.
 
 ## Fórmula geral
 
@@ -117,7 +117,9 @@ Views principais:
 - `public.online_typing_ranking_best_speed`;
 - `public.online_typing_ranking_best_accuracy`;
 - `public.online_typing_ranking_best_combo`;
-- `public.online_typing_ranking_best_by_phase`.
+- `public.online_typing_ranking_best_by_phase`;
+- `public.online_typing_ranking_best_by_text`;
+- `public.online_daily_challenge_ranking` (tabela separada: `daily_challenge_results`).
 
 As views `best` usam `row_number()` com `partition by user_id` para exibir no
 máximo um resultado por usuário em cada mural. Todas filtram
@@ -125,6 +127,9 @@ máximo um resultado por usuário em cada mural. Todas filtram
 
 A view `online_typing_ranking_best_by_phase` usa `partition by user_id, lesson_id`,
 permitindo que o mesmo usuário apareça uma vez por fase.
+
+A view `online_typing_ranking_best_by_text` usa `partition by user_id, practice_text_id`,
+permitindo que o mesmo usuário apareça uma vez por texto praticado.
 
 ### Campos expostos pelas views
 
@@ -163,9 +168,10 @@ amigável no escopo Online e mantém o Ranking Local intacto.
 - **Precisão:** `accuracy desc`, `ppm desc`, `errors asc`.
 - **Combo:** `max_combo desc`, `accuracy desc`, `ppm desc`.
 - **Fases:** `ranking_score desc`, `ppm desc`, `accuracy desc`, `max_combo desc` por `(user_id, lesson_id)`.
-- **Textos:** preparado para `mode in (practice_text, free)`.
+- **Textos:** `ranking_score desc`, `ppm desc`, `accuracy desc`, `max_combo desc` por `(user_id, practice_text_id)`.
+- **Desafio Diário:** `ranking_score desc`, `ppm desc`, `accuracy desc`, `max_combo desc` por `(user_id, challenge_date)`.
 
-Arcade e Desafio Diário continuam preparados para fases futuras.
+Arcade continua preparado para fase futura.
 
 ## Filtros
 
@@ -281,18 +287,157 @@ que já considera velocidade, precisão e combo. Se um resultado antigo tiver
   disponível no `getOnlineTypingRanking`;
 - `ranking_score` é client-side; resultados com score zerado aparecem no fim.
 
+## Ranking Online por Textos
+
+O Ranking Online por Textos exibe o melhor resultado de cada usuário em cada
+texto específico praticado. Um jogador pode aparecer múltiplas vezes no ranking —
+uma vez por texto que completou de forma elegível — mas nunca duas vezes no mesmo texto.
+
+**View:** `public.online_typing_ranking_best_by_text`
+
+**Campo de texto:** `practice_text_id` (text, ex: `'dojo-routine'`, `'focus-before-speed'`). O
+campo `mode = 'practice_text'` identifica resultados de textos para praticar.
+
+**Critérios mínimos de elegibilidade:**
+
+- `valid_for_ranking = true` (camada de antifraude já aplicada);
+- `mode = 'practice_text'` e `practice_text_id is not null`;
+- `accuracy >= 90`;
+- `duration_seconds >= 15`.
+
+**Lógica de melhor resultado por usuário por texto:**
+
+```sql
+row_number() over (
+  partition by user_id, practice_text_id
+  order by ranking_score desc, ppm desc, accuracy desc, max_combo desc, completed_at asc
+)
+```
+
+A partição por `(user_id, practice_text_id)` garante que cada jogador aparece uma vez
+por texto, mostrando sempre o seu melhor desempenho naquele texto específico.
+
+**ranking_score usado:** campo calculado pelo cliente ao salvar o resultado, que já
+considera velocidade, precisão e combo (`ppm * 1.4 + accuracy * 2 + combo * 0.4 - errors * 1.5`).
+
+**Mapeamento no front-end:**
+
+- Categoria `texts` → view `online_typing_ranking_best_by_text`;
+- `getModeLabel` usa `practice_text_id` para exibir o título real do texto (ex: "Rotina do Dojo");
+- Filtro por `practiceTextId` disponível no repositório para filtrar texto específico;
+- Fallback deduplica por `(user_id, practice_text_id)` para manter consistência.
+
+**Textos disponíveis** (definidos em `src/features/practiceTexts/data/practiceTexts.ts`):
+
+| ID | Título |
+|---|---|
+| `dojo-routine` | Rotina do Dojo |
+| `coffee-code` | Café e Código |
+| `digital-apprentice` | Aprendiz Digital |
+| `focus-before-speed` | Foco Antes da Velocidade |
+| `panda-journey` | Jornada do Panda |
+| `night-at-dojo` | Noite no Dojo |
+| `perfect-sequence` | Sequência Perfeita |
+| `control-and-rhythm` | Controle e Ritmo |
+| `guardian-challenge` | Desafio do Guardião |
+| `keyboard-final-trial` | Prova Final do Teclado |
+
+**Limitações atuais do Ranking por Textos:**
+
+- Não há seletor de texto na UI nesta versão — o ranking exibe todos os textos
+  combinados, com até um resultado por usuário por texto;
+- Resultados com `mode = 'free'` (treino livre sem texto fixo) não entram nesta view;
+- Um futuro seletor pode filtrar pela `practice_text_id` usando a opção `practiceTextId`
+  já disponível no `getOnlineTypingRanking`;
+- `ranking_score` é client-side; resultados antigos com score zerado aparecem no fim.
+
+## Ranking Online do Desafio Diário
+
+O Ranking do Desafio Diário usa uma tabela dedicada, separada de `typing_results`,
+para garantir semântica de "um resultado por usuário por dia" desde a camada de dados.
+
+**Tabela:** `public.daily_challenge_results`
+
+**Constraint de unicidade:** `unique(user_id, challenge_date)` — ao contrário das
+demais categorias, que deduplicam via view, aqui a unicidade é garantida em nível
+de banco de dados.
+
+**View:** `public.online_daily_challenge_ranking`
+
+**Campo de data:** `challenge_date` (text `YYYY-MM-DD`), derivado de `completed_at.slice(0, 10)`.
+
+**Campos de ranking adicionados (idempotente via `supabase/daily_challenge_ranking.sql`):**
+
+- `valid_for_ranking` (boolean, default false);
+- `ranking_score` (numeric, default 0);
+- `ranking_invalid_reason` (text, nullable);
+- `ranking_invalid_reasons` (jsonb, default `[]`);
+- `suspicious_flags` (jsonb, default `{}`).
+
+**Critérios mínimos de elegibilidade:**
+
+- `valid_for_ranking = true`;
+- `user_id is not null`;
+- `challenge_date is not null`.
+
+**Lógica de melhor resultado por usuário por dia:**
+
+```sql
+row_number() over (
+  partition by user_id, challenge_date
+  order by ranking_score desc, ppm desc, accuracy desc, max_combo desc, completed_at asc
+)
+```
+
+A partição por `(user_id, challenge_date)` é mantida por consistência com as demais
+views, mesmo que a constraint `unique(user_id, challenge_date)` já garanta uma linha
+por usuário por dia. Isso preserva a lógica caso a constraint seja relaxada no futuro.
+
+**Fluxo de salvamento:**
+
+1. `syncTypingResultToSupabase` em `syncLocalProgressService.ts` salva normalmente em `typing_results`;
+2. Se `mode === 'daily-challenge'`, chama também `saveDailyChallengeResult` em `dailyChallengeRemoteRepository.ts`;
+3. `saveDailyChallengeResult` faz leitura prévia (read-before-write): só executa o upsert se o novo `ranking_score` for estritamente maior que o existente.
+
+**Upsert com `onConflict: 'user_id,challenge_date'`:** se o resultado do dia já existir
+com score maior ou igual, a chamada retorna sem alterar o banco.
+
+**Período padrão:** ao selecionar a categoria Desafio Diário, o filtro de período
+é ajustado automaticamente para "Hoje" (`defaultPeriod: 'today'`).
+
+**Mapeamento no front-end:**
+
+- Categoria `daily` → view `online_daily_challenge_ranking`;
+- `shouldSkipRemoteCategory` retorna `false` para `daily` — a categoria é ativa;
+- Post-view dedup por `user_id` aplicado no repositório para consistência.
+
+**Diferenças em relação às demais categorias:**
+
+| Aspecto | Demais categorias | Desafio Diário |
+|---|---|---|
+| Tabela fonte | `typing_results` | `daily_challenge_results` |
+| Unicidade | deduplicação na view | constraint no banco |
+| Granularidade | por usuário (geral/speed/accuracy/combo) ou por usuário+fase/texto | por usuário por dia |
+| Período padrão | `all` | `today` |
+| Fallback | leitura direta em `typing_results` | sem fallback específico |
+
+**Arquivos relevantes:**
+
+- `supabase/daily_challenge_ranking.sql` — DDL completo;
+- `src/repositories/remote/dailyChallengeRemoteRepository.ts` — upsert com read-before-write;
+- `src/features/backend-sync/syncLocalProgressService.ts` — orquestração do salvamento dual.
+
 ## Limitações atuais
 
 - Ranking Online depende da execução dos SQLs em `supabase/`.
 - Antifraude ainda é básico e client-side.
-- Não há ranking diário dedicado com `daily_challenge_results` nesta fase.
+- `challenge_date` usa a data UTC de `completed_at`; pode divergir da data local do jogador em fusos muito diferentes do UTC.
 - Não há ranking global avançado por temporada.
 - Não há perfil público completo.
 
 ## Próximas fases
 
 - Recalcular elegibilidade no servidor, se o ranking ganhar competição real.
-- Ranking diário dedicado.
 - Ranking de Arcade com `arcade_scores`.
 - Filtros avançados por fase/texto específicos.
 - RPC ou materialized view se o volume de resultados crescer.

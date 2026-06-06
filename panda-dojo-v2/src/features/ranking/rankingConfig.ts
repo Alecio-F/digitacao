@@ -65,12 +65,13 @@ export const RANKING_CATEGORY_CONFIG: Record<RankingCategory, RankingCategoryCon
   daily: {
     id: 'daily',
     title: 'Desafio Diário',
-    description: 'Preparado para resultados diários dedicados em fase futura.',
+    description: 'Ranking do Desafio Diário — um resultado por usuário por dia.',
     defaultMetric: 'ranking_score',
     availableMetrics: ['ranking_score', 'ppm', 'accuracy'],
     requiresEligibleResult: true,
     supportedModes: ['daily_challenge'],
-    status: 'soon',
+    status: 'ready',
+    defaultPeriod: 'today',
   },
 };
 

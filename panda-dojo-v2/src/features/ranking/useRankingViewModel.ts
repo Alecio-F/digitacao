@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getOnlineTypingRanking } from '@/repositories/remote/rankingRemoteRepository';
 import { LESSONS } from '@/features/lessons/data/lessons';
+import { PRACTICE_TEXTS } from '@/features/practiceTexts/data/practiceTexts';
 import { RANKING_CATEGORY_CONFIG } from './rankingConfig';
 import { filterByPeriod } from './rankingFilters';
 import { mapRemoteRankingEntryToRankingEntry } from './rankingMappers';
@@ -17,6 +18,10 @@ import { useLocalRanking } from './hooks/useLocalRanking';
 
 const LESSON_TITLE_MAP: Record<string, string> = Object.fromEntries(
   LESSONS.map((l) => [l.id, l.title]),
+);
+
+const PRACTICE_TEXT_TITLE_MAP: Record<string, string> = Object.fromEntries(
+  PRACTICE_TEXTS.map((t) => [t.id, t.title]),
 );
 
 export const RANKING_CATEGORY_OPTIONS: RankingCategory[] = [
@@ -58,6 +63,10 @@ export function getMetricLabel(metric: RankingMetric): string {
 export function getModeLabel(entry: RankingEntry): string {
   if (entry.mode === 'lesson' && entry.lessonId) {
     return LESSON_TITLE_MAP[entry.lessonId] ?? `Fase: ${entry.lessonId}`;
+  }
+
+  if (entry.mode === 'practice_text' && entry.practiceTextId) {
+    return PRACTICE_TEXT_TITLE_MAP[entry.practiceTextId] ?? `Texto: ${entry.practiceTextId}`;
   }
 
   const labels: Record<RankingEntry['mode'], string> = {
@@ -231,6 +240,8 @@ export function useRankingViewModel() {
   function changeCategory(value: RankingCategory) {
     setCategory(value);
     setMetric(RANKING_CATEGORY_CONFIG[value].defaultMetric);
+    const defaultPeriod = RANKING_CATEGORY_CONFIG[value].defaultPeriod;
+    if (defaultPeriod) setPeriod(defaultPeriod);
   }
 
   return {

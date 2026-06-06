@@ -13,6 +13,7 @@ import * as arcadeScoreRemoteRepository from '@/repositories/remote/arcadeScoreR
 import * as lessonProgressRemoteRepository from '@/repositories/remote/lessonProgressRemoteRepository';
 import * as profileRemoteRepository from '@/repositories/remote/profileRemoteRepository';
 import * as typingResultRemoteRepository from '@/repositories/remote/typingResultRemoteRepository';
+import * as dailyChallengeRemoteRepository from '@/repositories/remote/dailyChallengeRemoteRepository';
 import * as userAchievementRemoteRepository from '@/repositories/remote/userAchievementRemoteRepository';
 import {
   enqueuePendingAchievement,
@@ -338,6 +339,38 @@ export async function importLocalProgressToSupabase(
   return { ok: true, error: null, summary, imported };
 }
 
+function toDailyChallengeResultInput(
+  normalized: HistoryItem,
+  durationSeconds: number,
+  accuracy: number,
+  completedAt: string,
+): dailyChallengeRemoteRepository.DailyChallengeResultInput | null {
+  const challengeId = normalized.dailyChallengeId;
+  if (!challengeId) return null;
+
+  const completedDate = new Date(completedAt);
+  const challengeDate = Number.isNaN(completedDate.getTime())
+    ? new Date().toISOString().slice(0, 10)
+    : completedDate.toISOString().slice(0, 10);
+
+  return {
+    challengeDate,
+    challengeId,
+    ppm: safeNumber(normalized.ppm),
+    cpm: safeNumber(normalized.cpm),
+    accuracy,
+    errors: safeNumber(normalized.erros),
+    maxCombo: safeNumber(normalized.maxCombo ?? normalized.combo),
+    durationSeconds,
+    validForRanking: normalized.validForRanking !== false,
+    rankingScore: safeNumber(normalized.rankingScore),
+    rankingInvalidReason: normalized.rankingInvalidReason ?? null,
+    rankingInvalidReasons: normalized.rankingInvalidReasons ?? [],
+    suspiciousFlags: { ...(normalized.suspiciousFlags ?? {}) },
+    completedAt,
+  };
+}
+
 export async function syncTypingResultToSupabase(result: HistoryItem): Promise<SyncStatus> {
   let input: typingResultRemoteRepository.RemoteTypingResultInput | null = null;
 
@@ -348,6 +381,19 @@ export async function syncTypingResultToSupabase(result: HistoryItem): Promise<S
 
     const remoteResult = await typingResultRemoteRepository.saveTypingResult(userId, input);
     if (remoteResult.error) enqueuePendingTypingResult(input);
+
+    if (result.mode === 'daily-challenge') {
+      const normalized = normalizeTrainingResult(result);
+      const durationSeconds = Math.max(0, Math.round(safeNumber(normalized.tempo) * 60));
+      const accuracy = safeNumber(
+        String(normalized.precisao ?? '0').replace('%', '').replace(',', '.'),
+      );
+      const completedAt = getHistoryCompletedAt(normalized);
+      const dailyInput = toDailyChallengeResultInput(normalized, durationSeconds, accuracy, completedAt);
+      if (dailyInput) {
+        void dailyChallengeRemoteRepository.saveDailyChallengeResult(userId, dailyInput);
+      }
+    }
 
     return {
       ok: !remoteResult.error,

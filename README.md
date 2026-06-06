@@ -16,7 +16,8 @@ A V2 está em fase funcional avançada:
 - Conta com autenticação Supabase e fallback local.
 - Sync local-first para progresso, histórico, conquistas e recordes.
 - Pending Sync para reenviar dados quando o Supabase falhar temporariamente.
-- Ranking Local e Ranking Online inicial com Supabase.
+- Ranking Local e Ranking Online (Geral, Velocidade, Precisão, Combo, Fases, Textos, Desafio Diário).
+- Desafio Diário com ranking dedicado em tabela própria (`daily_challenge_results`), um resultado por usuário por dia.
 - Tema claro/escuro, reduced motion e configurações persistidas.
 
 ## Stack
@@ -81,16 +82,19 @@ VITE_SUPABASE_URL=
 VITE_SUPABASE_PUBLISHABLE_KEY=
 ```
 
-4. Execute os SQLs no Supabase SQL Editor:
+4. Execute os SQLs no Supabase SQL Editor, nesta ordem:
 
 ```text
 panda-dojo-v2/supabase/schema.sql
 panda-dojo-v2/supabase/seed.sql
 panda-dojo-v2/supabase/ranking_views.sql
+panda-dojo-v2/supabase/daily_challenge_ranking.sql
 panda-dojo-v2/supabase/security_fixes.sql
 ```
 
 O script `fix_profiles_null_names.sql` é auxiliar e só deve ser usado para corrigir perfis antigos sem nome.
+
+`daily_challenge_ranking.sql` adiciona campos de ranking em `daily_challenge_results`, cria indexes, policies públicas e a view `online_daily_challenge_ranking`. É idempotente — pode ser executado mais de uma vez sem efeitos colaterais.
 
 Nunca use `service_role` no front-end.
 
@@ -115,12 +119,15 @@ Principais áreas de persistência:
 O Ranking possui dois escopos:
 
 - **Local:** usa histórico salvo no navegador.
-- **Online:** usa Supabase via `public.online_typing_ranking`.
+- **Online:** usa Supabase. Categorias disponíveis: Geral, Velocidade, Precisão, Combo, Fases, Textos e Desafio Diário.
+
+O Desafio Diário usa tabela própria (`daily_challenge_results`) com ranking dedicado e garante um resultado por usuário por dia, sem interferir no histórico geral.
 
 Documentação técnica:
 
 - [`panda-dojo-v2/docs/RANKING_SYSTEM.md`](./panda-dojo-v2/docs/RANKING_SYSTEM.md)
 - [`panda-dojo-v2/supabase/ranking_views.sql`](./panda-dojo-v2/supabase/ranking_views.sql)
+- [`panda-dojo-v2/supabase/daily_challenge_ranking.sql`](./panda-dojo-v2/supabase/daily_challenge_ranking.sql)
 
 ## Estrutura
 
@@ -173,9 +180,8 @@ Possível, mas exige cuidado com SPA e subpath. Para a V2, Vercel é a opção m
 
 ## Limitações Atuais
 
-- Ranking online ainda é inicial.
-- Desafio Diário online dedicado ainda não foi separado em tabela própria de ranking diário.
 - Perfil público completo ainda não existe.
+- Antifraude do ranking é client-side; recálculo server-side ainda não implementado.
 - O projeto ainda mantém `assets/` como legado da V1.
 - Alguns minigames do Arcade ainda são protótipos.
 

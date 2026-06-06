@@ -13,6 +13,8 @@ const ONLINE_RANKING_VIEWS = {
   accuracy: 'online_typing_ranking_best_accuracy',
   combo: 'online_typing_ranking_best_combo',
   phases: 'online_typing_ranking_best_by_phase',
+  texts: 'online_typing_ranking_best_by_text',
+  daily: 'online_daily_challenge_ranking',
 } as const;
 
 export interface OnlineTypingRankingOptions {
@@ -113,12 +115,20 @@ function getCategoryMinimumAccuracy(options: OnlineTypingRankingOptions): number
 }
 
 function shouldSkipRemoteCategory(category: RankingCategory): boolean {
-  return category === 'arcade' || category === 'daily';
+  return category === 'arcade';
 }
 
 function getOnlineRankingViewName(options: OnlineTypingRankingOptions): string {
+  if (options.category === 'daily') {
+    return ONLINE_RANKING_VIEWS.daily;
+  }
+
   if (options.category === 'phases') {
     return ONLINE_RANKING_VIEWS.phases;
+  }
+
+  if (options.category === 'texts') {
+    return ONLINE_RANKING_VIEWS.texts;
   }
 
   if (options.metric === 'combo') {
@@ -181,15 +191,6 @@ function dedupeOrderedResultsByUser(entries: RemoteRankingEntry[]): RemoteRankin
   return Array.from(bestByUser.values());
 }
 
-function dedupeOrderedResultsByUserAndLesson(entries: RemoteRankingEntry[]): RemoteRankingEntry[] {
-  const seen = new Set<string>();
-  return entries.filter((entry) => {
-    const key = `${entry.user_id}:${entry.lesson_id ?? ''}`;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-}
 
 async function queryRankingView(
   options: OnlineTypingRankingOptions,
@@ -222,7 +223,12 @@ async function queryRankingView(
     .limit(Math.max(1, Math.min(100, Math.round(options.limit ?? 24))))
     .returns<RemoteRankingEntry[]>();
 
-  return { data: data ?? [], error: normalizeError(error?.message ?? null) };
+  const raw = data ?? [];
+  const result = options.category === 'phases' || options.category === 'texts' || options.category === 'daily'
+    ? dedupeOrderedResultsByUser(raw)
+    : raw;
+
+  return { data: result, error: normalizeError(error?.message ?? null) };
 }
 
 async function queryTypingResultsFallback(
@@ -264,6 +270,7 @@ async function queryTypingResultsFallback(
 
   if (options.category === 'phases') query = query.eq('mode', 'lesson');
   if (options.category === 'texts') query = query.in('mode', ['practice_text', 'free']);
+  if (options.category === 'daily') query = query.eq('mode', 'daily-challenge');
 
   for (const order of getOrderColumns(options.category, options.metric)) {
     query = query.order(order.column, { ascending: order.ascending });
@@ -274,9 +281,7 @@ async function queryTypingResultsFallback(
     .returns<FallbackTypingResultRow[]>();
 
   const rows = data?.map(mapFallbackRow) ?? [];
-  const deduped = options.category === 'phases'
-    ? dedupeOrderedResultsByUserAndLesson(rows)
-    : dedupeOrderedResultsByUser(rows);
+  const deduped = dedupeOrderedResultsByUser(rows);
 
   return {
     data: deduped,

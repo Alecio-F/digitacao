@@ -62,4 +62,5 @@ export interface RankingCategoryConfig {
   minimumAccuracy?: number;
   supportedModes: RankingMode[];
   status?: 'ready' | 'soon';
+  defaultPeriod?: RankingPeriod;
 }
