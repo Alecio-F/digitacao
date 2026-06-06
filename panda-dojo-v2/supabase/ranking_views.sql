@@ -4,7 +4,9 @@
 -- As views expoem somente campos necessarios para o mural online e mantem
 -- dados sensiveis fora do front-end.
 
-create or replace view public.online_typing_ranking as
+create or replace view public.online_typing_ranking
+with (security_invoker = true)
+as
 select
   tr.id,
   tr.user_id,
@@ -42,6 +44,51 @@ on public.typing_results (
 
 comment on view public.online_typing_ranking is
   'Mural online publico com resultados elegiveis da Type Arena e campos minimos de perfil.';
+
+-- Policies necessarias para views com security_invoker.
+--
+-- Sem estas policies, o RLS de public.typing_results e public.profiles permite
+-- que cada usuario veja apenas os proprios dados. Isso faz o Ranking Online
+-- mostrar somente a conta logada, mesmo quando existem resultados de outros
+-- usuarios no banco.
+
+grant select on public.profiles to anon;
+grant select on public.profiles to authenticated;
+grant select on public.typing_results to anon;
+grant select on public.typing_results to authenticated;
+
+drop policy if exists "Public can read ranking profiles" on public.profiles;
+create policy "Public can read ranking profiles"
+on public.profiles
+for select
+to anon, authenticated
+using (
+  exists (
+    select 1
+    from public.typing_results tr
+    where tr.user_id = profiles.id
+      and tr.valid_for_ranking = true
+      and tr.user_id is not null
+      and tr.ppm is not null
+      and tr.accuracy is not null
+      and tr.accuracy >= 90
+      and tr.duration_seconds >= 15
+  )
+);
+
+drop policy if exists "Public can read eligible ranking results" on public.typing_results;
+create policy "Public can read eligible ranking results"
+on public.typing_results
+for select
+to anon, authenticated
+using (
+  valid_for_ranking = true
+  and user_id is not null
+  and ppm is not null
+  and accuracy is not null
+  and accuracy >= 90
+  and duration_seconds >= 15
+);
 
 -- Ranking Online Geral - melhor resultado por usuario.
 --

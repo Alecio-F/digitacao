@@ -1,24 +1,26 @@
-# Supabase — PandaDigitações V2
+# Supabase - PandaDigitacoes V2
 
-Esta pasta contém a fundação SQL do Supabase para a V2.
+Esta pasta contem a base SQL do Supabase para a V2.
 
 ## Arquivos
 
-- `schema.sql`: tabelas principais, triggers, índices e RLS.
+- `schema.sql`: tabelas principais, triggers, indices e RLS.
 - `seed.sql`: conquistas iniciais.
-- `ranking_views.sql`: view pública segura para o Ranking Online inicial.
-- `fix_profiles_null_names.sql`: correção auxiliar para perfis antigos sem nome.
+- `ranking_views.sql`: views e policies para o Ranking Online.
+- `fix_profiles_null_names.sql`: correcao auxiliar para perfis antigos sem nome.
+- `security_fixes.sql`: ajustes de seguranca para funcoes e permissoes.
 
-## Ordem de Execução
+## Ordem de Execucao
 
 1. Abra o projeto no Supabase Dashboard.
 2. Acesse SQL Editor.
 3. Execute `schema.sql`.
 4. Execute `seed.sql`.
 5. Execute `ranking_views.sql`.
-6. Execute scripts auxiliares somente se precisar corrigir dados antigos.
+6. Execute `security_fixes.sql`.
+7. Execute scripts auxiliares somente se precisar corrigir dados antigos.
 
-## Variáveis
+## Variaveis
 
 Copie `.env.example` para `.env.local` e preencha:
 
@@ -40,27 +42,38 @@ Para desenvolvimento:
 
 ## RLS
 
-Todas as tabelas públicas do schema têm Row Level Security ativo. As policies
-permitem que usuários autenticados acessem apenas seus próprios dados, exceto
-`achievements`, que é catálogo de leitura.
+Todas as tabelas publicas do schema tem Row Level Security ativo. As policies
+principais permitem que usuarios autenticados acessem seus proprios dados.
+
+Para o Ranking Online, `ranking_views.sql` adiciona policies publicas
+especificas e limitadas para:
+
+- resultados elegiveis em `typing_results`;
+- perfis que aparecem no mural online.
 
 ## Ranking Online
 
-`ranking_views.sql` cria `public.online_typing_ranking`, uma view de leitura para
-o mural online. Ela expõe somente resultados `valid_for_ranking = true` e os
-campos mínimos de perfil necessários na UI:
+`ranking_views.sql` cria duas views de leitura:
 
-- nome de exibição;
-- username;
-- título;
-- modo/fase/texto;
-- PPM, CPM, precisão, erros, combo, score e data.
+- `public.online_typing_ranking`: view inicial mantida para compatibilidade.
+- `public.online_typing_ranking_best`: view usada pelo front-end no Ranking
+  Online Geral. Ela retorna apenas o melhor resultado elegivel por usuario.
+
+A view `online_typing_ranking_best` usa `security_invoker = true`, le dados de
+`typing_results` + `profiles`, filtra somente resultados elegiveis e calcula:
+
+```sql
+ranking_score = (ppm * 0.7) + (accuracy * 0.3)
+```
+
+Ela usa `row_number() over (partition by user_id ...)` para manter somente o
+melhor resultado de cada usuario.
 
 O front-end usa a publishable key e nunca usa `service_role`. Se a view ainda
-não tiver sido executada, a página `/ranking` mostra um erro amigável no escopo
-Online e mantém o ranking local funcionando.
+nao tiver sido executada, a pagina `/ranking` mostra um erro amigavel no escopo
+Online e mantem o ranking local funcionando.
 
 ## Escopo Atual
 
-A base atual cobre Auth, perfis, sync local-first, restauração nuvem para local,
-fila de pending sync e Ranking Online inicial por `typing_results`.
+A base atual cobre Auth, perfis, sync local-first, restauracao nuvem para local,
+fila de pending sync e Ranking Online por melhor resultado de usuario.
