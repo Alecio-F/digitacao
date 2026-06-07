@@ -135,7 +135,7 @@ export function generateDailyShareText(result: ShareInput): string {
   });
 
   return [
-    `🐼 Panda Dojo - Desafio Diário · ${dateLabel}`,
+    `🐼 Panda Dojo Desafio Diário · ${dateLabel}`,
     challengeLabel,
     '',
     `🏅 Medalha: ${medal}`,
