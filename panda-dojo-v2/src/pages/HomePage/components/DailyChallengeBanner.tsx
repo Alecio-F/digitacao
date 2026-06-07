@@ -138,8 +138,14 @@ export function DailyChallengeBanner() {
           <span>HOJE</span>
           <strong>{formatDailyDisplayDate(challenge.dayKey).slice(0, 5)}</strong>
         </span>
-        <span className={styles.dailyChallengeMascot}>
-          <span className="material-symbols-outlined">sports_esports</span>
+        <span className={styles.dailyChallengePandaStage}>
+          <img
+            className={styles.dailyChallengePandaImage}
+            src="/desafio.png"
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
         </span>
       </div>
     </section>
