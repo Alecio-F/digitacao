@@ -155,10 +155,19 @@ export function generateDailyShareText(result: ShareInput): string {
   ].join('\n');
 }
 
+function normalizeDailyShareText(text: string): string {
+  return text.replace(
+    /^🐼 Panda Dojo\s+[-–—]\s+Desafio Diário/m,
+    '🐼 Panda Dojo Desafio Diário',
+  );
+}
+
 export async function copyDailyResultToClipboard(text: string): Promise<boolean> {
+  const normalizedText = normalizeDailyShareText(text);
+
   try {
     if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(text);
+      await navigator.clipboard.writeText(normalizedText);
       return true;
     }
   } catch {
@@ -167,7 +176,7 @@ export async function copyDailyResultToClipboard(text: string): Promise<boolean>
 
   try {
     const textarea = document.createElement('textarea');
-    textarea.value = text;
+    textarea.value = normalizedText;
     textarea.setAttribute('readonly', '');
     textarea.style.position = 'fixed';
     textarea.style.top = '-9999px';
