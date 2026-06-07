@@ -60,6 +60,11 @@ export function getMetricLabel(metric: RankingMetric): string {
   return labels[metric];
 }
 
+const ARCADE_GAME_TITLE_MAP: Record<string, string> = {
+  'panda-keys': 'Panda Keys',
+  'seal-challenge': 'Seal Challenge',
+};
+
 export function getModeLabel(entry: RankingEntry): string {
   if (entry.mode === 'lesson' && entry.lessonId) {
     return LESSON_TITLE_MAP[entry.lessonId] ?? `Fase: ${entry.lessonId}`;
@@ -67,6 +72,10 @@ export function getModeLabel(entry: RankingEntry): string {
 
   if (entry.mode === 'practice_text' && entry.practiceTextId) {
     return PRACTICE_TEXT_TITLE_MAP[entry.practiceTextId] ?? `Texto: ${entry.practiceTextId}`;
+  }
+
+  if (entry.mode === 'arcade' && entry.practiceTextId) {
+    return ARCADE_GAME_TITLE_MAP[entry.practiceTextId] ?? `Arcade: ${entry.practiceTextId}`;
   }
 
   const labels: Record<RankingEntry['mode'], string> = {
@@ -113,7 +122,12 @@ function safeAverage(values: number[]): number {
   return Math.round(values.reduce((sum, value) => sum + value, 0) / values.length);
 }
 
-function getStats(entries: RankingEntry[], fallback: ReturnType<typeof useLocalRanking>, scope: RankingScope) {
+function getStats(
+  entries: RankingEntry[],
+  fallback: ReturnType<typeof useLocalRanking>,
+  scope: RankingScope,
+  category: RankingCategory,
+) {
   if (scope === 'local') {
     return [
       { label: 'Melhor PPM', value: fallback.bestPpm || '--' },
@@ -121,6 +135,19 @@ function getStats(entries: RankingEntry[], fallback: ReturnType<typeof useLocalR
       { label: 'Melhor score', value: fallback.topEntries[0]?.rankingScore || '--' },
       { label: 'Treinos elegíveis', value: fallback.eligibleTrainings },
       { label: 'Média recente', value: fallback.averagePpm ? `${fallback.averagePpm} PPM` : '--' },
+    ];
+  }
+
+  if (category === 'arcade') {
+    const bestScore = entries.length ? Math.max(...entries.map((e) => e.rankingScore)) : 0;
+    const bestCombo = entries.length ? Math.max(...entries.map((e) => e.maxCombo)) : 0;
+    const uniquePlayers = new Set(entries.map((e) => e.userId)).size;
+    return [
+      { label: 'Melhor Score', value: bestScore || '--' },
+      { label: 'Melhor Combo', value: bestCombo ? `${bestCombo}x` : '--' },
+      { label: 'Resultados online', value: entries.length },
+      { label: 'Jogadores', value: uniquePlayers || '--' },
+      { label: 'Média do mural', value: '--' },
     ];
   }
 
@@ -255,7 +282,7 @@ export function useRankingViewModel() {
     podiumEntries,
     listEntries,
     bestEntry,
-    stats: getStats(entries, ranking, scope),
+    stats: getStats(entries, ranking, scope, category),
     currentMetricLabel: getMetricLabel(selectedMetric),
     currentMetricValue: getPrimaryMetricValue(bestEntry, selectedMetric),
     insight: getInsight(entries, averageAccuracy, averagePpm),

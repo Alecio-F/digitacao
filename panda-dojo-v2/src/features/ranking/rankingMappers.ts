@@ -84,6 +84,7 @@ function mapRemoteMode(mode: string): RankingMode {
   if (mode === 'practice-text' || mode === 'practice_text') return 'practice_text';
   if (mode === 'daily-challenge' || mode === 'daily_challenge') return 'daily_challenge';
   if (mode === 'random' || mode === 'random_words') return 'random_words';
+  if (mode === 'arcade') return 'arcade';
   return 'free';
 }
 

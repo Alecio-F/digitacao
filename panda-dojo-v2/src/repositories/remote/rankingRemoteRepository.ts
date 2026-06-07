@@ -15,6 +15,7 @@ const ONLINE_RANKING_VIEWS = {
   phases: 'online_typing_ranking_best_by_phase',
   texts: 'online_typing_ranking_best_by_text',
   daily: 'online_daily_challenge_ranking',
+  arcade: 'online_arcade_ranking_best',
 } as const;
 
 export interface OnlineTypingRankingOptions {
@@ -64,6 +65,19 @@ function getPeriodStart(period: RankingPeriod): string | null {
 }
 
 function getOrderColumns(category: RankingCategory, metric: RankingMetric) {
+  if (category === 'arcade') {
+    if (metric === 'combo') {
+      return [
+        { column: 'max_combo', ascending: false },
+        { column: 'ranking_score', ascending: false },
+      ];
+    }
+    return [
+      { column: 'ranking_score', ascending: false },
+      { column: 'max_combo', ascending: false },
+    ];
+  }
+
   if (category === 'speed') {
     return [
       { column: metric === 'cpm' ? 'cpm' : 'ppm', ascending: false },
@@ -115,10 +129,15 @@ function getCategoryMinimumAccuracy(options: OnlineTypingRankingOptions): number
 }
 
 function shouldSkipRemoteCategory(category: RankingCategory): boolean {
-  return category === 'arcade';
+  const withoutViews = new Set<RankingCategory>([]);
+  return withoutViews.has(category);
 }
 
 function getOnlineRankingViewName(options: OnlineTypingRankingOptions): string {
+  if (options.category === 'arcade') {
+    return ONLINE_RANKING_VIEWS.arcade;
+  }
+
   if (options.category === 'daily') {
     return ONLINE_RANKING_VIEWS.daily;
   }
@@ -209,6 +228,7 @@ async function queryRankingView(
   const minAccuracy = getCategoryMinimumAccuracy(options);
   if (minAccuracy !== null) query = query.gte('accuracy', minAccuracy);
 
+  if (options.category === 'arcade') query = query.eq('mode', 'arcade');
   if (options.category === 'phases') query = query.eq('mode', 'lesson');
   if (options.category === 'texts') query = query.in('mode', ['practice_text', 'free']);
   if (options.mode) query = query.eq('mode', options.mode);
@@ -235,6 +255,7 @@ async function queryTypingResultsFallback(
   options: OnlineTypingRankingOptions,
 ): Promise<RemoteRepositoryResult<RemoteRankingEntry[]>> {
   if (!supabase) return disabledResult();
+  if (options.category === 'arcade') return { data: [], error: null };
 
   let query = supabase
     .from('typing_results')

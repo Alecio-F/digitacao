@@ -55,12 +55,12 @@ export const RANKING_CATEGORY_CONFIG: Record<RankingCategory, RankingCategoryCon
   arcade: {
     id: 'arcade',
     title: 'Arcade',
-    description: 'Base preparada para Panda Keys e próximos minigames.',
+    description: 'Melhor score por usuário por jogo — Panda Keys, Seal Challenge e futuros minigames.',
     defaultMetric: 'arcade_score',
     availableMetrics: ['arcade_score', 'combo'],
     requiresEligibleResult: false,
     supportedModes: ['arcade'],
-    status: 'soon',
+    status: 'ready',
   },
   daily: {
     id: 'daily',

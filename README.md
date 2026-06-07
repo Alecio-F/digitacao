@@ -16,8 +16,10 @@ A V2 está em fase funcional avançada:
 - Conta com autenticação Supabase e fallback local.
 - Sync local-first para progresso, histórico, conquistas e recordes.
 - Pending Sync para reenviar dados quando o Supabase falhar temporariamente.
-- Ranking Local e Ranking Online (Geral, Velocidade, Precisão, Combo, Fases, Textos, Desafio Diário).
+- Ranking Local e Ranking Online (Geral, Velocidade, Precisão, Combo, Fases, Textos, Desafio Diário, Arcade).
+- Elegibilidade competitiva com motivo de invalidação para resultados fora do ranking.
 - Desafio Diário com ranking dedicado em tabela própria (`daily_challenge_results`), um resultado por usuário por dia.
+- Ranking do Arcade com melhor score por usuário por jogo (`arcade_scores`) — Panda Keys e Seal Challenge.
 - Tema claro/escuro, reduced motion e configurações persistidas.
 
 ## Stack
@@ -87,14 +89,25 @@ VITE_SUPABASE_PUBLISHABLE_KEY=
 ```text
 panda-dojo-v2/supabase/schema.sql
 panda-dojo-v2/supabase/seed.sql
+panda-dojo-v2/supabase/ranking_eligibility.sql
 panda-dojo-v2/supabase/ranking_views.sql
+panda-dojo-v2/supabase/ranking_combo_view.sql
+panda-dojo-v2/supabase/ranking_phase_view.sql
+panda-dojo-v2/supabase/ranking_text_view.sql
 panda-dojo-v2/supabase/daily_challenge_ranking.sql
+panda-dojo-v2/supabase/arcade_ranking.sql
 panda-dojo-v2/supabase/security_fixes.sql
 ```
 
 O script `fix_profiles_null_names.sql` é auxiliar e só deve ser usado para corrigir perfis antigos sem nome.
 
-`daily_challenge_ranking.sql` adiciona campos de ranking em `daily_challenge_results`, cria indexes, policies públicas e a view `online_daily_challenge_ranking`. É idempotente — pode ser executado mais de uma vez sem efeitos colaterais.
+`ranking_eligibility.sql` adiciona o campo `ranking_invalid_reason` em bancos já existentes e normaliza motivos principais de resultados inelegíveis.
+
+`ranking_combo_view.sql`, `ranking_phase_view.sql` e `ranking_text_view.sql` ativam rankings online específicos de Combo, Fases e Textos com views dedicadas.
+
+`daily_challenge_ranking.sql` adiciona campos de ranking em `daily_challenge_results`, cria indexes, policies públicas e a view `online_daily_challenge_ranking`. É idempotente.
+
+`arcade_ranking.sql` adiciona grant público e policy de leitura em `arcade_scores` e cria a view `online_arcade_ranking_best`. É idempotente.
 
 Nunca use `service_role` no front-end.
 
@@ -119,15 +132,23 @@ Principais áreas de persistência:
 O Ranking possui dois escopos:
 
 - **Local:** usa histórico salvo no navegador.
-- **Online:** usa Supabase. Categorias disponíveis: Geral, Velocidade, Precisão, Combo, Fases, Textos e Desafio Diário.
+- **Online:** usa Supabase. Categorias disponíveis: Geral, Velocidade, Precisão, Combo, Fases, Textos, Desafio Diário e Arcade.
 
-O Desafio Diário usa tabela própria (`daily_challenge_results`) com ranking dedicado e garante um resultado por usuário por dia, sem interferir no histórico geral.
+O Desafio Diário usa tabela própria (`daily_challenge_results`) com ranking dedicado e garante um resultado por usuário por dia. O Arcade usa `arcade_scores` com melhor score por usuário por jogo — sem interferir no histórico geral de digitação.
+
+Resultados de Type Arena entram no ranking apenas quando passam pela elegibilidade mínima: precisão suficiente, duração mínima, quantidade adequada de caracteres e ausência de padrões suspeitos. Resultados fora do ranking continuam salvos no histórico, mas recebem `ranking_invalid_reason`.
 
 Documentação técnica:
 
 - [`panda-dojo-v2/docs/RANKING_SYSTEM.md`](./panda-dojo-v2/docs/RANKING_SYSTEM.md)
+- [`panda-dojo-v2/docs/RANKING_VALIDATION_RULES.md`](./panda-dojo-v2/docs/RANKING_VALIDATION_RULES.md)
+- [`panda-dojo-v2/supabase/ranking_eligibility.sql`](./panda-dojo-v2/supabase/ranking_eligibility.sql)
 - [`panda-dojo-v2/supabase/ranking_views.sql`](./panda-dojo-v2/supabase/ranking_views.sql)
+- [`panda-dojo-v2/supabase/ranking_combo_view.sql`](./panda-dojo-v2/supabase/ranking_combo_view.sql)
+- [`panda-dojo-v2/supabase/ranking_phase_view.sql`](./panda-dojo-v2/supabase/ranking_phase_view.sql)
+- [`panda-dojo-v2/supabase/ranking_text_view.sql`](./panda-dojo-v2/supabase/ranking_text_view.sql)
 - [`panda-dojo-v2/supabase/daily_challenge_ranking.sql`](./panda-dojo-v2/supabase/daily_challenge_ranking.sql)
+- [`panda-dojo-v2/supabase/arcade_ranking.sql`](./panda-dojo-v2/supabase/arcade_ranking.sql)
 
 ## Estrutura
 

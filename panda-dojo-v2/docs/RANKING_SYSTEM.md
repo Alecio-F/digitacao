@@ -31,7 +31,7 @@ quando o Supabase estiver indisponível.
 - **Fases:** usa resultados `lesson` e permite filtro futuro por `lessonId`.
 - **Textos:** usa resultados `practice_text` e `free`.
 - **Desafio Diário:** ranking diário dedicado com tabela própria (`daily_challenge_results`), um resultado por usuário por dia, padrão "Hoje".
-- **Arcade:** espaço preparado para Panda Keys e próximos minigames.
+- **Arcade:** melhor score por usuário por jogo — Panda Keys, Seal Challenge e futuros minigames.
 
 ## Fórmula geral
 
@@ -119,7 +119,8 @@ Views principais:
 - `public.online_typing_ranking_best_combo`;
 - `public.online_typing_ranking_best_by_phase`;
 - `public.online_typing_ranking_best_by_text`;
-- `public.online_daily_challenge_ranking` (tabela separada: `daily_challenge_results`).
+- `public.online_daily_challenge_ranking` (tabela separada: `daily_challenge_results`);
+- `public.online_arcade_ranking_best` (tabela separada: `arcade_scores`).
 
 As views `best` usam `row_number()` com `partition by user_id` para exibir no
 máximo um resultado por usuário em cada mural. Todas filtram
@@ -170,8 +171,7 @@ amigável no escopo Online e mantém o Ranking Local intacto.
 - **Fases:** `ranking_score desc`, `ppm desc`, `accuracy desc`, `max_combo desc` por `(user_id, lesson_id)`.
 - **Textos:** `ranking_score desc`, `ppm desc`, `accuracy desc`, `max_combo desc` por `(user_id, practice_text_id)`.
 - **Desafio Diário:** `ranking_score desc`, `ppm desc`, `accuracy desc`, `max_combo desc` por `(user_id, challenge_date)`.
-
-Arcade continua preparado para fase futura.
+- **Arcade:** `ranking_score desc` (= score), `max_combo desc`, `level_reached desc` por `(user_id, game_id)`.
 
 ## Filtros
 
@@ -427,18 +427,117 @@ com score maior ou igual, a chamada retorna sem alterar o banco.
 - `src/repositories/remote/dailyChallengeRemoteRepository.ts` — upsert com read-before-write;
 - `src/features/backend-sync/syncLocalProgressService.ts` — orquestração do salvamento dual.
 
+## Ranking Online do Arcade
+
+O Ranking do Arcade usa a tabela `public.arcade_scores`, que já existe desde o schema
+inicial do projeto. Cada jogador pode aparecer uma vez por jogo no ranking combinado.
+
+**Tabela:** `public.arcade_scores`
+
+**Campos disponíveis:** `game_id`, `score`, `max_combo`, `level_reached`, `played_at`
+
+**View:** `public.online_arcade_ranking_best`
+
+**Jogos disponíveis:**
+
+| `game_id` | Nome exibido |
+|---|---|
+| `panda-keys` | Panda Keys |
+| `seal-challenge` | Seal Challenge |
+
+**Lógica de melhor resultado por usuário por jogo:**
+
+```sql
+row_number() over (
+  partition by user_id, game_id
+  order by score desc, max_combo desc, level_reached desc, played_at asc
+)
+```
+
+A partição por `(user_id, game_id)` garante que cada jogador aparece no máximo
+uma vez por jogo. Em uma visão combinada (sem filtro por jogo), um usuário pode
+aparecer duas vezes — uma por jogo — o que é comportamento correto.
+
+**Compatibilidade com `RemoteRankingEntry`:**
+
+O Arcade não usa os campos `ppm`, `cpm`, `accuracy`, `errors` e `duration_seconds`.
+A view retorna `0` nesses campos para compatibilidade com o contrato do front-end.
+
+Mapeamentos relevantes:
+- `ranking_score = score` (o score do jogo é usado como ranking_score)
+- `practice_text_id = game_id` (transporta o identificador do jogo para o front-end)
+- `mode = 'arcade'`
+- `valid_for_ranking = true` (todos os scores > 0 são elegíveis)
+
+**`getModeLabel` para Arcade:**
+
+Quando `mode === 'arcade'` e `practiceTextId` está presente, exibe o nome do jogo
+(`'panda-keys'` → `'Panda Keys'`, `'seal-challenge'` → `'Seal Challenge'`).
+
+**Stats para Arcade Online:**
+
+Os cards de estatística exibem métricas relevantes para arcade:
+- Melhor Score
+- Melhor Combo
+- Resultados online
+- Jogadores únicos
+
+**Elegibilidade:**
+
+O Arcade não tem camada de antifraude dedicada. O critério de elegibilidade mínima
+é `score > 0`, aplicado tanto na policy RLS quanto na view.
+
+**Fluxo de salvamento:**
+
+O fluxo de sync remoto já estava implementado desde o início do projeto:
+1. Jogo termina → `savePandaKeysBestScore(score)` / `saveSealBestScore(score)` localmente
+2. Se logado → `syncArcadeScoreToSupabase(gameId, score, metadata)` em `syncLocalProgressService.ts`
+3. → `arcadeScoreRemoteRepository.saveArcadeScore(userId, remoteGameId, input)` → INSERT em `arcade_scores`
+
+O ranking não interfere no fluxo de salvamento — não foi necessário alterar nada no sync.
+
+**Arquivos relevantes:**
+
+- `supabase/arcade_ranking.sql` — grants, policy pública, view
+- `src/repositories/remote/rankingRemoteRepository.ts` — routing para arcade view, ordering
+- `src/features/ranking/rankingConfig.ts` — status `'ready'`
+- `src/features/ranking/rankingScoring.ts` — fix do metric `arcade_score`
+- `src/features/ranking/rankingMappers.ts` — `mapRemoteMode` suporta `'arcade'`
+- `src/features/ranking/useRankingViewModel.ts` — `getModeLabel` e `getStats` para arcade
+
+**Diferenças em relação às demais categorias:**
+
+| Aspecto | Type Arena (Geral/Speed/etc.) | Desafio Diário | Arcade |
+|---|---|---|---|
+| Tabela fonte | `typing_results` | `daily_challenge_results` | `arcade_scores` |
+| Dedup | por usuário (view) | por usuário/dia (constraint + view) | por usuário/jogo (view) |
+| Campos de typing | ppm, cpm, accuracy, etc. | ppm, cpm, accuracy, etc. | não disponíveis (0) |
+| Elegibilidade | antifraude completo | antifraude completo | score > 0 |
+| Fallback (view falha) | lê `typing_results` direto | nenhum | retorna [] |
+| Ranking Local | histórico local | histórico local | não disponível |
+
+**Limitações atuais do Ranking do Arcade:**
+
+- Ranking Local para Arcade não está disponível — os scores do Arcade são armazenados
+  em estrutura separada (`arcadeScoreRepository`) e não mapeados para `RankingEntry` local.
+- Não há filtro por jogo específico na UI — o ranking combina todos os jogos.
+- Stats de PPM, precisão e tempo não fazem sentido para Arcade e são exibidos como `--`.
+- `level_reached` é retornado pela view mas não exibido no front-end atual.
+
 ## Limitações atuais
 
 - Ranking Online depende da execução dos SQLs em `supabase/`.
 - Antifraude ainda é básico e client-side.
 - `challenge_date` usa a data UTC de `completed_at`; pode divergir da data local do jogador em fusos muito diferentes do UTC.
+- Ranking Local para Arcade não está disponível (scores em estrutura separada).
+- Não há filtro por jogo específico na UI do Arcade.
 - Não há ranking global avançado por temporada.
 - Não há perfil público completo.
 
 ## Próximas fases
 
 - Recalcular elegibilidade no servidor, se o ranking ganhar competição real.
-- Ranking de Arcade com `arcade_scores`.
+- Filtro por jogo específico no Ranking do Arcade.
 - Filtros avançados por fase/texto específicos.
 - RPC ou materialized view se o volume de resultados crescer.
 - Testes automatizados dos selectors, mappers e repository remoto.

@@ -50,6 +50,6 @@ export function getMetricValue(result: RankingEntry, metric: string): number {
   if (metric === 'accuracy') return getAccuracyScore(result);
   if (metric === 'lowest_time') return getLowestTimeScore(result);
   if (metric === 'combo') return Math.max(0, safeNumber(result.maxCombo));
-  if (metric === 'arcade_score') return Math.max(0, safeNumber(result.metricValue));
+  if (metric === 'arcade_score') return Math.max(0, safeNumber(result.rankingScore));
   return Math.max(0, safeNumber(result.metricValue));
 }
