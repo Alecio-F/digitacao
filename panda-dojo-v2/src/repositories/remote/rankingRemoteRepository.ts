@@ -16,6 +16,8 @@ const ONLINE_RANKING_VIEWS = {
   texts: 'online_typing_ranking_best_by_text',
   daily: 'online_daily_challenge_ranking',
   arcade: 'online_arcade_ranking_best',
+  curiosityErrors: 'online_curiosity_ranking_most_errors',
+  curiosityChaos: 'online_curiosity_ranking_chaos',
 } as const;
 
 export interface OnlineTypingRankingOptions {
@@ -65,6 +67,21 @@ function getPeriodStart(period: RankingPeriod): string | null {
 }
 
 function getOrderColumns(category: RankingCategory, metric: RankingMetric) {
+  if (category === 'curiosities') {
+    if (metric === 'chaos') {
+      return [
+        { column: 'ranking_score', ascending: false },
+        { column: 'errors', ascending: false },
+        { column: 'completed_at', ascending: true },
+      ];
+    }
+    return [
+      { column: 'errors', ascending: false },
+      { column: 'duration_seconds', ascending: false },
+      { column: 'completed_at', ascending: true },
+    ];
+  }
+
   if (category === 'arcade') {
     if (metric === 'combo') {
       return [
@@ -138,6 +155,12 @@ function getOnlineRankingViewName(options: OnlineTypingRankingOptions): string {
     return ONLINE_RANKING_VIEWS.arcade;
   }
 
+  if (options.category === 'curiosities') {
+    return options.metric === 'chaos'
+      ? ONLINE_RANKING_VIEWS.curiosityChaos
+      : ONLINE_RANKING_VIEWS.curiosityErrors;
+  }
+
   if (options.category === 'daily') {
     return ONLINE_RANKING_VIEWS.daily;
   }
@@ -191,7 +214,7 @@ function mapFallbackRow(row: FallbackTypingResultRow): RemoteRankingEntry {
 
 function normalizeError(message: string | null): string | null {
   if (!message) return null;
-  if (message.includes('online_typing_ranking')) {
+  if (message.includes('online_typing_ranking') || message.includes('online_curiosity_ranking')) {
     return 'A view online do ranking selecionado ainda nao foi aplicada no Supabase.';
   }
   if (message.toLowerCase().includes('permission') || message.toLowerCase().includes('policy')) {
@@ -219,8 +242,11 @@ async function queryRankingView(
 
   let query = supabase
     .from(viewName)
-    .select('*')
-    .eq('valid_for_ranking', true);
+    .select('*');
+
+  if (options.category !== 'curiosities') {
+    query = query.eq('valid_for_ranking', true);
+  }
 
   const periodStart = getPeriodStart(options.period);
   if (periodStart) query = query.gte('completed_at', periodStart);
@@ -229,6 +255,7 @@ async function queryRankingView(
   if (minAccuracy !== null) query = query.gte('accuracy', minAccuracy);
 
   if (options.category === 'arcade') query = query.eq('mode', 'arcade');
+  if (options.category === 'curiosities') query = query.neq('mode', 'arcade');
   if (options.category === 'phases') query = query.eq('mode', 'lesson');
   if (options.category === 'texts') query = query.in('mode', ['practice_text', 'free']);
   if (options.mode) query = query.eq('mode', options.mode);
@@ -255,7 +282,9 @@ async function queryTypingResultsFallback(
   options: OnlineTypingRankingOptions,
 ): Promise<RemoteRepositoryResult<RemoteRankingEntry[]>> {
   if (!supabase) return disabledResult();
-  if (options.category === 'arcade') return { data: [], error: null };
+  if (options.category === 'arcade' || options.category === 'curiosities') {
+    return { data: [], error: null };
+  }
 
   let query = supabase
     .from('typing_results')

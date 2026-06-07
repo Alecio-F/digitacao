@@ -7,6 +7,7 @@ import { filterByPeriod } from './rankingFilters';
 import { mapRemoteRankingEntryToRankingEntry } from './rankingMappers';
 import {
   getAccuracyRanking,
+  getCuriosityRanking,
   getGeneralRanking,
   getPhaseRanking,
   getSpeedRanking,
@@ -32,6 +33,7 @@ export const RANKING_CATEGORY_OPTIONS: RankingCategory[] = [
   'texts',
   'arcade',
   'daily',
+  'curiosities',
 ];
 
 export const RANKING_PERIOD_OPTIONS: Array<{ value: RankingPeriod; label: string }> = [
@@ -55,6 +57,8 @@ export function getMetricLabel(metric: RankingMetric): string {
     lowest_time: 'Menor tempo',
     combo: 'Combo',
     arcade_score: 'Score Arcade',
+    errors: 'Mais erros',
+    chaos: 'Maior caos',
   };
 
   return labels[metric];
@@ -106,6 +110,9 @@ function getCategoryRanking(
     return getGeneralRanking(entries.filter((entry) => entry.mode === 'daily_challenge'), 24);
   }
   if (category === 'arcade') return [];
+  if (category === 'curiosities') {
+    return getCuriosityRanking(entries, metric === 'chaos' ? 'chaos' : 'errors', 24);
+  }
   return getGeneralRanking(entries, 24);
 }
 
@@ -151,6 +158,20 @@ function getStats(
     ];
   }
 
+  if (category === 'curiosities') {
+    const mostErrors = entries.length ? Math.max(...entries.map((e) => e.errors)) : 0;
+    const topChaos = entries.length ? Math.max(...entries.map((e) => getMetricValue(e, 'chaos'))) : 0;
+    const averageErrors = safeAverage(entries.map((entry) => entry.errors));
+    const uniquePlayers = new Set(entries.map((e) => e.userId)).size;
+    return [
+      { label: 'Mais erros', value: mostErrors || '--' },
+      { label: 'Maior caos', value: topChaos || '--' },
+      { label: 'Resultados', value: entries.length },
+      { label: 'Jogadores', value: uniquePlayers || '--' },
+      { label: 'Média de erros', value: averageErrors || '--' },
+    ];
+  }
+
   const bestPpm = entries.length ? Math.max(...entries.map((entry) => entry.ppm)) : 0;
   const bestAccuracy = entries.length ? Math.max(...entries.map((entry) => entry.accuracy)) : 0;
   const bestScore = entries.length ? Math.max(...entries.map((entry) => entry.rankingScore)) : 0;
@@ -165,9 +186,22 @@ function getStats(
   ];
 }
 
-function getInsight(entries: RankingEntry[], averageAccuracy: number, averagePpm: number): string {
+function getInsight(
+  entries: RankingEntry[],
+  averageAccuracy: number,
+  averagePpm: number,
+  category: RankingCategory,
+): string {
   if (entries.length === 0) {
     return 'Nenhum nome no mural ainda. O Mestre Panda está apontando para a Arena com um olhar perigosamente competitivo.';
+  }
+
+  if (category === 'curiosities') {
+    const leader = entries[0];
+    if (leader.errors >= 20) {
+      return 'O teclado sobreviveu a essa rodada. O Mestre Panda chamou de caos, mas anotou no mural com respeito.';
+    }
+    return 'Muitos erros, muita coragem. O Dojo respeita a tentativa, mas o teclado pediu um intervalo dramático.';
   }
 
   const leader = entries[0];
@@ -285,7 +319,7 @@ export function useRankingViewModel() {
     stats: getStats(entries, ranking, scope, category),
     currentMetricLabel: getMetricLabel(selectedMetric),
     currentMetricValue: getPrimaryMetricValue(bestEntry, selectedMetric),
-    insight: getInsight(entries, averageAccuracy, averagePpm),
+    insight: getInsight(entries, averageAccuracy, averagePpm, category),
     isPreparedOnly: selectedConfig.status === 'soon',
     isOnlineLoading: shouldUseOnline ? isOnlineLoading : false,
     onlineError: shouldUseOnline ? onlineError : null,

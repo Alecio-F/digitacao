@@ -73,6 +73,16 @@ export const RANKING_CATEGORY_CONFIG: Record<RankingCategory, RankingCategoryCon
     status: 'ready',
     defaultPeriod: 'today',
   },
+  curiosities: {
+    id: 'curiosities',
+    title: 'Curiosidades',
+    description: 'Mural dos Distraídos: onde o Mestre Panda registra erros, caos e coragem de teclado.',
+    defaultMetric: 'errors',
+    availableMetrics: ['errors', 'chaos'],
+    requiresEligibleResult: false,
+    supportedModes: ['all', 'free', 'random_words', 'lesson', 'practice_text', 'daily_challenge'],
+    status: 'ready',
+  },
 };
 
 export const DEFAULT_RANKING_CATEGORY: RankingCategory = 'general';

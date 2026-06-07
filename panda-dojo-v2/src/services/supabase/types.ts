@@ -59,6 +59,7 @@ export interface RemoteRankingEntry {
   valid_for_ranking: boolean;
   completed_at: string;
   created_at?: string;
+  curiosity_type?: 'most_errors' | 'chaos';
 }
 
 export interface RemoteLessonProgress {

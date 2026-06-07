@@ -16,7 +16,7 @@ A V2 está em fase funcional avançada:
 - Conta com autenticação Supabase e fallback local.
 - Sync local-first para progresso, histórico, conquistas e recordes.
 - Pending Sync para reenviar dados quando o Supabase falhar temporariamente.
-- Ranking Local e Ranking Online (Geral, Velocidade, Precisão, Combo, Fases, Textos, Desafio Diário, Arcade).
+- Ranking Local e Ranking Online (Geral, Velocidade, Precisão, Combo, Fases, Textos, Desafio Diário, Arcade, Curiosidades).
 - Elegibilidade competitiva com motivo de invalidação para resultados fora do ranking.
 - Desafio Diário com ranking dedicado em tabela própria (`daily_challenge_results`), um resultado por usuário por dia.
 - Ranking do Arcade com melhor score por usuário por jogo (`arcade_scores`) — Panda Keys e Seal Challenge.
@@ -96,6 +96,7 @@ panda-dojo-v2/supabase/ranking_phase_view.sql
 panda-dojo-v2/supabase/ranking_text_view.sql
 panda-dojo-v2/supabase/daily_challenge_ranking.sql
 panda-dojo-v2/supabase/arcade_ranking.sql
+panda-dojo-v2/supabase/ranking_curiosities.sql
 panda-dojo-v2/supabase/security_fixes.sql
 ```
 
@@ -108,6 +109,8 @@ O script `fix_profiles_null_names.sql` é auxiliar e só deve ser usado para cor
 `daily_challenge_ranking.sql` adiciona campos de ranking em `daily_challenge_results`, cria indexes, policies públicas e a view `online_daily_challenge_ranking`. É idempotente.
 
 `arcade_ranking.sql` adiciona grant público e policy de leitura em `arcade_scores` e cria a view `online_arcade_ranking_best`. É idempotente.
+
+`ranking_curiosities.sql` cria o Mural dos Distraídos com as views `online_curiosity_ranking_most_errors` e `online_curiosity_ranking_chaos`. Ele permite baixa precisão para fins de curiosidade, mas bloqueia sessões curtas, vazias ou marcadas como suspeitas.
 
 Nunca use `service_role` no front-end.
 
@@ -132,9 +135,11 @@ Principais áreas de persistência:
 O Ranking possui dois escopos:
 
 - **Local:** usa histórico salvo no navegador.
-- **Online:** usa Supabase. Categorias disponíveis: Geral, Velocidade, Precisão, Combo, Fases, Textos, Desafio Diário e Arcade.
+- **Online:** usa Supabase. Categorias disponíveis: Geral, Velocidade, Precisão, Combo, Fases, Textos, Desafio Diário, Arcade e Curiosidades.
 
 O Desafio Diário usa tabela própria (`daily_challenge_results`) com ranking dedicado e garante um resultado por usuário por dia. O Arcade usa `arcade_scores` com melhor score por usuário por jogo — sem interferir no histórico geral de digitação.
+
+Curiosidades usa `typing_results` em views dedicadas para mostrar "Mais erros" e "Maior caos" por usuário. O score de caos é `errors * 2 + greatest(0, 100 - accuracy)`.
 
 Resultados de Type Arena entram no ranking apenas quando passam pela elegibilidade mínima: precisão suficiente, duração mínima, quantidade adequada de caracteres e ausência de padrões suspeitos. Resultados fora do ranking continuam salvos no histórico, mas recebem `ranking_invalid_reason`.
 
@@ -149,6 +154,7 @@ Documentação técnica:
 - [`panda-dojo-v2/supabase/ranking_text_view.sql`](./panda-dojo-v2/supabase/ranking_text_view.sql)
 - [`panda-dojo-v2/supabase/daily_challenge_ranking.sql`](./panda-dojo-v2/supabase/daily_challenge_ranking.sql)
 - [`panda-dojo-v2/supabase/arcade_ranking.sql`](./panda-dojo-v2/supabase/arcade_ranking.sql)
+- [`panda-dojo-v2/supabase/ranking_curiosities.sql`](./panda-dojo-v2/supabase/ranking_curiosities.sql)
 
 ## Estrutura
 

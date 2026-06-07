@@ -128,6 +128,29 @@ export function getTextRanking(
   return withPositions(limitResults(ranked, limit), metric);
 }
 
+export function getCuriosityRanking(
+  results: RankingEntry[],
+  metric: Extract<RankingMetric, 'errors' | 'chaos'> = 'errors',
+  limit = DEFAULT_RANKING_LIMIT,
+): RankingEntry[] {
+  const base = results.filter((entry) => (
+    entry.userId
+    && entry.durationSeconds >= 15
+    && entry.errors > 0
+  ));
+
+  const ranked = dedupeResults(base).sort((a, b) => {
+    const metricDiff = getMetricValue(b, metric) - getMetricValue(a, metric);
+    if (metricDiff !== 0) return metricDiff;
+    const errorDiff = b.errors - a.errors;
+    if (errorDiff !== 0) return errorDiff;
+    if (metric === 'errors') return b.durationSeconds - a.durationSeconds;
+    return new Date(a.completedAt).getTime() - new Date(b.completedAt).getTime();
+  });
+
+  return withPositions(limitResults(ranked, limit), metric);
+}
+
 export function getLowestTimeRanking(
   results: RankingEntry[],
   mode: RankingMode,

@@ -14,10 +14,12 @@ const PERIOD_LABELS = {
 } as const;
 
 export function RankingHero({ viewModel }: Props) {
-  const { bestEntry, entries, period, scope, selectedConfig } = viewModel;
+  const { bestEntry, category, currentMetricLabel, currentMetricValue, entries, period, scope, selectedConfig } = viewModel;
   const scopeLabel = scope === 'online' ? 'Online' : 'Local';
   const periodLabel = PERIOD_LABELS[period];
   const leaderPpm = bestEntry?.ppm ? Math.round(bestEntry.ppm) : '--';
+  const leaderMetricLabel = category === 'curiosities' ? currentMetricLabel : 'PPM';
+  const leaderMetricValue = category === 'curiosities' ? currentMetricValue : leaderPpm;
 
   return (
     <section className={styles.hero} aria-labelledby="ranking-title">
@@ -46,8 +48,8 @@ export function RankingHero({ viewModel }: Props) {
 
       <div className={styles.heroMetrics} aria-label="Resumo do ranking selecionado">
         <article className={styles.heroMetricCard}>
-          <span>PPM</span>
-          <strong>{leaderPpm}</strong>
+          <span>{leaderMetricLabel}</span>
+          <strong>{leaderMetricValue}</strong>
           <small>líder do mural</small>
         </article>
         <article className={styles.heroMetricCard}>

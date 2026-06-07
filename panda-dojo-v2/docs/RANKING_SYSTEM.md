@@ -32,6 +32,7 @@ quando o Supabase estiver indisponível.
 - **Textos:** usa resultados `practice_text` e `free`.
 - **Desafio Diário:** ranking diário dedicado com tabela própria (`daily_challenge_results`), um resultado por usuário por dia, padrão "Hoje".
 - **Arcade:** melhor score por usuário por jogo — Panda Keys, Seal Challenge e futuros minigames.
+- **Curiosidades:** Mural dos Distraídos com "Mais erros" e "Maior caos". Aceita baixa precisão, mas ignora sessões curtas, vazias ou suspeitas.
 
 ## Fórmula geral
 
@@ -120,11 +121,19 @@ Views principais:
 - `public.online_typing_ranking_best_by_phase`;
 - `public.online_typing_ranking_best_by_text`;
 - `public.online_daily_challenge_ranking` (tabela separada: `daily_challenge_results`);
-- `public.online_arcade_ranking_best` (tabela separada: `arcade_scores`).
+- `public.online_arcade_ranking_best` (tabela separada: `arcade_scores`);
+- `public.online_curiosity_ranking_most_errors`;
+- `public.online_curiosity_ranking_chaos`.
 
 As views `best` usam `row_number()` com `partition by user_id` para exibir no
 máximo um resultado por usuário em cada mural. Todas filtram
 `valid_for_ranking = true`.
+
+As views de Curiosidades são exceção controlada: elas retornam `valid_for_ranking = true`
+para indicar elegibilidade ao mural de curiosidade, mas aceitam resultados com
+`ranking_invalid_reason = low_accuracy`. Elas continuam bloqueando
+`suspicious_repetition`, `invalid_input_pattern`, `missing_required_data`,
+duração menor que 15 segundos e sessões com menos de 50 caracteres.
 
 A view `online_typing_ranking_best_by_phase` usa `partition by user_id, lesson_id`,
 permitindo que o mesmo usuário apareça uma vez por fase.
@@ -172,6 +181,8 @@ amigável no escopo Online e mantém o Ranking Local intacto.
 - **Textos:** `ranking_score desc`, `ppm desc`, `accuracy desc`, `max_combo desc` por `(user_id, practice_text_id)`.
 - **Desafio Diário:** `ranking_score desc`, `ppm desc`, `accuracy desc`, `max_combo desc` por `(user_id, challenge_date)`.
 - **Arcade:** `ranking_score desc` (= score), `max_combo desc`, `level_reached desc` por `(user_id, game_id)`.
+- **Curiosidades / Mais erros:** `errors desc`, `duration_seconds desc`, `completed_at asc` por `user_id`.
+- **Curiosidades / Maior caos:** `(errors * 2 + greatest(0, 100 - accuracy)) desc`, `errors desc`, `completed_at asc` por `user_id`.
 
 ## Filtros
 
@@ -523,6 +534,49 @@ O ranking não interfere no fluxo de salvamento — não foi necessário alterar
 - Não há filtro por jogo específico na UI — o ranking combina todos os jogos.
 - Stats de PPM, precisão e tempo não fazem sentido para Arcade e são exibidos como `--`.
 - `level_reached` é retornado pela view mas não exibido no front-end atual.
+
+## Ranking Online de Curiosidades
+
+Curiosidades é o "Mural dos Distraídos". Ele não substitui o ranking competitivo
+e não muda a elegibilidade normal da Type Arena. A intenção é mostrar leituras
+divertidas do histórico online sem premiar abuso.
+
+**Views:**
+
+- `public.online_curiosity_ranking_most_errors`
+- `public.online_curiosity_ranking_chaos`
+
+**Arquivo SQL:** `supabase/ranking_curiosities.sql`
+
+**Métricas na UI:**
+
+- `errors` → "Mais erros"
+- `chaos` → "Maior caos"
+
+**Fórmula de caos:**
+
+```text
+chaos = errors * 2 + greatest(0, 100 - accuracy)
+```
+
+**Filtros mínimos das views:**
+
+- `user_id is not null`;
+- `duration_seconds >= 15`;
+- `errors > 0`;
+- `accuracy between 0 and 100`;
+- pelo menos 50 caracteres via `raw_key_count` ou `correct_chars + wrong_chars`;
+- ignora `suspicious_repetition`, `invalid_input_pattern` e `missing_required_data`;
+- aceita `low_accuracy`, porque baixa precisão é parte da curiosidade do mural.
+
+**Comportamento no front-end:**
+
+- categoria `curiosities`;
+- métrica "Mais erros" → view `online_curiosity_ranking_most_errors`;
+- métrica "Maior caos" → view `online_curiosity_ranking_chaos`;
+- o pódio usa o valor principal da métrica selecionada;
+- dados secundários continuam mostrando PPM, precisão, erros e combo;
+- o Ranking Local tem suporte simples usando o histórico do navegador.
 
 ## Limitações atuais
 

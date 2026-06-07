@@ -43,6 +43,12 @@ export function getLowestTimeScore(result: RankingEntry): number {
   return duration > 0 ? duration : Number.POSITIVE_INFINITY;
 }
 
+export function getChaosScore(result: Pick<RankingEntry, 'errors' | 'accuracy'>): number {
+  const errors = Math.max(0, safeNumber(result.errors));
+  const accuracy = Math.max(0, Math.min(100, safeNumber(result.accuracy)));
+  return Math.max(0, Math.round(errors * 2 + Math.max(0, 100 - accuracy)));
+}
+
 export function getMetricValue(result: RankingEntry, metric: string): number {
   if (metric === 'ranking_score') return Math.max(0, safeNumber(result.rankingScore));
   if (metric === 'ppm') return getSpeedScore(result, 'ppm');
@@ -51,5 +57,7 @@ export function getMetricValue(result: RankingEntry, metric: string): number {
   if (metric === 'lowest_time') return getLowestTimeScore(result);
   if (metric === 'combo') return Math.max(0, safeNumber(result.maxCombo));
   if (metric === 'arcade_score') return Math.max(0, safeNumber(result.rankingScore));
+  if (metric === 'errors') return Math.max(0, safeNumber(result.errors));
+  if (metric === 'chaos') return getChaosScore(result);
   return Math.max(0, safeNumber(result.metricValue));
 }

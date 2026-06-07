@@ -7,6 +7,11 @@ O histórico continua salvando todos os treinos. O ranking local e o ranking
 online mostram apenas resultados marcados como `validForRanking: true` ou
 `valid_for_ranking = true`.
 
+Exceção: a categoria Curiosidades usa views próprias no Supabase para montar o
+"Mural dos Distraídos". Ela pode mostrar resultados com baixa precisão
+(`low_accuracy`), mas ainda exige duração mínima, caracteres suficientes e
+bloqueia padrões suspeitos.
+
 ## Métricas competitivas
 
 - PPM é calculado a partir de caracteres corretos: `(correctChars / 5) / minutos`.
@@ -97,6 +102,29 @@ Os códigos gravados em `rankingInvalidReasons` são:
 - O histórico da tela final mostra todos os treinos e sinaliza se cada item vale
   para ranking.
 - A página Ranking usa apenas resultados elegíveis em recordes, timeline e tabela.
+- A categoria Curiosidades mostra "Mais erros" e "Maior caos" em um mural
+  separado. Esses resultados não entram no ranking competitivo normal.
+
+## Curiosidades / Mural dos Distraídos
+
+As views `online_curiosity_ranking_most_errors` e
+`online_curiosity_ranking_chaos` são criadas por
+`supabase/ranking_curiosities.sql`.
+
+Regras mínimas:
+
+- `duration_seconds >= 15`;
+- pelo menos 50 caracteres via `raw_key_count` ou `correct_chars + wrong_chars`;
+- `errors > 0`;
+- `accuracy` entre 0 e 100;
+- permite `ranking_invalid_reason = low_accuracy`;
+- ignora `suspicious_repetition`, `invalid_input_pattern` e `missing_required_data`.
+
+O score de caos é:
+
+```text
+chaos = errors * 2 + greatest(0, 100 - accuracy)
+```
 
 ## Escopo atual
 

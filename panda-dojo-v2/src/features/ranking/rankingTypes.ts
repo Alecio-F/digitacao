@@ -5,7 +5,8 @@ export type RankingCategory =
   | 'phases'
   | 'texts'
   | 'arcade'
-  | 'daily';
+  | 'daily'
+  | 'curiosities';
 
 export type RankingMetric =
   | 'ranking_score'
@@ -14,7 +15,9 @@ export type RankingMetric =
   | 'accuracy'
   | 'lowest_time'
   | 'combo'
-  | 'arcade_score';
+  | 'arcade_score'
+  | 'errors'
+  | 'chaos';
 
 export type RankingScope = 'local' | 'online';
 export type RankingPeriod = 'today' | 'week' | 'month' | 'all';
