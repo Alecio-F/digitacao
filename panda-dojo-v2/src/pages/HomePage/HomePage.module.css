@@ -455,12 +455,12 @@
 .dailyChallengePandaStage {
   position: relative;
   display: flex;
-  width: min(116%, 355px);
-  min-height: clamp(220px, 28vw, 340px);
+  width: min(108%, 330px);
+  min-height: clamp(210px, 26vw, 320px);
   align-items: flex-end;
   justify-content: center;
-  margin-right: clamp(-42px, -3vw, -16px);
-  margin-bottom: clamp(-46px, -4vw, -24px);
+  margin-right: clamp(8px, 1.8vw, 28px);
+  margin-bottom: clamp(-40px, -3.5vw, -22px);
 }
 
 .dailyChallengePandaStage::before {
@@ -482,15 +482,15 @@
   position: relative;
   z-index: 1;
   display: block;
-  width: min(118%, 380px);
+  width: min(108%, 340px);
   max-width: none;
-  max-height: clamp(260px, 34vw, 430px);
+  max-height: clamp(245px, 30vw, 385px);
   object-fit: contain;
   object-position: center bottom;
   filter:
     drop-shadow(0 22px 34px rgba(11, 57, 84, 0.22))
     drop-shadow(0 0 22px rgba(20, 184, 212, 0.2));
-  transform: translateX(2%);
+  transform: translateX(-8%);
 }
 
 @keyframes dailyChallengeGlow {
@@ -646,14 +646,15 @@
   }
 
   .dailyChallengePandaStage {
-    width: min(72vw, 320px);
-    min-height: clamp(190px, 34vw, 270px);
-    margin-right: -22px;
-    margin-bottom: -38px;
+    width: min(68vw, 290px);
+    min-height: clamp(180px, 32vw, 250px);
+    margin-right: 12px;
+    margin-bottom: -32px;
   }
 
   .dailyChallengePandaImage {
-    max-height: clamp(230px, 42vw, 330px);
+    max-height: clamp(215px, 38vw, 300px);
+    transform: translateX(-5%);
   }
 
   .quickAccessGrid {
@@ -728,15 +729,15 @@
   }
 
   .dailyChallengePandaStage {
-    width: min(92vw, 280px);
-    min-height: 190px;
+    width: min(86vw, 260px);
+    min-height: 178px;
     margin-right: 0;
-    margin-bottom: -34px;
+    margin-bottom: -28px;
   }
 
   .dailyChallengePandaImage {
-    max-height: 270px;
-    transform: translateX(0);
+    max-height: 248px;
+    transform: translateX(-2%);
   }
 
   .dailyChallengeTopline,
